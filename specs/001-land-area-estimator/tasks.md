@@ -44,13 +44,13 @@
 
 ### Geometry Library: Core Data Models & Validation
 
-- [ ] T014 [P] Create `backend/src/SteelTree.GeoAcre.Geometry/GeoPoint.cs` as record with Latitude/Longitude validation (-90 to 90, -180 to 180 ranges)
-- [ ] T015 [P] Create `backend/src/SteelTree.GeoAcre.Geometry/Polygon.cs` class with properties: Id, Vertices, IsExcludePolygon, ParentPolygonId, IsValid, HasIntersections, ComputedAreaSquareMeters, ComputedPerimeterMeters, PerSideLengthsMeters (lazy-computed properties or stub methods)
-- [ ] T016 [P] Create `backend/src/SteelTree.GeoAcre.Geometry/Measurement.cs` class with properties: Id, Vertices, IsValid, TotalDistanceMeters, PerSegmentDistancesMeters
+- [X] T014 [P] Create `backend/src/SteelTree.GeoAcre.Geometry/GeoPoint.cs` as record with Latitude/Longitude validation (-90 to 90, -180 to 180 ranges)
+- [X] T015 [P] Create `backend/src/SteelTree.GeoAcre.Geometry/Polygon.cs` class with properties: Id, Vertices, IsExcludePolygon, ParentPolygonId, IsValid, HasIntersections, ComputedAreaSquareMeters, ComputedPerimeterMeters, PerSideLengthsMeters (lazy-computed properties or stub methods)
+- [X] T016 [P] Create `backend/src/SteelTree.GeoAcre.Geometry/Measurement.cs` class with properties: Id, Vertices, IsValid, TotalDistanceMeters, PerSegmentDistancesMeters
 
 ### Geometry Library: Core Algorithms
 
-- [ ] T017 Create `backend/src/SteelTree.GeoAcre.Geometry/GeoCalculations.cs` static class with method stubs:
+- [X] T017 Create `backend/src/SteelTree.GeoAcre.Geometry/GeoCalculations.cs` static class with method stubs:
   - `Distance(GeoPoint from, GeoPoint to) → double` (Haversine formula, ~0.5m accuracy)
   - `ComputeArea(IEnumerable<GeoPoint> vertices) → double` (spherical excess, <0.5% accuracy)
   - `DetectIntersections(IEnumerable<GeoPoint> vertices) → bool` (sweep-line, O(n log n))
@@ -58,28 +58,28 @@
   - `ComputeAreaEvenOddRule(IEnumerable<GeoPoint> vertices) → double`
   - `IsPointInPolygon(GeoPoint point, IEnumerable<GeoPoint> polygonVertices) → bool`
   - `ComputeIntersection(Polygon primary, Polygon exclude) → List<GeoPoint>`
-- [ ] T018 [P] Create `backend/src/SteelTree.GeoAcre.Geometry/UnitConversion.cs` static class with conversion methods (m² ↔ acres/hectares/square feet, m ↔ feet/miles/km)
-- [ ] T019 [P] Create custom exceptions: `backend/src/SteelTree.GeoAcre.Geometry/InvalidPolygonException.cs`, `InvalidCoordinateException.cs`
+- [X] T018 [P] Create `backend/src/SteelTree.GeoAcre.Geometry/UnitConversion.cs` static class with conversion methods (m² ↔ acres/hectares/square feet, m ↔ feet/miles/km)
+- [X] T019 [P] Create custom exceptions: `backend/src/SteelTree.GeoAcre.Geometry/InvalidPolygonException.cs`, `InvalidCoordinateException.cs`
 
 ### Geometry Library: Unit Tests (TDD—write these FIRST, ensure they FAIL)
 
-- [ ] T020 [P] Create `backend/tests/unit/SteelTree.GeoAcre.Geometry.Tests/GeoPointTests.cs` with tests:
+- [X] T020 [P] Create `backend/tests/unit/SteelTree.GeoAcre.Geometry.Tests/GeoPointTests.cs` with tests:
   - Valid coordinates create record successfully
   - Invalid latitude (>90, <-90) throws `InvalidCoordinateException`
   - Invalid longitude (>180, <-180) throws `InvalidCoordinateException`
-- [ ] T021 [P] Create `backend/tests/unit/SteelTree.GeoAcre.Geometry.Tests/GeoCalculations_DistanceTests.cs` with tests:
+- [X] T021 [P] Create `backend/tests/unit/SteelTree.GeoAcre.Geometry.Tests/GeoCalculations_DistanceTests.cs` with tests:
   - Known coordinates (NYC to LA) within 0.5% accuracy (~3944 km)
   - Zero distance for same point
   - Symmetry: Distance(A, B) == Distance(B, A)
-- [ ] T022 [P] Create `backend/tests/unit/SteelTree.GeoAcre.Geometry.Tests/GeoCalculations_AreaTests.cs` with tests:
+- [X] T022 [P] Create `backend/tests/unit/SteelTree.GeoAcre.Geometry.Tests/GeoCalculations_AreaTests.cs` with tests:
   - Central Park area (~843 acres) within 0.5% accuracy
   - Triangle area calculation
   - Self-intersecting polygon uses even-odd rule correctly
-- [ ] T023 [P] Create `backend/tests/unit/SteelTree.GeoAcre.Geometry.Tests/GeoCalculations_IntersectionTests.cs` with tests:
+- [X] T023 [P] Create `backend/tests/unit/SteelTree.GeoAcre.Geometry.Tests/GeoCalculations_IntersectionTests.cs` with tests:
   - Simple polygon (non-intersecting) returns false
   - Self-intersecting polygon returns true
   - Square and bowtie patterns
-- [ ] T024 [P] Create `backend/tests/unit/SteelTree.GeoAcre.Geometry.Tests/UnitConversionTests.cs` with tests:
+- [X] T024 [P] Create `backend/tests/unit/SteelTree.GeoAcre.Geometry.Tests/UnitConversionTests.cs` with tests:
   - Acres ↔ square meters conversions
   - Feet ↔ meters conversions
   - Symmetry: A → B → A recovers original within rounding
