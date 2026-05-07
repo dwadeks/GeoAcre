@@ -1,9 +1,11 @@
 <!--
   SYNC IMPACT REPORT
-  Version change: (new) → 1.0.0
-  Modified principles: N/A (initial ratification)
-  Added sections: Core Principles, Technology Stack & Standards, Development Workflow, Governance
+  Version change: 1.0.0 → 1.0.1
+  Modified principles: N/A
+  Added sections: N/A
   Removed sections: N/A
+  Changes: C# library naming convention added (SteelTree.GeoAcre prefix);
+           unit test tooling updated to Microsoft Testing Platform.
   Templates updated:
     ✅ .specify/memory/constitution.md — this file
     ⚠ .specify/templates/plan-template.md — Constitution Check gates should reference principles below
@@ -79,6 +81,8 @@ are prohibited.
 1. **C# / .NET 10** — preferred for all backend libraries, CLI tools, and services.
    Use the latest stable SDK. Target `net10.0` TFM unless a specific platform
    target (e.g., `net10.0-windows`) is required.
+   All C# library assembly and namespace names MUST begin with `SteelTree.GeoAcre`
+   (e.g., `SteelTree.GeoAcre.Parcels`, `SteelTree.GeoAcre.Geometry`).
 2. **TypeScript** — preferred over plain JavaScript for all front-end libraries,
    Node.js utilities, and any context where C# is not appropriate. Strict mode
    (`"strict": true`) MUST be enabled. `any` type is prohibited without a
@@ -88,7 +92,8 @@ are prohibited.
 
 **Tooling standards**:
 
-- C#: xUnit for unit/integration tests, FluentAssertions for assertions.
+- C#: Microsoft Testing Platform (MSTest runner with `microsoft.testing.platform`) for
+  unit and integration tests; FluentAssertions for assertions.
 - TypeScript/JavaScript: Vitest (preferred) or Jest for tests.
 - All projects MUST include a linter and formatter configuration (e.g.,
   `dotnet format`, ESLint + Prettier).
@@ -128,4 +133,4 @@ All PRs and code reviews MUST verify compliance with the principles above.
 Complexity violations MUST be documented in the feature plan's Complexity Tracking
 table before the PR is approved.
 
-**Version**: 1.0.0 | **Ratified**: 2026-05-07 | **Last Amended**: 2026-05-07
+**Version**: 1.0.1 | **Ratified**: 2026-05-07 | **Last Amended**: 2026-05-07
