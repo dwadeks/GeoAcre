@@ -18,19 +18,19 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create project directory structure per implementation plan (frontend/, backend/, specs/, .github/, .specify/)
-- [ ] T002 [P] Initialize Git repository and create initial commit
-- [ ] T003 [P] Initialize frontend project with React 18.x, TypeScript 5.x, Vitest, React Testing Library in `frontend/`
-- [ ] T004 [P] Configure frontend TypeScript strict mode in `frontend/tsconfig.json` (strict: true)
-- [ ] T005 [P] Initialize backend C# solution with `backend/GeoAcre.sln` and Directory.Build.props
-- [ ] T006 [P] Create `backend/src/SteelTree.GeoAcre.Geometry/SteelTree.GeoAcre.Geometry.csproj` as .NET 10 class library
-- [ ] T007 [P] Create `backend/tests/unit/SteelTree.GeoAcre.Geometry.Tests/SteelTree.GeoAcre.Geometry.Tests.csproj` with MSTest and Moq references
-- [ ] T008 [P] Create `backend/src/SteelTree.GeoAcre.Web.Api/SteelTree.GeoAcre.Web.Api.csproj` as ASP.NET Core 10 web project
-- [ ] T009 [P] Create `backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/SteelTree.GeoAcre.Web.Api.Tests.csproj` with MSTest and HttpClient testing
-- [ ] T010 [P] Configure frontend ESLint, Prettier, and pre-commit hooks in `frontend/.eslintrc.json` and `frontend/prettier.config.js`
-- [ ] T011 [P] Configure backend code analysis and formatting in `Directory.Build.props` (StyleCop, FxCop)
-- [ ] T012 [P] Create shared frontend TypeScript models in `frontend/src/models/GeoTypes.ts` (stub: GeoPoint, Polygon interfaces)
-- [ ] T013 Create root `.gitignore` with node_modules, bin/, obj/, .vs/, .env patterns
+- [X] T001 Create project directory structure per implementation plan (frontend/, backend/, specs/, .github/, .specify/)
+- [X] T002 [P] Initialize Git repository and create initial commit
+- [X] T003 [P] Initialize frontend project with React 18.x, TypeScript 5.x, Vitest, React Testing Library in `frontend/`
+- [X] T004 [P] Configure frontend TypeScript strict mode in `frontend/tsconfig.json` (strict: true)
+- [X] T005 [P] Initialize backend C# solution with `backend/GeoAcre.sln` and Directory.Build.props
+- [X] T006 [P] Create `backend/src/SteelTree.GeoAcre.Geometry/SteelTree.GeoAcre.Geometry.csproj` as .NET 10 class library
+- [X] T007 [P] Create `backend/tests/unit/SteelTree.GeoAcre.Geometry.Tests/SteelTree.GeoAcre.Geometry.Tests.csproj` with MSTest and Moq references
+- [X] T008 [P] Create `backend/src/SteelTree.GeoAcre.Web.Api/SteelTree.GeoAcre.Web.Api.csproj` as ASP.NET Core 10 web project
+- [X] T009 [P] Create `backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/SteelTree.GeoAcre.Web.Api.Tests.csproj` with MSTest and HttpClient testing
+- [X] T010 [P] Configure frontend ESLint, Prettier, and pre-commit hooks in `frontend/.eslintrc.json` and `frontend/prettier.config.js`
+- [X] T011 [P] Configure backend code analysis and formatting in `Directory.Build.props` (StyleCop, FxCop)
+- [X] T012 [P] Create shared frontend TypeScript models in `frontend/src/models/GeoTypes.ts` (stub: GeoPoint, Polygon interfaces)
+- [X] T013 Create root `.gitignore` with node_modules, bin/, obj/, .vs/, .env patterns
 
 **Checkpoint**: Project structure initialized; all projects buildable and ready for implementation
 

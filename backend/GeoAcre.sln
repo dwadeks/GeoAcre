@@ -1,0 +1,43 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteelTree.GeoAcre.Geometry", "src\SteelTree.GeoAcre.Geometry\SteelTree.GeoAcre.Geometry.csproj", "{F1E1D1C1-1A1A-4A4A-8A8A-1A1A1A1A1A1A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteelTree.GeoAcre.Geocoding", "src\SteelTree.GeoAcre.Geocoding\SteelTree.GeoAcre.Geocoding.csproj", "{F2E2D2C2-2A2A-4A4A-8A8A-2A2A2A2A2A2A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteelTree.GeoAcre.Web.Api", "src\SteelTree.GeoAcre.Web.Api\SteelTree.GeoAcre.Web.Api.csproj", "{F3E3D3C3-3A3A-4A4A-8A8A-3A3A3A3A3A3A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteelTree.GeoAcre.Geometry.Tests", "tests\SteelTree.GeoAcre.Geometry.Tests\SteelTree.GeoAcre.Geometry.Tests.csproj", "{F4E4D4C4-4A4A-4A4A-8A8A-4A4A4A4A4A4A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteelTree.GeoAcre.Web.Api.Tests", "tests\SteelTree.GeoAcre.Web.Api.Tests\SteelTree.GeoAcre.Web.Api.Tests.csproj", "{F5E5D5C5-5A5A-4A4A-8A8A-5A5A5A5A5A5A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F1E1D1C1-1A1A-4A4A-8A8A-1A1A1A1A1A1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1E1D1C1-1A1A-4A4A-8A8A-1A1A1A1A1A1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1E1D1C1-1A1A-4A4A-8A8A-1A1A1A1A1A1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1E1D1C1-1A1A-4A4A-8A8A-1A1A1A1A1A1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2E2D2C2-2A2A-4A4A-8A8A-2A2A2A2A2A2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2E2D2C2-2A2A-4A4A-8A8A-2A2A2A2A2A2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2E2D2C2-2A2A-4A4A-8A8A-2A2A2A2A2A2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2E2D2C2-2A2A-4A4A-8A8A-2A2A2A2A2A2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3E3D3C3-3A3A-4A4A-8A8A-3A3A3A3A3A3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3E3D3C3-3A3A-4A4A-8A8A-3A3A3A3A3A3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3E3D3C3-3A3A-4A4A-8A8A-3A3A3A3A3A3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3E3D3C3-3A3A-4A4A-8A8A-3A3A3A3A3A3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4E4D4C4-4A4A-4A4A-8A8A-4A4A4A4A4A4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4E4D4C4-4A4A-4A4A-8A8A-4A4A4A4A4A4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4E4D4C4-4A4A-4A4A-8A8A-4A4A4A4A4A4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4E4D4C4-4A4A-4A4A-8A8A-4A4A4A4A4A4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5E5D5C5-5A5A-4A4A-8A8A-5A5A5A5A5A5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5E5D5C5-5A5A-4A4A-8A8A-5A5A5A5A5A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5E5D5C5-5A5A-4A4A-8A8A-5A5A5A5A5A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5E5D5C5-5A5A-4A4A-8A8A-5A5A5A5A5A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
