@@ -103,10 +103,10 @@
 
 ### Frontend Infrastructure
 
-- [ ] T036 [P] Create `frontend/src/services/apiClient.ts` with Axios or Fetch wrapper for backend API calls
-- [ ] T037 [P] Create `frontend/src/models/GeoTypes.ts` with TypeScript types matching backend DTOs
-- [ ] T038 Create `frontend/src/pages/App.tsx` root component with basic layout (map area, control panel, export section)
-- [ ] T039 [P] Create `frontend/src/styles/globals.css` with responsive layout base styles
+- [X] T036 [P] Create `frontend/src/services/apiClient.ts` with Axios or Fetch wrapper for backend API calls
+- [X] T037 [P] Create `frontend/src/models/GeoTypes.ts` with TypeScript types matching backend DTOs
+- [X] T038 Create `frontend/src/pages/App.tsx` root component with basic layout (map area, control panel, export section)
+- [X] T039 [P] Create `frontend/src/styles/globals.css` with responsive layout base styles
 
 **Checkpoint**: Geometry library complete with all tests passing; API infrastructure ready; frontend basic structure in place
 
@@ -120,51 +120,51 @@
 
 ### Tests for User Story 1 (Write FIRST, ensure they FAIL)
 
-- [ ] T040 [P] Create `backend/tests/unit/SteelTree.GeoAcre.Geometry.Tests/PolygonTests.cs` with tests:
+- [X] T040 [P] Create `backend/tests/unit/SteelTree.GeoAcre.Geometry.Tests/PolygonTests.cs` with tests:
   - Polygon with 3 vertices is valid; fewer is invalid
   - Polygon.ComputedAreaSquareMeters matches expected area for known polygon
   - Polygon.PerSideLengthsMeters has correct count and magnitudes
   - Test data: Central Park boundary, simple triangle at equator
-- [ ] T041 [P] Create `frontend/src/services/__tests__/geometryService.test.ts` with Vitest tests:
+- [X] T041 [P] Create `frontend/src/services/__tests__/geometryService.test.ts` with Vitest tests:
   - `calculatePolygonArea()` returns correct acres for sample coordinates
   - `formatArea()` converts square meters to acres/hectares/square feet
   - `calculateSideLengths()` returns array of lengths in feet/meters
-- [ ] T042 Create `frontend/src/components/__tests__/MapContainer.test.tsx` with React Testing Library tests:
+- [X] T042 Create `frontend/src/components/__tests__/MapContainer.test.tsx` with React Testing Library tests:
   - Map renders with Leaflet tiles visible
   - Clicking map registers vertex placement (mock click events)
   - Polygon renders after 3+ vertices placed
-- [ ] T043 [P] Create `frontend/src/components/__tests__/PolygonDisplay.test.tsx` with React Testing Library tests:
+- [X] T043 [P] Create `frontend/src/components/__tests__/PolygonDisplay.test.tsx` with React Testing Library tests:
   - Side lengths display with correct unit labels
   - Area displays in selected unit (default acres)
   - Area updates when polygon changes
 
 ### Implementation for User Story 1
 
-- [ ] T044 [P] Create `frontend/src/services/geometryService.ts` with functions:
+- [X] T044 [P] Create `frontend/src/services/geometryService.ts` with functions:
   - `calculatePolygonArea(vertices: GeoPoint[]): number` (calls Turf.js or backend)
   - `calculateSideLengths(vertices: GeoPoint[]): number[]`
   - `formatArea(squareMeters: number, unit: 'acres' | 'hectares' | 'sqm'): string`
   - `formatDistance(meters: number, unit: 'feet' | 'meters' | 'miles' | 'km'): string`
-- [ ] T045 [P] Create `frontend/src/services/mapService.ts` wrapper around Leaflet:
+- [X] T045 [P] Create `frontend/src/services/mapService.ts` wrapper around Leaflet:
   - `initMap(containerId: string): LeafletMap`
   - `addMarker(lat: number, lon: number): Marker`
   - `drawPolygon(vertices: [lat, lon][]): Polygon`
   - `addPopup(marker: Marker, content: string): void`
   - `panTo(lat: number, lon: number, zoom: number): void`
-- [ ] T046 Create `frontend/src/components/MapContainer.tsx` with Leaflet map:
+- [X] T046 Create `frontend/src/components/MapContainer.tsx` with Leaflet map:
   - Renders map in centered div
   - Tracks click events to build vertex array
   - Renders polygon on canvas when 3+ vertices
   - Displays vertex markers with drag handles (for P4)
   - State management for current polygon (React.useState)
-- [ ] T047 [P] Create `frontend/src/components/PolygonDisplay.tsx` to show area and side lengths
-- [ ] T048 [P] Create `frontend/src/components/UnitSelector.tsx` with dropdowns for area (acres, hectares, sqm) and distance (feet, meters, miles, km) units
-- [ ] T049 [P] Create `frontend/src/models/index.ts` with TypeScript types: `GeoPoint`, `Polygon`, `UnitPreference` (areaUnit, distanceUnit)
-- [ ] T050 Create `frontend/src/pages/App.tsx` to integrate MapContainer, PolygonDisplay, UnitSelector with state management (useReducer or Context for session state)
-- [ ] T051 [P] Create `frontend/src/index.tsx` with React.createRoot() and render App
-- [ ] T052 [P] Update `frontend/package.json` with scripts: `dev`, `build`, `test`, `lint`
-- [ ] T053 Update `backend/src/SteelTree.GeoAcre.Web.Api/Program.cs` to accept optional POST `/geometry/calculate-area` endpoint (body: { vertices, excludePolygons }, response: { areaSquareMeters, perSideLengthsMeters, hasIntersections, netArea })
-- [ ] T054 [P] Create `backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/GeometryControllerTests.cs` with integration tests:
+- [X] T047 [P] Create `frontend/src/components/PolygonDisplay.tsx` to show area and side lengths
+- [X] T048 [P] Create `frontend/src/components/UnitSelector.tsx` with dropdowns for area (acres, hectares, sqm) and distance (feet, meters, miles, km) units
+- [X] T049 [P] Create `frontend/src/models/index.ts` with TypeScript types: `GeoPoint`, `Polygon`, `UnitPreference` (areaUnit, distanceUnit)
+- [X] T050 Create `frontend/src/pages/App.tsx` to integrate MapContainer, PolygonDisplay, UnitSelector with state management (useReducer or Context for session state)
+- [X] T051 [P] Create `frontend/src/index.tsx` with React.createRoot() and render App
+- [X] T052 [P] Update `frontend/package.json` with scripts: `dev`, `build`, `test`, `lint`
+- [X] T053 Update `backend/src/SteelTree.GeoAcre.Web.Api/Program.cs` to accept optional POST `/geometry/calculate-area` endpoint (body: { vertices, excludePolygons }, response: { areaSquareMeters, perSideLengthsMeters, hasIntersections, netArea })
+- [X] T054 [P] Create `backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/GeometryControllerTests.cs` with integration tests:
   - POST /geometry/calculate-area with valid polygon returns correct area
   - Invalid polygon (< 3 vertices) returns 400 Bad Request
 
