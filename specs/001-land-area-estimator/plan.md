@@ -30,6 +30,7 @@ A web application for measuring land area and distance by drawing polygons and p
 **Performance Goals**:
 - Map interactions (pan, zoom, vertex drag): <100ms response
 - Area/distance recalculation (on vertex move): <50ms
+- Geometry calculation API endpoints (area, distance): <50ms response time
 - Address geocoding: <5 seconds (including network latency)
 
 **Constraints**:

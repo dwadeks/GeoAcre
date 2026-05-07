@@ -319,9 +319,9 @@
   - `calculateSegmentDistances(vertices)` returns array of per-segment distances
   - Symmetry: Distance from A→B→A matches 2×Distance(A, B)
 - [ ] T082 Create `frontend/src/components/__tests__/MeasurementTool.test.tsx` with React Testing Library tests:
-  - Mode toggle button switches to measurement mode
+  - Mode toggle button switches to Distance Measurement Mode
   - Clicking map places measurement points
-  - Polyline renders with segment labels
+  - Measurement Polyline renders with segment labels
   - Total distance displays and updates
   - Clear button resets measurement
 
@@ -331,12 +331,12 @@
   - `calculatePolylineDistance(vertices: GeoPoint[]): number`
   - `calculateSegmentDistances(vertices: GeoPoint[]): number[]`
 - [ ] T084 Create `frontend/src/components/MeasurementTool.tsx`:
-  - Toggle button to activate/deactivate measurement mode
+  - Toggle button to activate/deactivate Distance Measurement Mode
   - When active, clicking map adds measurement point
-  - Renders polyline with segment labels and total distance
+  - Renders Measurement Polyline with segment labels and total distance
   - Clear button to reset
 - [ ] T085 Update `frontend/src/pages/App.tsx` to:
-  - Track current mode (polygon vs. measurement)
+  - Track current mode (polygon vs. Distance Measurement)
   - Display confirmation prompt when switching modes mid-draw
   - Render appropriate editor based on mode
 - [ ] T086 Update `backend/src/SteelTree.GeoAcre.Web.Api/Controllers/GeometryController.cs` to add optional POST `/geometry/calculate-distance` endpoint:
@@ -346,7 +346,7 @@
   - POST /geometry/calculate-distance returns correct distance
   - Invalid input (< 2 vertices) returns 400 Bad Request
 
-**Checkpoint**: User Story 5 complete. Users can measure distances along polylines independently of area polygons.
+**Checkpoint**: User Story 5 complete. Users can measure distances along Measurement Polylines independently of area polygons.
 
 ---
 
@@ -439,12 +439,15 @@
 - [ ] T102 Update `frontend/src/components/MapContainer.tsx` to detect `polygon.hasIntersections` and render warning indicator (icon or banner)
 - [ ] T103 [P] Update `frontend/src/components/PolygonDisplay.tsx` to show warning message when polygon self-intersects
 - [ ] T104 Create `frontend/src/components/SelfIntersectionWarning.tsx` to display warning UI
+- [ ] T104b [P] Create integration test in `backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/SelfIntersectionTests.cs`:
+  - POST /geometry/calculate-area with self-intersecting polygon returns area using even-odd rule
+  - Verify integration: area calculation uses ComputeAreaEvenOddRule() AND frontend displays warning simultaneously
 
 ### Mode Switching & Confirmation Dialogs
 
 - [ ] T105 Create `frontend/src/components/ConfirmationDialog.tsx` for mode switching and polygon discard prompts
 - [ ] T106 Update `frontend/src/pages/App.tsx` to show confirmation when:
-  - User switches modes (area ↔ measurement) with in-progress shape
+  - User switches modes (Area Polygon ↔ Distance Measurement) with in-progress shape
   - User starts new polygon with existing polygon already drawn
   - Message: "You have an [unfinished/existing] shape — discard it?"
 

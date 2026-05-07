@@ -144,26 +144,26 @@ all side lengths and area recalculate instantly.
 ### User Story 5 - Measure Distance Along a Polyline (Priority: P5)
 
 A user wants to measure the length of a road, fence line, or other non-closed
-path without creating an area polygon. They activate distance-measurement mode,
+path without creating an area polygon. They activate Distance Measurement Mode,
 click a start point, click intermediate points, and click an endpoint. The total
 distance along the line is displayed, with each segment labeled.
 
 **Why this priority**: Useful utility, but the application delivers its primary
 value without it. Independent of polygon functionality.
 
-**Independent Test**: Switch to distance measurement mode, click several points,
+**Independent Test**: Switch to Distance Measurement Mode, click several points,
 verify each segment and cumulative total distance are shown.
 
 **Acceptance Scenarios**:
 
-1. **Given** the user activates distance measurement mode, **When** they click a
+1. **Given** the user activates Distance Measurement Mode, **When** they click a
    start point, one or more intermediate points, and an endpoint, **Then** each
    segment is drawn on the map labeled with its individual length and a summary
    shows the total path length.
-2. **Given** a completed measurement polyline, **When** the user adds or removes
+2. **Given** a completed Measurement Polyline, **When** the user adds or removes
    a point, **Then** all segment labels and the total update.
-3. **Given** distance measurement mode is active, **When** the map is panned or
-   zoomed, **Then** the measurement polyline stays anchored to its geographic
+3. **Given** Distance Measurement Mode is active, **When** the map is panned or
+   zoomed, **Then** the Measurement Polyline stays anchored to its geographic
    coordinates.
 
 ---
@@ -268,15 +268,17 @@ verify the file contains correct vertex coordinates and computed values.
   excluded intersections).
 - **FR-008**: Users MUST be able to move any polygon vertex to a new position;
   on pointer devices this is a click-and-drag; on touch devices this is a
-  long-press on the vertex handle followed by a drag. A plain tap MUST NOT
-  trigger a vertex drag. All measurements MUST update in real time during the drag.
-- **FR-009**: Users MUST be able to activate a distance measurement mode distinct
+  long-press (≥500ms) on the vertex handle followed by a drag. A plain tap
+  (≤500ms) MUST NOT trigger a vertex drag and MUST NOT move the vertex.
+  Visual feedback (e.g., highlight or cursor change) MUST indicate when a
+  vertex is draggable. All measurements MUST update in real time during the drag.
+- **FR-009**: Users MUST be able to activate a Distance Measurement Mode distinct
   from area polygon mode. If a shape is in progress when the user switches modes,
   the application MUST display a confirmation prompt ("You have an unfinished shape
   — discard it?"); the mode switch MUST NOT occur until the user confirms.
-- **FR-010**: In distance measurement mode, users MUST be able to place a start
-  point, any number of intermediate points, and an endpoint to form a polyline;
-  total path length and per-segment lengths MUST be displayed.
+- **FR-010**: In Distance Measurement Mode, users MUST be able to place a start
+  point, any number of intermediate points, and an endpoint to form a Measurement
+  Polyline; total path length and per-segment lengths MUST be displayed.
 - **FR-011**: Users MUST be able to select the area unit from at minimum: acres,
   hectares, square feet, square meters.
 - **FR-012**: Users MUST be able to select the distance unit from at minimum:
@@ -327,10 +329,16 @@ verify the file contains correct vertex coordinates and computed values.
   area for polygons up to 1,000 acres.
 - **SC-003**: Distance calculations are accurate to within 0.5% of true geodetic
   distance for segments up to 10 miles.
-- **SC-004**: All measurement labels update within 100 milliseconds of a vertex
-  being dragged to a new position.
+- **SC-004**: All measurement labels (area, side lengths, distances) update
+  within 100 milliseconds of a vertex position change during drag in normal
+  network conditions (backend response <50ms).
 - **SC-005**: The application functions correctly on current major browsers
   (Chrome, Firefox, Edge, Safari) without plugins.
+- **SC-006**: Users can export session data as JSON (download or copy to
+  clipboard) without errors for any session containing ≥1 polygon or measurement.
+- **SC-007**: All error messages (invalid input, network unavailable, rate
+  limited, geocoding failure) are clear, user-friendly, and suggest recovery
+  actions (e.g., "Try again", "Check your address", "Refresh and retry").
 - **SC-008**: Self-intersecting polygons produce consistent, reproducible area
   results (using even-odd fill rule) and display a clear warning; the user is
   never blocked from using the tool due to self-intersection.
