@@ -1,7 +1,6 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31919.166
+# Visual Studio Version 18
+VisualStudioVersion = 18.2.11430.68 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteelTree.GeoAcre.Geometry", "src\SteelTree.GeoAcre.Geometry\SteelTree.GeoAcre.Geometry.csproj", "{F1E1D1C1-1A1A-4A4A-8A8A-1A1A1A1A1A1A}"
 EndProject
@@ -12,6 +11,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteelTree.GeoAcre.Geometry.Tests", "tests\SteelTree.GeoAcre.Geometry.Tests\SteelTree.GeoAcre.Geometry.Tests.csproj", "{F4E4D4C4-4A4A-4A4A-8A8A-4A4A4A4A4A4A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteelTree.GeoAcre.Web.Api.Tests", "tests\SteelTree.GeoAcre.Web.Api.Tests\SteelTree.GeoAcre.Web.Api.Tests.csproj", "{F5E5D5C5-5A5A-4A4A-8A8A-5A5A5A5A5A5A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0720E8E2-7BB1-4317-9825-FA3BB6296054}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5E582299-B6E8-434D-8C76-0BA407171233}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,5 +42,15 @@ Global
 		{F5E5D5C5-5A5A-4A4A-8A8A-5A5A5A5A5A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5E5D5C5-5A5A-4A4A-8A8A-5A5A5A5A5A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5E5D5C5-5A5A-4A4A-8A8A-5A5A5A5A5A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F1E1D1C1-1A1A-4A4A-8A8A-1A1A1A1A1A1A} = {0720E8E2-7BB1-4317-9825-FA3BB6296054}
+		{F2E2D2C2-2A2A-4A4A-8A8A-2A2A2A2A2A2A} = {0720E8E2-7BB1-4317-9825-FA3BB6296054}
+		{F3E3D3C3-3A3A-4A4A-8A8A-3A3A3A3A3A3A} = {0720E8E2-7BB1-4317-9825-FA3BB6296054}
+		{F4E4D4C4-4A4A-4A4A-8A8A-4A4A4A4A4A4A} = {5E582299-B6E8-434D-8C76-0BA407171233}
+		{F5E5D5C5-5A5A-4A4A-8A8A-5A5A5A5A5A5A} = {5E582299-B6E8-434D-8C76-0BA407171233}
 	EndGlobalSection
 EndGlobal

@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "SteelTree.GeoAcre.Web.Api": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:64697;http://localhost:64698"
+    }
+  }
+}
