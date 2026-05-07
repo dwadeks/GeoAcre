@@ -53,9 +53,12 @@ interface Polygon {
 ```
 
 ```csharp
-// Backend (C#)
+// Backend (C#) - SteelTree.GeoAcre.Geometry
+// Note: Private fields use underscore + camelCase (e.g., _vertexCache)
 public class Polygon
 {
+    private List<double>? _cachedPerSideLengths;
+    
     public string Id { get; init; } = Guid.NewGuid().ToString();
     public List<GeoPoint> Vertices { get; init; } = new();
     public bool IsExcludePolygon { get; init; }
@@ -66,12 +69,18 @@ public class Polygon
     public double ComputedAreaSquareMeters => GeoCalculations.ComputeGeoArea(Vertices);
     public double ComputedPerimeterMeters => GeoCalculations.ComputePerimeter(Vertices);
     
-    public List<double> PerSideLengthsMeters =>
-        Enumerable.Range(0, Vertices.Count)
-            .Select(i => GeoCalculations.Distance(
-                Vertices[i],
-                Vertices[(i + 1) % Vertices.Count]))
-            .ToList();
+    public List<double> PerSideLengthsMeters
+    {
+        get
+        {
+            _cachedPerSideLengths ??= Enumerable.Range(0, Vertices.Count)
+                .Select(i => GeoCalculations.Distance(
+                    Vertices[i],
+                    Vertices[(i + 1) % Vertices.Count]))
+                .ToList();
+            return _cachedPerSideLengths;
+        }
+    }
 }
 ```
 

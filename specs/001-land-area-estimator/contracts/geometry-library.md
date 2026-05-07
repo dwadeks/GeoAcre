@@ -232,6 +232,13 @@ All public methods MUST have unit tests covering:
 3. **Error cases**: Invalid inputs throw expected exceptions
 4. **Accuracy**: Results verified against known reference data
 
+**Test Style**: All tests MUST follow the Arrange/Act/Assert pattern:
+- **Arrange**: Set up test data and any dependencies
+- **Act**: Invoke the method being tested
+- **Assert**: Verify the result or exception
+
+**Mocking**: When tests require mocking, use the Moq library (NuGet: `Moq`).
+
 ### Reference Test Data
 
 Use real surveyed areas or well-known geographic features:
@@ -239,7 +246,7 @@ Use real surveyed areas or well-known geographic features:
 - Small property in urban area (cross-validate with county records)
 - Synthetic polygons with known areas (e.g., equilateral triangles at the equator)
 
-### Example Unit Tests (MSTest)
+### Example Unit Tests (MSTest with Arrange/Act/Assert)
 
 ```csharp
 [TestClass]
@@ -248,25 +255,35 @@ public class GeoCalculationsTests
     [TestMethod]
     public void Distance_KnownCoordinates_ReturnsExpectedDistance()
     {
+        // Arrange
         var from = new GeoPoint(40.7128, -74.0060); // NYC
         var to = new GeoPoint(34.0522, -118.2437);  // LA
+        var expectedMeters = 3944000; // ~3944 km
+        var tolerancePercent = 0.005; // 0.5%
+        
+        // Act
         var distance = GeoCalculations.Distance(from, to);
         
-        var expectedMeters = 3944000; // ~3944 km
-        Assert.IsTrue(Math.Abs(distance - expectedMeters) / expectedMeters < 0.005,
-            $"Distance {distance} is not within 0.5% of expected {expectedMeters}");
+        // Assert
+        var percentError = Math.Abs(distance - expectedMeters) / expectedMeters;
+        Assert.IsTrue(percentError < tolerancePercent,
+            $"Distance {distance} is not within {tolerancePercent * 100}% of expected {expectedMeters}");
     }
     
     [TestMethod]
     [ExpectedException(typeof(InvalidCoordinateException))]
     public void GeoPoint_InvalidLatitude_ThrowsException()
     {
+        // Arrange & Act: Attempt to create with invalid latitude
         _ = new GeoPoint(91, 0);
+        
+        // Assert: Exception expected; handled by [ExpectedException]
     }
     
     [TestMethod]
     public void HasIntersections_SelfIntersectingPolygon_ReturnsTrue()
     {
+        // Arrange
         var vertices = new List<GeoPoint>
         {
             new(40, -80),
@@ -274,8 +291,45 @@ public class GeoCalculationsTests
             new(45, -80),
             new(45, -85),
         };
+        
+        // Act
         var intersects = GeoCalculations.DetectIntersections(vertices);
-        Assert.IsTrue(intersects);
+        
+        // Assert
+        Assert.IsTrue(intersects, "Expected self-intersecting polygon to be detected");
+    }
+}
+```
+
+### Example Test with Moq (Mocking External Dependencies)
+
+```csharp
+[TestClass]
+public class GeocodeServiceTests
+{
+    [TestMethod]
+    public void GeocodeService_ValidAddress_CallsNominatimAndReturnsResult()
+    {
+        // Arrange
+        var mockHttpClient = new Mock<HttpClient>();
+        mockHttpClient
+            .Setup(c => c.GetAsync(It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"lat\": \"39.7817\", \"lon\": \"-89.6501\"}")
+            });
+        
+        var service = new GeocodeService(mockHttpClient.Object);
+        var query = "123 Main St, Springfield, IL";
+        
+        // Act
+        var result = service.GeocodeAsync(query).Result;
+        
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(39.7817, result.Latitude, 0.0001);
+        Assert.AreEqual(-89.6501, result.Longitude, 0.0001);
+        mockHttpClient.Verify(c => c.GetAsync(It.IsAny<string>()), Times.Once);
     }
 }
 ```

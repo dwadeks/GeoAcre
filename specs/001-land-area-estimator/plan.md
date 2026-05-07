@@ -129,15 +129,15 @@ backend/
 │   │   ├── GeocodeService.cs
 │   │   ├── ReverseGeocodeService.cs
 │   │   └── [service].Tests.cs
-│   ├── GeoAcre.Api/
-│   │   ├── Controllers/
-│   │   │   ├── GeocodingController.cs
-│   │   │   └── MeasurementController.cs
-│   │   ├── Services/
-│   │   └── Program.cs
-│   └── tests/
-│       ├── unit/
-│       └── integration/
+│   └── SteelTree.GeoAcre.Web.Api/
+│       ├── Controllers/
+│       │   ├── GeocodingController.cs
+│       │   └── MeasurementController.cs
+│       ├── Services/
+│       └── Program.cs
+├── tests/
+│   ├── unit/
+│   └── integration/
 ├── GeoAcre.sln
 ├── Directory.Build.props        # Common settings (TargetFramework, LangVersion, etc.)
 └── azure-pipelines.yml or GitHub Actions workflow

@@ -168,7 +168,7 @@ dotnet test
 | `frontend/src/services/mapService.ts` | Leaflet wrapper |
 | `frontend/src/services/geometryService.ts` | Turf.js calculations |
 | `backend/src/SteelTree.GeoAcre.Geometry/` | Core geometry library (C#) |
-| `backend/src/GeoAcre.Api/` | ASP.NET Core API |
+| `backend/src/SteelTree.GeoAcre.Web.Api/` | ASP.NET Core API |
 | `specs/001-land-area-estimator/` | Specification, design docs, contracts |
 
 ---
@@ -255,8 +255,10 @@ az staticwebapp upload-and-build \
 ### C# (Backend)
 
 - Follow Microsoft naming conventions (PascalCase for public members)
+- Private fields: start with underscore followed by camelCase (e.g., `_polygonVertices`)
 - Use nullability annotations (`#nullable enable`)
 - Unit test naming: `MethodName_Scenario_ExpectedResult`
+- Unit tests: Use Arrange/Act/Assert style; when mocking, use Moq library
 - Format: `dotnet format` (run before commit)
 
 ---
