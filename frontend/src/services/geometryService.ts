@@ -14,6 +14,21 @@ function toTurfCoordinates(vertices: GeoPoint[]): Array<[number, number]> {
 }
 
 /**
+ * Close a coordinate ring for Turf.js (ensure first point equals last point)
+ */
+function closeRing(coords: Array<[number, number]>): Array<[number, number]> {
+  if (coords.length === 0) return coords
+  
+  const closed = [...coords]
+  if (closed[0][0] !== closed[closed.length - 1][0] ||
+      closed[0][1] !== closed[closed.length - 1][1]) {
+    closed.push(closed[0])
+  }
+  
+  return closed
+}
+
+/**
  * Calculate area of a polygon given vertices in square meters
  * Uses Turf.js area calculation for accuracy
  */
@@ -24,11 +39,11 @@ export function calculatePolygonArea(vertices: GeoPoint[]): number {
 
   try {
     const coords = toTurfCoordinates(vertices)
-    // Create a closed polygon (first point must equal last point for Turf)
-    const polygon = turf.polygon([coords])
+    const polygon = turf.polygon([closeRing(coords)])
     // Area is returned in square meters
     return turf.area(polygon)
-  } catch {
+  } catch (error) {
+    console.error('Error calculating polygon area:', error)
     return 0
   }
 }
@@ -145,8 +160,8 @@ export function polygonsIntersect(
   }
 
   try {
-    const poly1 = turf.polygon([toTurfCoordinates(polygon1)])
-    const poly2 = turf.polygon([toTurfCoordinates(polygon2)])
+    const poly1 = turf.polygon([closeRing(toTurfCoordinates(polygon1))])
+    const poly2 = turf.polygon([closeRing(toTurfCoordinates(polygon2))])
 
     return (
       turf.booleanIntersects(poly1, poly2) ||
@@ -170,7 +185,7 @@ export function isPointInPolygon(
 
   try {
     const turfPoint = turf.point([point.longitude, point.latitude])
-    const polygon = turf.polygon([toTurfCoordinates(polygonVertices)])
+    const polygon = turf.polygon([closeRing(toTurfCoordinates(polygonVertices))])
     return turf.booleanPointInPolygon(turfPoint, polygon)
   } catch {
     return false
