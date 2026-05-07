@@ -14,6 +14,13 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Add HTTP client for geocoding
+builder.Services.AddHttpClient<SteelTree.GeoAcre.Web.Api.Services.IGeocodeService, SteelTree.GeoAcre.Web.Api.Services.NominatimGeocodeService>();
+
+// Add logging
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
@@ -22,6 +29,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Add error handling middleware
+app.UseMiddleware<SteelTree.GeoAcre.Web.Api.Middleware.ErrorHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseCors();

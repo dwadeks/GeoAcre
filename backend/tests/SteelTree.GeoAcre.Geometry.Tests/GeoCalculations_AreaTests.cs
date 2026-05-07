@@ -28,6 +28,8 @@ public class GeoCalculations_AreaTests
     public void ComputeArea_CentralPark_WithinAccuracyTarget()
     {
         // Arrange - Central Park, NYC (approximately 843 acres = 3,409,000 square meters)
+        // Note: These are approximate coordinates; the actual spherical polygon formed
+        // by these coordinates has an area of approximately 2.76M sq m due to spherical geometry
         var vertices = new[]
         {
             new GeoPoint(40.7829, -73.9654), // Northwest corner
@@ -35,9 +37,8 @@ public class GeoCalculations_AreaTests
             new GeoPoint(40.7680, -73.9456), // Southeast corner
             new GeoPoint(40.7680, -73.9654), // Southwest corner
         };
-        var expectedAcres = 843;
-        var expectedSquareMeters = expectedAcres * 4046.8564224;
-        var tolerancePercent = 0.015; // 1.5% tolerance (target is <0.5%)
+        var expectedSquareMeters = 2_762_334; // Actual area from spherical polygon formula with these coordinates
+        var tolerancePercent = 0.01; // 1% tolerance for spherical geometry approximation
 
         // Act
         var areaSquareMeters = GeoCalculations.ComputeArea(vertices);

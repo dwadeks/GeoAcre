@@ -86,20 +86,20 @@
 
 ### Geometry Library: Implementation (Make tests PASS)
 
-- [ ] T025 Implement `GeoCalculations.Distance()` using Haversine formula in `backend/src/SteelTree.GeoAcre.Geometry/GeoCalculations.cs`
-- [ ] T026 Implement `GeoCalculations.ComputeArea()` using spherical excess formula in `backend/src/SteelTree.GeoAcre.Geometry/GeoCalculations.cs`
-- [ ] T027 Implement `GeoCalculations.DetectIntersections()` using sweep-line or O(n²) line intersection in `backend/src/SteelTree.GeoAcre.Geometry/GeoCalculations.cs`
-- [ ] T028 [P] Implement remaining `GeoCalculations` methods: `ComputePerimeter()`, `ComputeAreaEvenOddRule()`, `IsPointInPolygon()`, `ComputeIntersection()` in `backend/src/SteelTree.GeoAcre.Geometry/GeoCalculations.cs`
-- [ ] T029 [P] Implement `UnitConversion` methods in `backend/src/SteelTree.GeoAcre.Geometry/UnitConversion.cs`
-- [ ] T030 [P] Update Polygon lazy properties in `backend/src/SteelTree.GeoAcre.Geometry/Polygon.cs` to call `GeoCalculations` methods and cache results
-- [ ] T031 [P] Update Measurement lazy properties in `backend/src/SteelTree.GeoAcre.Geometry/Measurement.cs` to call `GeoCalculations` methods
+- [X] T025 Implement `GeoCalculations.Distance()` using Haversine formula in `backend/src/SteelTree.GeoAcre.Geometry/GeoCalculations.cs`
+- [X] T026 Implement `GeoCalculations.ComputeArea()` using spherical excess formula in `backend/src/SteelTree.GeoAcre.Geometry/GeoCalculations.cs`
+- [X] T027 Implement `GeoCalculations.DetectIntersections()` using sweep-line or O(n²) line intersection in `backend/src/SteelTree.GeoAcre.Geometry/GeoCalculations.cs`
+- [X] T028 [P] Implement remaining `GeoCalculations` methods: `ComputePerimeter()`, `ComputeAreaEvenOddRule()`, `IsPointInPolygon()`, `ComputeIntersection()` in `backend/src/SteelTree.GeoAcre.Geometry/GeoCalculations.cs`
+- [X] T029 [P] Implement `UnitConversion` methods in `backend/src/SteelTree.GeoAcre.Geometry/UnitConversion.cs`
+- [X] T030 [P] Update Polygon lazy properties in `backend/src/SteelTree.GeoAcre.Geometry/Polygon.cs` to call `GeoCalculations` methods and cache results
+- [X] T031 [P] Update Measurement lazy properties in `backend/src/SteelTree.GeoAcre.Geometry/Measurement.cs` to call `GeoCalculations` methods
 
 ### API Infrastructure
 
-- [ ] T032 Create `backend/src/SteelTree.GeoAcre.Web.Api/Program.cs` with ASP.NET Core 10 minimal API setup, CORS, logging, and error middleware
-- [ ] T033 [P] Create `backend/src/SteelTree.GeoAcre.Web.Api/Models/GeoTypes.cs` with request/response DTOs for GeocodeSearchRequest, GeocodeSearchResponse, GeocodereverseRequest, ReverseGeocodeResponse
-- [ ] T034 [P] Create error handling middleware in `backend/src/SteelTree.GeoAcre.Web.Api/Middleware/ErrorHandlingMiddleware.cs` (400, 429, 500, 503 responses)
-- [ ] T035 Create `backend/src/SteelTree.GeoAcre.Web.Api/Services/IGeocodeService.cs` interface and stub implementation `NominatimGeocodeService.cs`
+- [X] T032 Create `backend/src/SteelTree.GeoAcre.Web.Api/Program.cs` with ASP.NET Core 10 minimal API setup, CORS, logging, and error middleware
+- [X] T033 [P] Create `backend/src/SteelTree.GeoAcre.Web.Api/Models/GeoTypes.cs` with request/response DTOs for GeocodeSearchRequest, GeocodeSearchResponse, GeocodereverseRequest, ReverseGeocodeResponse
+- [X] T034 [P] Create error handling middleware in `backend/src/SteelTree.GeoAcre.Web.Api/Middleware/ErrorHandlingMiddleware.cs` (400, 429, 500, 503 responses)
+- [X] T035 Create `backend/src/SteelTree.GeoAcre.Web.Api/Services/IGeocodeService.cs` interface and stub implementation `NominatimGeocodeService.cs`
 
 ### Frontend Infrastructure
 

@@ -23,7 +23,7 @@ public static class UnitConversion
     /// </summary>
     public static double SquareMetersToAcres(double squareMeters)
     {
-        throw new NotImplementedException("Area conversion to be implemented.");
+        return squareMeters / SquareMetersPerAcre;
     }
 
     /// <summary>
@@ -31,7 +31,7 @@ public static class UnitConversion
     /// </summary>
     public static double AcresToSquareMeters(double acres)
     {
-        throw new NotImplementedException("Area conversion to be implemented.");
+        return acres * SquareMetersPerAcre;
     }
 
     /// <summary>
@@ -39,7 +39,7 @@ public static class UnitConversion
     /// </summary>
     public static double SquareMetersToHectares(double squareMeters)
     {
-        throw new NotImplementedException("Area conversion to be implemented.");
+        return squareMeters / SquareMetersPerHectare;
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ public static class UnitConversion
     /// </summary>
     public static double HectaresToSquareMeters(double hectares)
     {
-        throw new NotImplementedException("Area conversion to be implemented.");
+        return hectares * SquareMetersPerHectare;
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ public static class UnitConversion
     /// </summary>
     public static double SquareMetersToSquareFeet(double squareMeters)
     {
-        throw new NotImplementedException("Area conversion to be implemented.");
+        return squareMeters / SquareMetersPerSquareFoot;
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public static class UnitConversion
     /// </summary>
     public static double SquareFeetToSquareMeters(double squareFeet)
     {
-        throw new NotImplementedException("Area conversion to be implemented.");
+        return squareFeet * SquareMetersPerSquareFoot;
     }
 
     /// <summary>
@@ -71,7 +71,7 @@ public static class UnitConversion
     /// </summary>
     public static double SquareMetersToSquareMiles(double squareMeters)
     {
-        throw new NotImplementedException("Area conversion to be implemented.");
+        return squareMeters / SquareMetersPerSquareMile;
     }
 
     /// <summary>
@@ -79,7 +79,7 @@ public static class UnitConversion
     /// </summary>
     public static double SquareMilesToSquareMeters(double squareMiles)
     {
-        throw new NotImplementedException("Area conversion to be implemented.");
+        return squareMiles * SquareMetersPerSquareMile;
     }
 
     // ===== DISTANCE CONVERSIONS =====
@@ -89,7 +89,7 @@ public static class UnitConversion
     /// </summary>
     public static double MetersToFeet(double meters)
     {
-        throw new NotImplementedException("Distance conversion to be implemented.");
+        return meters / MetersPerFoot;
     }
 
     /// <summary>
@@ -97,7 +97,7 @@ public static class UnitConversion
     /// </summary>
     public static double FeetToMeters(double feet)
     {
-        throw new NotImplementedException("Distance conversion to be implemented.");
+        return feet * MetersPerFoot;
     }
 
     /// <summary>
@@ -105,7 +105,7 @@ public static class UnitConversion
     /// </summary>
     public static double MetersToMiles(double meters)
     {
-        throw new NotImplementedException("Distance conversion to be implemented.");
+        return meters / MetersPerMile;
     }
 
     /// <summary>
@@ -113,7 +113,7 @@ public static class UnitConversion
     /// </summary>
     public static double MilesToMeters(double miles)
     {
-        throw new NotImplementedException("Distance conversion to be implemented.");
+        return miles * MetersPerMile;
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ public static class UnitConversion
     /// </summary>
     public static double MetersToKilometers(double meters)
     {
-        throw new NotImplementedException("Distance conversion to be implemented.");
+        return meters / MetersPerKilometer;
     }
 
     /// <summary>
@@ -129,6 +129,6 @@ public static class UnitConversion
     /// </summary>
     public static double KilometersToMeters(double kilometers)
     {
-        throw new NotImplementedException("Distance conversion to be implemented.");
+        return kilometers * MetersPerKilometer;
     }
 }
