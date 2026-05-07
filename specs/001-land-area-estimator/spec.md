@@ -5,6 +5,16 @@
 **Status**: Draft
 **Input**: User description: "Build a web application for estimating land size in acres..."
 
+## Clarifications
+
+### Session 2026-05-07
+
+- Q: What happens to an in-progress shape when the user switches modes mid-draw? → A: Prompt to confirm discard ("You have an unfinished shape — discard it?"); user must explicitly confirm before the shape is removed and the mode switches.
+- Q: What happens to an existing completed primary polygon when the user starts drawing a new one? → A: Prompt to confirm discard ("You have an existing polygon — discard it?"); the old polygon is only removed if the user explicitly confirms.
+- Q: Should polygon/measurement data be exportable in v1 to support future persistence? → A: Yes — users can download or copy the current session's shapes as JSON (coordinates + computed measurements); this validates the data model for future persistence without requiring a backend.
+- Q: How should touch interactions disambiguate tap-to-place vs. drag for vertex editing on mobile? → A: Tap places a new vertex; long-press on an existing vertex handle (or a dedicated drag handle) initiates a vertex drag, keeping the two gestures distinct and preventing accidental moves.
+- Q: How should self-intersecting polygons (where sides cross) be handled? → A: Allow the polygon to close and calculate its area using the even-odd fill rule; display a visible warning indicator (e.g., icon, banner) that the polygon self-intersects.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Draw Polygon and Measure Area (Priority: P1)
@@ -33,8 +43,9 @@ Delivers a fully usable area estimator.
    to complete it, **Then** the application prevents completion and shows a
    descriptive message.
 4. **Given** a completed polygon, **When** the user clicks to start a new polygon,
-   **Then** they are prompted to confirm replacing the current polygon or the
-   previous polygon is cleared automatically (per assumption).
+   **Then** the application displays a confirmation prompt ("You have an existing
+   polygon — discard it?"); the existing polygon and its exclude polygons are only
+   removed if the user explicitly confirms.
 
 ---
 
@@ -115,13 +126,18 @@ all side lengths and area recalculate instantly.
 **Acceptance Scenarios**:
 
 1. **Given** a completed polygon, **When** the user drags a vertex to a new
-   position on the map, **Then** the polygon boundary redraws and all side lengths
-   and the total area update in real time.
+   position on the map (mouse) or long-presses a vertex handle and drags (touch),
+   **Then** the polygon boundary redraws and all side lengths and the total area
+   update in real time.
 2. **Given** vertex editing is active, **When** the user also pans or zooms the
    map, **Then** the map moves and vertex handles remain correctly positioned over
    their geographic coordinates.
 3. **Given** an exclude polygon exists, **When** the user drags one of its
    vertices, **Then** the exclude polygon redraws and the net area recalculates.
+4. **Given** a touch device, **When** the user taps the map (not on an existing
+   vertex handle), **Then** a new vertex is placed; tapping on an existing handle
+   and holding initiates a drag, preventing accidental vertex moves during
+   normal map navigation.
 
 ---
 
@@ -178,10 +194,45 @@ labels convert.
 
 ---
 
+### User Story 7 - Export Session Data as JSON (Priority: P7)
+
+A user has finished measuring a parcel and wants to preserve their work for later
+or hand it off to another tool. They click an export button and either download a
+JSON file or copy the JSON to the clipboard. The JSON contains all polygon
+vertices, exclude polygons, measurement polylines, computed areas, and distances
+in the currently selected units.
+
+**Why this priority**: No server required; validates the data model that future
+persistence will rely on. Low implementation cost relative to the value of not
+losing session work.
+
+**Independent Test**: Draw a polygon with one exclude polygon, export as JSON,
+verify the file contains correct vertex coordinates and computed values.
+
+**Acceptance Scenarios**:
+
+1. **Given** a session with at least one polygon or measurement, **When** the user
+   activates the export action, **Then** a valid JSON file is downloaded (or JSON
+   is copied to the clipboard) containing all vertex coordinates, computed side
+   lengths, area values, and the selected units.
+2. **Given** an exported JSON, **When** a developer inspects it, **Then** the
+   schema is self-describing and sufficient to reconstruct all shapes (suitable
+   for future import/persistence use).
+3. **Given** an empty session (no shapes drawn), **When** the user activates
+   export, **Then** the export action is disabled or produces an empty-shapes JSON
+   with a descriptive message.
+
+---
+
 ### Edge Cases
 
+- What happens when the user switches mode (area polygon ↔ distance measurement)
+  while a shape is in progress? A confirmation prompt is shown; the in-progress
+  shape is only discarded if the user explicitly confirms.
 - What happens when the user draws a self-intersecting polygon (crossing sides)?
-  The area calculation must still return a defined value or display a warning.
+  The polygon is allowed to close and the area is calculated using the even-odd
+  fill rule (standard cartographic behavior). A visible warning indicator is
+  displayed to signal the self-intersection condition.
 - What happens when the user zooms in very far and tries to draw a polygon?
   Vertices should be placeable at any zoom level with sufficient precision.
 - How does the app handle lat/long input in varying formats (decimal degrees,
@@ -205,6 +256,9 @@ labels convert.
   latitude and longitude coordinates.
 - **FR-004**: Users MUST be able to draw an area polygon by clicking vertices on
   the map; the polygon MUST close on demand or on double-click of the last point.
+  If a completed primary polygon already exists when the user initiates a new one,
+  the application MUST display a confirmation prompt before discarding the existing
+  polygon and its associated exclude polygons.
 - **FR-005**: The application MUST display the length of each polygon side
   adjacent to that side on the map, in the currently selected distance unit.
 - **FR-006**: The application MUST display the total enclosed area of the primary
@@ -212,10 +266,14 @@ labels convert.
 - **FR-007**: Users MUST be able to draw one or more exclude polygons inside a
   primary polygon; the application MUST display the net area (primary minus
   excluded intersections).
-- **FR-008**: Users MUST be able to drag any polygon vertex to a new position;
-  all measurements MUST update in real time during the drag.
+- **FR-008**: Users MUST be able to move any polygon vertex to a new position;
+  on pointer devices this is a click-and-drag; on touch devices this is a
+  long-press on the vertex handle followed by a drag. A plain tap MUST NOT
+  trigger a vertex drag. All measurements MUST update in real time during the drag.
 - **FR-009**: Users MUST be able to activate a distance measurement mode distinct
-  from area polygon mode.
+  from area polygon mode. If a shape is in progress when the user switches modes,
+  the application MUST display a confirmation prompt ("You have an unfinished shape
+  — discard it?"); the mode switch MUST NOT occur until the user confirms.
 - **FR-010**: In distance measurement mode, users MUST be able to place a start
   point, any number of intermediate points, and an endpoint to form a polyline;
   total path length and per-segment lengths MUST be displayed.
@@ -228,8 +286,17 @@ labels convert.
 - **FR-014**: Users MUST be able to delete an exclude polygon individually.
 - **FR-015**: Users MUST be able to clear all polygons and measurements to start
   fresh.
-
-### Key Entities
+- **FR-016**: Users MUST be able to export the current session's shapes as JSON;
+  the export MUST include all polygon vertex coordinates (latitude/longitude),
+  exclude polygon vertices, measurement polyline vertices, computed area values,
+  computed distance values, and the currently selected units. Export is available
+  as a file download and/or clipboard copy.
+- **FR-017**: The JSON export schema MUST be self-describing and sufficient to
+  fully reconstruct all session shapes, in anticipation of a future import feature.
+- **FR-018**: If a polygon's sides self-intersect (cross each other), the
+  application MUST calculate the area using the even-odd fill rule (a standard
+  cartographic algorithm) and MUST display a visible warning indicator (e.g., an
+  icon or banner) that the polygon is self-intersecting.
 
 - **Primary Polygon**: The main boundary representing the parcel of land; has an
   ordered list of geographic vertices, a computed area, and computed per-side
@@ -246,6 +313,10 @@ labels convert.
   applies globally to all displayed measurements.
 - **Map View State**: Current center coordinates and zoom level of the visible map.
 
+- **Session Snapshot**: A portable JSON representation of all shapes and
+  measurements in the current session; includes vertex coordinates, computed
+  values, and selected units. Designed as the data contract for future persistence.
+
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
@@ -260,17 +331,24 @@ labels convert.
   being dragged to a new position.
 - **SC-005**: The application functions correctly on current major browsers
   (Chrome, Firefox, Edge, Safari) without plugins.
-- **SC-006**: Address search returns a result or a clear failure message within
-  5 seconds on a standard broadband connection.
+- **SC-008**: Self-intersecting polygons produce consistent, reproducible area
+  results (using even-odd fill rule) and display a clear warning; the user is
+  never blocked from using the tool due to self-intersection.
 
 ## Assumptions
 
-- **No persistence in v1**: Polygons and measurements are session-only; they are
-  not saved between page loads or shared with others.
+- **No server-side persistence in v1**: Polygons and measurements are session-only
+  and are not saved between page loads. However, users can export session data as
+  JSON to preserve their work locally. The export schema is designed to support a
+  future import/persistence feature.
 - **Single primary polygon per session**: Only one primary polygon exists at a
-  time; starting a new one replaces the previous one.
-- **Desktop-first**: The primary target is desktop/laptop browsers; mobile/touch
-  support is a secondary concern and not required for v1 acceptance.
+  time; starting a new one triggers a confirmation prompt before replacing the
+  previous one (see FR-004 and Clarifications).
+- **Desktop-first, mobile-aware**: The primary target is desktop/laptop browsers;
+  mobile/touch support is a secondary concern and not required for v1 acceptance,
+  but interaction design MUST accommodate touch from the start. On touch devices:
+  tap places vertices, long-press on a vertex handle initiates a drag, and two-
+  finger pinch/pan navigates the map.
 - **Lat/long input is decimal degrees only**: DMS and other formats are out of
   scope for v1.
 - **Map tile provider availability**: The app relies on a third-party map tile
