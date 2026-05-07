@@ -40,12 +40,7 @@ namespace SteelTree.GeoAcre.Web.Api.Controllers
                     .ToList();
 
                 // Create primary polygon
-                var primaryPolygon = new Polygon(
-                    Guid.NewGuid(),
-                    vertices,
-                    isExcludePolygon: false,
-                    parentPolygonId: null
-                );
+                var primaryPolygon = new Polygon(vertices, false, null);
 
                 // Calculate primary area
                 var primaryArea = primaryPolygon.ComputedAreaSquareMeters;
@@ -66,10 +61,9 @@ namespace SteelTree.GeoAcre.Web.Api.Controllers
                             .ToList();
 
                         var excludePolygon = new Polygon(
-                            Guid.NewGuid(),
                             excludeGeoPoints,
-                            isExcludePolygon: true,
-                            parentPolygonId: primaryPolygon.Id
+                            true,
+                            primaryPolygon.Id
                         );
 
                         excludedAreaTotal += excludePolygon.ComputedAreaSquareMeters;
