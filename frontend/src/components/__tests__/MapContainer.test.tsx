@@ -1,13 +1,19 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import MapContainer from '../MapContainer'
 
 // Mock Leaflet
 vi.mock('leaflet', () => ({
+  Marker: {
+    prototype: {
+      setIcon: vi.fn(),
+    },
+  },
   map: vi.fn(() => ({
     setView: vi.fn(),
     on: vi.fn(),
     remove: vi.fn(),
+    removeLayer: vi.fn(),
   })),
   tileLayer: vi.fn(() => ({
     addTo: vi.fn(),
@@ -44,5 +50,14 @@ describe('MapContainer', () => {
 
     // Assert - Component should be rendered
     expect(screen.getByTestId('map')).toBeInTheDocument()
+  })
+
+  it('shows a satellite toggle and switches label when clicked', () => {
+    render(<MapContainer onPolygonChange={vi.fn()} />)
+
+    const toggle = screen.getByRole('button', { name: /satellite/i })
+    fireEvent.click(toggle)
+
+    expect(screen.getByRole('button', { name: /streets/i })).toBeInTheDocument()
   })
 })

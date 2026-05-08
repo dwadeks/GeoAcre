@@ -6,6 +6,8 @@
 import L from 'leaflet'
 import type { GeoPoint } from '../models/GeoTypes'
 
+export type BaseLayerMode = 'street' | 'satellite'
+
 // Default Leaflet marker icon fix (Vite issue)
 const DefaultIcon = L.icon({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -24,6 +26,27 @@ export interface MapInstance {
   map: L.Map
   polygons: L.Polygon[]
   markers: L.Marker[]
+  baseLayers: Record<BaseLayerMode, L.TileLayer>
+  activeBaseLayer: BaseLayerMode
+}
+
+function createStreetLayer(): L.TileLayer {
+  return L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19,
+  })
+}
+
+function createSatelliteLayer(): L.TileLayer {
+  return L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    {
+      attribution:
+        'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community',
+      maxZoom: 19,
+    }
+  )
 }
 
 /**
@@ -32,18 +55,33 @@ export interface MapInstance {
 export function initMap(containerId: string): MapInstance {
   const map = L.map(containerId).setView([39.8283, -98.5795], 4) // Center on USA
 
-  // Add OpenStreetMap tiles
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    maxZoom: 19,
-  }).addTo(map)
+  const baseLayers: Record<BaseLayerMode, L.TileLayer> = {
+    street: createStreetLayer(),
+    satellite: createSatelliteLayer(),
+  }
+
+  baseLayers.street.addTo(map)
 
   return {
     map,
     polygons: [],
     markers: [],
+    baseLayers,
+    activeBaseLayer: 'street',
   }
+}
+
+export function setBaseLayer(
+  mapInstance: MapInstance,
+  layerMode: BaseLayerMode
+): void {
+  if (mapInstance.activeBaseLayer === layerMode) {
+    return
+  }
+
+  mapInstance.map.removeLayer(mapInstance.baseLayers[mapInstance.activeBaseLayer])
+  mapInstance.baseLayers[layerMode].addTo(mapInstance.map)
+  mapInstance.activeBaseLayer = layerMode
 }
 
 /**
@@ -150,6 +188,7 @@ export function getMapInstance(mapId: string): L.Map | null {
 
 export default {
   initMap,
+  setBaseLayer,
   addMarker,
   drawPolygon,
   addPopup,

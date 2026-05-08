@@ -1,4 +1,4 @@
-import { FC, useReducer } from 'react'
+import { FC, useCallback, useReducer } from 'react'
 import type { Polygon, SessionState, UnitPreference } from '../models/GeoTypes'
 import MapContainer from '../components/MapContainer'
 import PolygonDisplay from '../components/PolygonDisplay'
@@ -59,7 +59,7 @@ function sessionReducer(state: SessionState, action: SessionAction): SessionStat
 const App: FC = () => {
   const [state, dispatch] = useReducer(sessionReducer, initialState)
 
-  const handlePolygonChange = (polygon: Polygon | undefined) => {
+  const handlePolygonChange = useCallback((polygon: Polygon | undefined) => {
     if (!polygon) {
       dispatch({ type: 'SET_PRIMARY_POLYGON', payload: undefined })
       return
@@ -78,15 +78,15 @@ const App: FC = () => {
     }
 
     dispatch({ type: 'SET_PRIMARY_POLYGON', payload: enrichedPolygon })
-  }
+  }, [])
 
-  const handleUnitPreferenceChange = (unitPreference: UnitPreference) => {
+  const handleUnitPreferenceChange = useCallback((unitPreference: UnitPreference) => {
     dispatch({ type: 'UPDATE_UNIT_PREFERENCE', payload: unitPreference })
-  }
+  }, [])
 
-  const handleClearAll = () => {
+  const handleClearAll = useCallback(() => {
     dispatch({ type: 'CLEAR_ALL' })
-  }
+  }, [])
 
   return (
     <div className="app">

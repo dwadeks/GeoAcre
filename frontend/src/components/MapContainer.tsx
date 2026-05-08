@@ -6,7 +6,7 @@
 import { FC, useEffect, useRef, useState } from 'react'
 import type { GeoPoint, Polygon } from '../models/GeoTypes'
 import * as mapService from '../services/mapService'
-import type { MapInstance } from '../services/mapService'
+import type { BaseLayerMode, MapInstance } from '../services/mapService'
 import { v4 as uuidv4 } from 'uuid'
 import 'leaflet/dist/leaflet.css'
 
@@ -17,9 +17,15 @@ interface MapContainerProps {
 const MapContainer: FC<MapContainerProps> = ({ onPolygonChange }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<MapInstance | null>(null)
+  const onPolygonChangeRef = useRef(onPolygonChange)
+  const modeRef = useRef<'draw' | 'view'>('draw')
   const [vertices, setVertices] = useState<GeoPoint[]>([])
-  const [polygon, setPolygon] = useState<Polygon | undefined>()
   const [mode, setMode] = useState<'draw' | 'view'>('draw')
+  const [baseLayer, setBaseLayer] = useState<BaseLayerMode>('street')
+
+  useEffect(() => {
+    onPolygonChangeRef.current = onPolygonChange
+  }, [onPolygonChange])
 
   // Initialize map
   useEffect(() => {
@@ -30,7 +36,7 @@ const MapContainer: FC<MapContainerProps> = ({ onPolygonChange }) => {
 
     // Add click handler to map for vertex placement
     instance.map.on('click', (e: L.LeafletMouseEvent) => {
-      if (mode !== 'draw') return
+      if (modeRef.current !== 'draw') return
 
       const { lat, lng } = e.latlng
       const newVertex: GeoPoint = { latitude: lat, longitude: lng }
@@ -41,7 +47,17 @@ const MapContainer: FC<MapContainerProps> = ({ onPolygonChange }) => {
     return () => {
       instance.map.remove()
     }
+  }, [])
+
+  useEffect(() => {
+    modeRef.current = mode
   }, [mode])
+
+  useEffect(() => {
+    if (!mapInstanceRef.current) return
+
+    mapService.setBaseLayer(mapInstanceRef.current, baseLayer)
+  }, [baseLayer])
 
   // Draw polygon when vertices change
   useEffect(() => {
@@ -58,7 +74,7 @@ const MapContainer: FC<MapContainerProps> = ({ onPolygonChange }) => {
     }
 
     // Draw completed polygon
-    const poly = mapService.drawPolygon(mapInstanceRef.current, vertices, {
+    mapService.drawPolygon(mapInstanceRef.current, vertices, {
       color: '#3388ff',
       fillColor: '#3388ff',
       fillOpacity: 0.2,
@@ -76,20 +92,16 @@ const MapContainer: FC<MapContainerProps> = ({ onPolygonChange }) => {
       perSideLengthsMeters: [],
     }
 
-    setPolygon(newPolygon)
-    onPolygonChange?.(newPolygon)
-
-    mapService.fitBounds(mapInstanceRef.current)
-  }, [vertices, onPolygonChange])
+    onPolygonChangeRef.current?.(newPolygon)
+  }, [vertices])
 
   const handleClear = () => {
     setVertices([])
-    setPolygon(undefined)
     if (mapInstanceRef.current) {
       mapService.clearPolygons(mapInstanceRef.current)
       mapService.clearMarkers(mapInstanceRef.current)
     }
-    onPolygonChange?.(undefined)
+    onPolygonChangeRef.current?.(undefined)
   }
 
   const handleUndo = () => {
@@ -132,6 +144,16 @@ const MapContainer: FC<MapContainerProps> = ({ onPolygonChange }) => {
           onClick={() => setMode(mode === 'draw' ? 'view' : 'draw')}
         >
           {mode === 'draw' ? '✓ Drawing' : '👁️ View'}
+        </button>
+        <button
+          className="btn-secondary btn-sm"
+          onClick={() =>
+            setBaseLayer((current) =>
+              current === 'street' ? 'satellite' : 'street'
+            )
+          }
+        >
+          {baseLayer === 'street' ? '🛰 Satellite' : '🗺 Streets'}
         </button>
         <button className="btn-secondary btn-sm" onClick={handleUndo} disabled={vertices.length === 0}>
           ↶ Undo
