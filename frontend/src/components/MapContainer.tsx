@@ -9,6 +9,7 @@ import * as mapService from '../services/mapService'
 import type { BaseLayerMode, MapInstance } from '../services/mapService'
 import * as dragService from '../services/dragService'
 import type { DragState } from '../services/dragService'
+import L from 'leaflet'
 import { v4 as uuidv4 } from 'uuid'
 import 'leaflet/dist/leaflet.css'
 
@@ -41,6 +42,7 @@ const MapContainer: FC<MapContainerProps> = ({
   const [dragState, setDragState] = useState<DragState | null>(null)
   const markersRef = useRef<L.Marker[]>([])
   const dragJustEndedRef = useRef(false)
+  const dragSourceRef = useRef<'inprogress' | 'primary' | null>(null)
   useEffect(() => {
     onPolygonChangeRef.current = onPolygonChange
   }, [onPolygonChange])
@@ -108,8 +110,8 @@ const MapContainer: FC<MapContainerProps> = ({
     const handleMouseMove = (e: L.LeafletMouseEvent) => {
       if (!dragState || mode !== 'draw') return
 
-      // Prevent map from panning during vertex drag
-      e.originalEvent.stopPropagation()
+      // Prevent Leaflet map drag behavior while dragging a vertex marker.
+      L.DomEvent.stop(e)
 
       const { lat, lng } = e.latlng
       const updatedVertices = dragService.updateVertexPosition(dragState, {
@@ -124,6 +126,16 @@ const MapContainer: FC<MapContainerProps> = ({
       if (!dragState) return
       dragService.endDrag(dragState)
       setDragState(null)
+
+      if (dragSourceRef.current === 'primary' && primaryPolygon) {
+        onPolygonChangeRef.current?.({
+          ...primaryPolygon,
+          vertices: dragState.currentVertices,
+        })
+      }
+
+      dragSourceRef.current = null
+
       // Mark that drag just ended to prevent click from placing vertex
       dragJustEndedRef.current = true
       setTimeout(() => {
@@ -140,23 +152,7 @@ const MapContainer: FC<MapContainerProps> = ({
         mapInstanceRef.current.map.off('mouseup', handleMouseUp)
       }
     }
-  }, [dragState, mode])
-
-  // Attach drag handlers to vertex markers
-  useEffect(() => {
-    if (!mapInstanceRef.current || mode !== 'draw') return
-
-    markersRef.current.forEach((marker, index) => {
-      marker.off('mousedown')
-      marker.on('mousedown', (e: any) => {
-        // Prevent map panning when starting vertex drag
-        if (e.originalEvent) {
-          e.originalEvent.stopPropagation()
-        }
-        setDragState(dragService.startDrag(index, vertices))
-      })
-    })
-  }, [vertices, mode])
+  }, [dragState, mode, primaryPolygon])
 
   // Draw persisted polygons and the in-progress polygon when inputs change.
   useEffect(() => {
@@ -172,6 +168,23 @@ const MapContainer: FC<MapContainerProps> = ({
         fillColor: '#3388ff',
         fillOpacity: 0.15,
       })
+
+      if (mode === 'draw') {
+        primaryPolygon.vertices.forEach((v, idx) => {
+          const marker = mapService.addMarker(
+            mapInstanceRef.current!,
+            v.latitude,
+            v.longitude,
+            `Vertex ${idx + 1}`
+          )
+          marker.on('mousedown', (e: any) => {
+            L.DomEvent.stop(e)
+            dragSourceRef.current = 'primary'
+            setDragState(dragService.startDrag(idx, primaryPolygon.vertices))
+          })
+          markersRef.current.push(marker)
+        })
+      }
     }
 
     excludePolygons.forEach((exclude) => {
@@ -197,6 +210,11 @@ const MapContainer: FC<MapContainerProps> = ({
           v.longitude,
           `Vertex ${idx + 1}`
         )
+        marker.on('mousedown', (e: any) => {
+          L.DomEvent.stop(e)
+          dragSourceRef.current = 'inprogress'
+          setDragState(dragService.startDrag(idx, vertices))
+        })
         markersRef.current.push(marker)
       })
     }
