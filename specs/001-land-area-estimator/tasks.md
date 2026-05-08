@@ -278,29 +278,29 @@
 
 ### Tests for User Story 4
 
-- [ ] T075 Create `frontend/src/components/__tests__/VertexEditor.test.tsx` with React Testing Library tests:
+- [X] T075 Create `frontend/src/components/__tests__/VertexEditor.test.tsx` with React Testing Library tests:
   - Vertex drag handler responds to mouse/touch events
   - Polygon redraws during drag
   - Area and side lengths update in real time
   - Map pan/zoom unaffected by vertex editing
-- [ ] T076 [P] Create `frontend/src/services/__tests__/dragService.test.ts` with tests:
+- [X] T076 [P] Create `frontend/src/services/__tests__/dragService.test.ts` with tests:
   - `startDrag(vertexIndex)` initializes drag state
   - `updateVertexPosition(lat, lon)` moves vertex and computes new measurements
   - `endDrag()` finalizes position
 
 ### Implementation for User Story 4
 
-- [ ] T077 Update `frontend/src/components/MapContainer.tsx` to add vertex drag handlers:
+- [X] T077 Update `frontend/src/components/MapContainer.tsx` to add vertex drag handlers:
   - Render draggable vertex handles (circles) at each vertex position
   - Listen for mousedown/touchstart on handles
   - On drag: update vertex position in real-time, recompute polygon, update display
   - On drag end: finalize position
-- [ ] T078 [P] Create `frontend/src/services/dragService.ts` with functions:
+- [X] T078 [P] Create `frontend/src/services/dragService.ts` with functions:
   - `startDrag(vertexIndex: number): DragState`
   - `updateVertexPosition(dragState: DragState, latLng: LatLng): LatLng[]` (returns updated vertices)
   - `endDrag(dragState: DragState): void`
-- [ ] T079 [P] Update `frontend/src/models/index.ts` to track dragging state if needed
-- [ ] T080 Update `frontend/src/pages/App.tsx` to integrate vertex drag handlers and trigger area/distance recalculation on drag update
+- [X] T079 [P] Update `frontend/src/models/index.ts` to track dragging state if needed
+- [X] T080 Update `frontend/src/pages/App.tsx` to integrate vertex drag handlers and trigger area/distance recalculation on drag update
 
 **Checkpoint**: User Story 4 complete. Users can fine-tune boundaries by dragging vertices; real-time feedback enhances precision.
 

@@ -7,6 +7,8 @@ import { FC, useEffect, useRef, useState } from 'react'
 import type { GeoPoint, Polygon } from '../models/GeoTypes'
 import * as mapService from '../services/mapService'
 import type { BaseLayerMode, MapInstance } from '../services/mapService'
+import * as dragService from '../services/dragService'
+import type { DragState } from '../services/dragService'
 import { v4 as uuidv4 } from 'uuid'
 import 'leaflet/dist/leaflet.css'
 
@@ -36,6 +38,8 @@ const MapContainer: FC<MapContainerProps> = ({
   const [vertices, setVertices] = useState<GeoPoint[]>([])
   const [mode, setMode] = useState<'draw' | 'view'>('draw')
   const [baseLayer, setBaseLayer] = useState<BaseLayerMode>('street')
+  const [dragState, setDragState] = useState<DragState | null>(null)
+  const markersRef = useRef<L.Marker[]>([])
 
   useEffect(() => {
     onPolygonChangeRef.current = onPolygonChange
@@ -96,12 +100,58 @@ const MapContainer: FC<MapContainerProps> = ({
     )
   }, [panToLocation])
 
+  // Handle vertex dragging
+  useEffect(() => {
+    if (!mapInstanceRef.current) return
+
+    const handleMouseMove = (e: L.LeafletMouseEvent) => {
+      if (!dragState || mode !== 'draw') return
+
+      const { lat, lng } = e.latlng
+      const updatedVertices = dragService.updateVertexPosition(dragState, {
+        latitude: lat,
+        longitude: lng,
+      })
+
+      setVertices(updatedVertices)
+    }
+
+    const handleMouseUp = () => {
+      if (!dragState) return
+      dragService.endDrag(dragState)
+      setDragState(null)
+    }
+
+    mapInstanceRef.current.map.on('mousemove', handleMouseMove)
+    mapInstanceRef.current.map.on('mouseup', handleMouseUp)
+
+    return () => {
+      if (mapInstanceRef.current?.map?.off) {
+        mapInstanceRef.current.map.off('mousemove', handleMouseMove)
+        mapInstanceRef.current.map.off('mouseup', handleMouseUp)
+      }
+    }
+  }, [dragState, mode])
+
+  // Attach drag handlers to vertex markers
+  useEffect(() => {
+    if (!mapInstanceRef.current || mode !== 'draw') return
+
+    markersRef.current.forEach((marker, index) => {
+      marker.off('mousedown')
+      marker.on('mousedown', () => {
+        setDragState(dragService.startDrag(index, vertices))
+      })
+    })
+  }, [vertices, mode])
+
   // Draw persisted polygons and the in-progress polygon when inputs change.
   useEffect(() => {
     if (!mapInstanceRef.current) return
 
     mapService.clearPolygons(mapInstanceRef.current)
     mapService.clearMarkers(mapInstanceRef.current)
+    markersRef.current = []
 
     if (primaryPolygon && primaryPolygon.vertices.length >= 3) {
       mapService.drawPolygon(mapInstanceRef.current, primaryPolygon.vertices, {
@@ -126,9 +176,15 @@ const MapContainer: FC<MapContainerProps> = ({
     }
 
     if (vertices.length > 0) {
-      // Draw vertices as markers while drawing.
+      // Draw vertices as markers while drawing and store references.
       vertices.forEach((v, idx) => {
-        mapService.addMarker(mapInstanceRef.current!, v.latitude, v.longitude, `Vertex ${idx + 1}`)
+        const marker = mapService.addMarker(
+          mapInstanceRef.current!,
+          v.latitude,
+          v.longitude,
+          `Vertex ${idx + 1}`
+        )
+        markersRef.current.push(marker)
       })
     }
 
