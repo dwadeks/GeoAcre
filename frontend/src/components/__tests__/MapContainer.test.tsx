@@ -1,54 +1,47 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 import MapContainer from '../MapContainer'
 
-// Mock Leaflet
-vi.mock('leaflet', () => ({
-  Marker: {
-    prototype: {
-      setIcon: vi.fn(),
+const mapStub = {
+  on: vi.fn(),
+  remove: vi.fn(),
+}
+
+vi.mock('../../services/mapService', () => ({
+  initMap: vi.fn(() => ({
+    map: mapStub,
+    polygons: [],
+    markers: [],
+    baseLayers: {
+      street: { addTo: vi.fn() },
+      satellite: { addTo: vi.fn() },
     },
-  },
-  map: vi.fn(() => ({
-    setView: vi.fn(),
-    on: vi.fn(),
-    remove: vi.fn(),
-    removeLayer: vi.fn(),
+    activeBaseLayer: 'street',
   })),
-  tileLayer: vi.fn(() => ({
-    addTo: vi.fn(),
-  })),
-  polygon: vi.fn(() => ({
-    addTo: vi.fn(),
-    remove: vi.fn(),
-  })),
-  marker: vi.fn(() => ({
-    addTo: vi.fn(),
-    remove: vi.fn(),
-    bindPopup: vi.fn(),
-  })),
-  LatLng: vi.fn((lat, lng) => ({ lat, lng })),
-  latLngBounds: vi.fn(),
-  icon: vi.fn(() => ({})),
+  setBaseLayer: vi.fn(),
+  clearPolygons: vi.fn(),
+  clearMarkers: vi.fn(),
+  addMarker: vi.fn(),
+  drawPolygon: vi.fn(),
+  panTo: vi.fn(),
 }))
 
 describe('MapContainer', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   it('renders map container div', () => {
-    // Act
     render(<MapContainer onPolygonChange={vi.fn()} />)
 
-    // Assert
     expect(screen.getByTestId('map')).toBeInTheDocument()
   })
 
-  it('should call onPolygonChange when vertices are updated', () => {
-    // Arrange
+  it('renders with onPolygonChange callback', () => {
     const mockOnPolygonChange = vi.fn()
 
-    // Act
     render(<MapContainer onPolygonChange={mockOnPolygonChange} />)
 
-    // Assert - Component should be rendered
     expect(screen.getByTestId('map')).toBeInTheDocument()
   })
 

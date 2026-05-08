@@ -32,6 +32,7 @@ if (app.Environment.IsDevelopment())
 
 // Add error handling middleware
 app.UseMiddleware<SteelTree.GeoAcre.Web.Api.Middleware.ErrorHandlingMiddleware>();
+app.UseMiddleware<SteelTree.GeoAcre.Web.Api.Middleware.RateLimitingMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseCors();
@@ -39,3 +40,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run("http://localhost:5000");
+
+public partial class Program { }

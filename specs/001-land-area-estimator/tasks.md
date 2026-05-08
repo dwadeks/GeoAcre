@@ -180,16 +180,16 @@
 
 ### Tests for User Story 2
 
-- [ ] T055 [P] Create `frontend/src/services/__tests__/geocodingService.test.ts` with tests:
+- [X] T055 [P] Create `frontend/src/services/__tests__/geocodingService.test.ts` with tests:
   - `searchAddress(query)` calls backend `/geocode/search` and returns results array
   - `reverseGeocode(lat, lon)` calls backend `/geocode/reverse` and returns address string
   - Error handling for network failures and invalid inputs
-- [ ] T056 Create `frontend/src/components/__tests__/LocationSearch.test.tsx` with React Testing Library tests:
+- [X] T056 Create `frontend/src/components/__tests__/LocationSearch.test.tsx` with React Testing Library tests:
   - Input field accepts address text
   - Button submits search query
   - Results dropdown displays search results
   - Clicking result triggers map navigation (pan/zoom)
-- [ ] T057 [P] Create `backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/GeocodingControllerTests.cs` with tests:
+- [X] T057 [P] Create `backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/GeocodingControllerTests.cs` with tests:
   - POST /geocode/search with "Springfield, IL" returns valid results array
   - POST /geocode/reverse with lat=39.7817, lon=-89.6501 returns address
   - Empty query returns 400 Bad Request
@@ -197,26 +197,26 @@
 
 ### Implementation for User Story 2
 
-- [ ] T058 Create `frontend/src/services/geocodingService.ts` with functions:
+- [X] T058 Create `frontend/src/services/geocodingService.ts` with functions:
   - `searchAddress(query: string, maxResults?: number): Promise<SearchResult[]>`
   - `reverseGeocode(latitude: number, longitude: number): Promise<string>`
   - Each calls backend API via apiClient
-- [ ] T059 Create `frontend/src/components/LocationSearch.tsx`:
+- [X] T059 Create `frontend/src/components/LocationSearch.tsx`:
   - Input field for address or lat/lon
   - Search button
   - Results dropdown with clickable results
   - Handles loading state, errors
-- [ ] T060 [P] Update `frontend/src/pages/App.tsx` to integrate LocationSearch and call `mapService.panTo()` when result selected
-- [ ] T061 Create `backend/src/SteelTree.GeoAcre.Web.Api/Controllers/GeocodingController.cs`:
+- [X] T060 [P] Update `frontend/src/pages/App.tsx` to integrate LocationSearch and call `mapService.panTo()` when result selected
+- [X] T061 Create `backend/src/SteelTree.GeoAcre.Web.Api/Controllers/GeocodingController.cs`:
   - POST `/geocode/search` endpoint (body: {query, maxResults?}) → response: {results: [{id, displayName, latitude, longitude, boundingBox?}]}
   - POST `/geocode/reverse` endpoint (body: {latitude, longitude}) → response: {address, latitude, longitude}
-- [ ] T062 Implement `NominatimGeocodeService` in `backend/src/SteelTree.GeoAcre.Web.Api/Services/NominatimGeocodeService.cs`:
+- [X] T062 Implement `NominatimGeocodeService` in `backend/src/SteelTree.GeoAcre.Web.Api/Services/NominatimGeocodeService.cs`:
   - Call Nominatim API `https://nominatim.openstreetmap.org/search?q={query}&format=json`
   - Call Nominatim API `https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lon}&format=json`
   - Error handling: network failures → 503, invalid coords → 400
   - Rate limiting: max 1 request/sec (per Nominatim terms)
-- [ ] T063 [P] Update `backend/src/SteelTree.GeoAcre.Web.Api/Program.cs` to register `IGeocodeService` in DI container
-- [ ] T064 [P] Add rate limiting middleware for geocoding endpoint (10 req/sec per IP) in `backend/src/SteelTree.GeoAcre.Web.Api/Middleware/RateLimitingMiddleware.cs`
+- [X] T063 [P] Update `backend/src/SteelTree.GeoAcre.Web.Api/Program.cs` to register `IGeocodeService` in DI container
+- [X] T064 [P] Add rate limiting middleware for geocoding endpoint (10 req/sec per IP) in `backend/src/SteelTree.GeoAcre.Web.Api/Middleware/RateLimitingMiddleware.cs`
 
 **Checkpoint**: User Story 2 complete. Users can search by address or coordinates and navigate the map. Combined with P1, the app now enables location-based area measurement for any real-world property.
 

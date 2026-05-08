@@ -12,9 +12,10 @@ import 'leaflet/dist/leaflet.css'
 
 interface MapContainerProps {
   onPolygonChange?: (polygon: Polygon | undefined) => void
+  panToLocation?: GeoPoint | null
 }
 
-const MapContainer: FC<MapContainerProps> = ({ onPolygonChange }) => {
+const MapContainer: FC<MapContainerProps> = ({ onPolygonChange, panToLocation }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<MapInstance | null>(null)
   const onPolygonChangeRef = useRef(onPolygonChange)
@@ -58,6 +59,17 @@ const MapContainer: FC<MapContainerProps> = ({ onPolygonChange }) => {
 
     mapService.setBaseLayer(mapInstanceRef.current, baseLayer)
   }, [baseLayer])
+
+  useEffect(() => {
+    if (!mapInstanceRef.current || !panToLocation) return
+
+    mapService.panTo(
+      mapInstanceRef.current,
+      panToLocation.latitude,
+      panToLocation.longitude,
+      16
+    )
+  }, [panToLocation])
 
   // Draw polygon when vertices change
   useEffect(() => {

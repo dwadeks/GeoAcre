@@ -3,6 +3,7 @@ import type { Polygon, SessionState, UnitPreference } from '../models/GeoTypes'
 import MapContainer from '../components/MapContainer'
 import PolygonDisplay from '../components/PolygonDisplay'
 import UnitSelector from '../components/UnitSelector'
+import LocationSearch from '../components/LocationSearch'
 import { calculatePolygonArea, calculateSideLengths, calculatePerimeter } from '../services/geometryService'
 import '../styles/globals.css'
 
@@ -58,6 +59,10 @@ function sessionReducer(state: SessionState, action: SessionAction): SessionStat
 
 const App: FC = () => {
   const [state, dispatch] = useReducer(sessionReducer, initialState)
+  const [targetLocation, setTargetLocation] = useReducer(
+    (_: { latitude: number; longitude: number } | null, next: { latitude: number; longitude: number } | null) => next,
+    null
+  )
 
   const handlePolygonChange = useCallback((polygon: Polygon | undefined) => {
     if (!polygon) {
@@ -88,6 +93,10 @@ const App: FC = () => {
     dispatch({ type: 'CLEAR_ALL' })
   }, [])
 
+  const handleLocationSelect = useCallback((latitude: number, longitude: number) => {
+    setTargetLocation({ latitude, longitude })
+  }, [])
+
   return (
     <div className="app">
       <header>
@@ -95,7 +104,7 @@ const App: FC = () => {
       </header>
       <main>
         {/* Map container */}
-        <MapContainer onPolygonChange={handlePolygonChange} />
+        <MapContainer onPolygonChange={handlePolygonChange} panToLocation={targetLocation} />
 
         {/* Control panel */}
         <div className="control-panel">
@@ -118,6 +127,8 @@ const App: FC = () => {
             unitPreference={state.unitPreference}
             onUnitPreferenceChange={handleUnitPreferenceChange}
           />
+
+          <LocationSearch onLocationSelect={handleLocationSelect} />
 
           {/* Polygon Display */}
           <section>

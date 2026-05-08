@@ -41,7 +41,7 @@ describe('PolygonDisplay', () => {
     )
 
     // Assert
-    expect(screen.getByText(/side|length/i)).toBeInTheDocument()
+    expect(screen.getByText(/side lengths/i)).toBeInTheDocument()
   })
 
   it('should update when polygon changes', () => {

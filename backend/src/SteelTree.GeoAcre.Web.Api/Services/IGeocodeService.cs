@@ -32,7 +32,8 @@ public class NominatimGeocodeService : IGeocodeService
     private readonly HttpClient _httpClient;
     private readonly ILogger<NominatimGeocodeService> _logger;
     private const string NominatimBaseUrl = "https://nominatim.openstreetmap.org";
-    private static readonly DateTime LastRequestTime = DateTime.UtcNow;
+    private static DateTime _lastRequestTime = DateTime.MinValue;
+    private static readonly SemaphoreSlim RateLimitLock = new(1, 1);
     private const int MinRequestIntervalMs = 1000; // 1 second between requests per Nominatim Terms of Service
 
     public NominatimGeocodeService(HttpClient httpClient, ILogger<NominatimGeocodeService> logger)
@@ -86,6 +87,9 @@ public class NominatimGeocodeService : IGeocodeService
 
     public async Task<string> ReverseGeocodeAsync(double latitude, double longitude)
     {
+        if (latitude is < -90 or > 90 || longitude is < -180 or > 180)
+            throw new ArgumentException("Latitude or longitude is out of valid range.");
+
         try
         {
             // Rate limiting
@@ -120,14 +124,26 @@ public class NominatimGeocodeService : IGeocodeService
     /// </summary>
     private static Task RateLimitAsync()
     {
-        // Note: In production, this should use a proper rate limiting strategy
-        // This is a simplified version for the stub implementation
-        var elapsedMs = (DateTime.UtcNow - LastRequestTime).TotalMilliseconds;
-        if (elapsedMs < MinRequestIntervalMs)
+        return RateLimitInternalAsync();
+    }
+
+    private static async Task RateLimitInternalAsync()
+    {
+        await RateLimitLock.WaitAsync();
+        try
         {
-            return Task.Delay(MinRequestIntervalMs - (int)elapsedMs);
+            var elapsedMs = (DateTime.UtcNow - _lastRequestTime).TotalMilliseconds;
+            if (elapsedMs < MinRequestIntervalMs)
+            {
+                await Task.Delay(MinRequestIntervalMs - (int)elapsedMs);
+            }
+
+            _lastRequestTime = DateTime.UtcNow;
         }
-        return Task.CompletedTask;
+        finally
+        {
+            RateLimitLock.Release();
+        }
     }
 
     // DTOs for Nominatim API responses
