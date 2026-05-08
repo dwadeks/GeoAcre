@@ -152,6 +152,14 @@ p {
   z-index: 1;
 }
 
+/* Use an arrow cursor while placing vertices so click target is unambiguous. */
+.map-container.drawing-mode .leaflet-container,
+.map-container.drawing-mode .leaflet-grab,
+.map-container.drawing-mode .leaflet-dragging,
+.map-container.drawing-mode .leaflet-interactive {
+  cursor: default !important;
+}
+
 /* ============================================================================
    Sidebar / Control Panel
    ============================================================================ */

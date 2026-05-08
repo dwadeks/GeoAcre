@@ -123,7 +123,7 @@ const MapContainer: FC<MapContainerProps> = ({ onPolygonChange, panToLocation })
   }
 
   return (
-    <div className="map-container">
+    <div className={`map-container ${mode === 'draw' ? 'drawing-mode' : 'view-mode'}`}>
       <div
         ref={mapContainerRef}
         id="map"
