@@ -40,7 +40,7 @@ const MapContainer: FC<MapContainerProps> = ({
   const [baseLayer, setBaseLayer] = useState<BaseLayerMode>('street')
   const [dragState, setDragState] = useState<DragState | null>(null)
   const markersRef = useRef<L.Marker[]>([])
-
+  const dragJustEndedRef = useRef(false)
   useEffect(() => {
     onPolygonChangeRef.current = onPolygonChange
   }, [onPolygonChange])
@@ -67,6 +67,7 @@ const MapContainer: FC<MapContainerProps> = ({
     // Add click handler to map for vertex placement
     instance.map.on('click', (e: L.LeafletMouseEvent) => {
       if (modeRef.current !== 'draw') return
+      if (dragJustEndedRef.current) return
 
       const { lat, lng } = e.latlng
       const newVertex: GeoPoint = { latitude: lat, longitude: lng }
@@ -107,6 +108,9 @@ const MapContainer: FC<MapContainerProps> = ({
     const handleMouseMove = (e: L.LeafletMouseEvent) => {
       if (!dragState || mode !== 'draw') return
 
+      // Prevent map from panning during vertex drag
+      e.originalEvent.stopPropagation()
+
       const { lat, lng } = e.latlng
       const updatedVertices = dragService.updateVertexPosition(dragState, {
         latitude: lat,
@@ -119,11 +123,12 @@ const MapContainer: FC<MapContainerProps> = ({
     const handleMouseUp = () => {
       if (!dragState) return
       dragService.endDrag(dragState)
-      // Re-enable map dragging when vertex drag ends
-      if (mapInstanceRef.current?.map?.dragging) {
-        mapInstanceRef.current.map.dragging.enable()
-      }
       setDragState(null)
+      // Mark that drag just ended to prevent click from placing vertex
+      dragJustEndedRef.current = true
+      setTimeout(() => {
+        dragJustEndedRef.current = false
+      }, 50)
     }
 
     mapInstanceRef.current.map.on('mousemove', handleMouseMove)
@@ -134,10 +139,6 @@ const MapContainer: FC<MapContainerProps> = ({
         mapInstanceRef.current.map.off('mousemove', handleMouseMove)
         mapInstanceRef.current.map.off('mouseup', handleMouseUp)
       }
-      // Ensure dragging is re-enabled on unmount
-      if (mapInstanceRef.current?.map?.dragging) {
-        mapInstanceRef.current.map.dragging.enable()
-      }
     }
   }, [dragState, mode])
 
@@ -147,10 +148,10 @@ const MapContainer: FC<MapContainerProps> = ({
 
     markersRef.current.forEach((marker, index) => {
       marker.off('mousedown')
-      marker.on('mousedown', () => {
-        // Disable map dragging while dragging a vertex
-        if (mapInstanceRef.current?.map?.dragging) {
-          mapInstanceRef.current.map.dragging.disable()
+      marker.on('mousedown', (e: any) => {
+        // Prevent map panning when starting vertex drag
+        if (e.originalEvent) {
+          e.originalEvent.stopPropagation()
         }
         setDragState(dragService.startDrag(index, vertices))
       })
