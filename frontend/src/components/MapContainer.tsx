@@ -119,6 +119,10 @@ const MapContainer: FC<MapContainerProps> = ({
     const handleMouseUp = () => {
       if (!dragState) return
       dragService.endDrag(dragState)
+      // Re-enable map dragging when vertex drag ends
+      if (mapInstanceRef.current?.map?.dragging) {
+        mapInstanceRef.current.map.dragging.enable()
+      }
       setDragState(null)
     }
 
@@ -130,6 +134,10 @@ const MapContainer: FC<MapContainerProps> = ({
         mapInstanceRef.current.map.off('mousemove', handleMouseMove)
         mapInstanceRef.current.map.off('mouseup', handleMouseUp)
       }
+      // Ensure dragging is re-enabled on unmount
+      if (mapInstanceRef.current?.map?.dragging) {
+        mapInstanceRef.current.map.dragging.enable()
+      }
     }
   }, [dragState, mode])
 
@@ -140,6 +148,10 @@ const MapContainer: FC<MapContainerProps> = ({
     markersRef.current.forEach((marker, index) => {
       marker.off('mousedown')
       marker.on('mousedown', () => {
+        // Disable map dragging while dragging a vertex
+        if (mapInstanceRef.current?.map?.dragging) {
+          mapInstanceRef.current.map.dragging.disable()
+        }
         setDragState(dragService.startDrag(index, vertices))
       })
     })
