@@ -34,7 +34,10 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<SteelTree.GeoAcre.Web.Api.Middleware.ErrorHandlingMiddleware>();
 app.UseMiddleware<SteelTree.GeoAcre.Web.Api.Middleware.RateLimitingMiddleware>();
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseCors();
 app.UseAuthorization();
 app.MapControllers();
