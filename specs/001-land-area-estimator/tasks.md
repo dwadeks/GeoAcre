@@ -230,41 +230,41 @@
 
 ### Tests for User Story 3
 
-- [ ] T065 [P] Create `backend/tests/unit/SteelTree.GeoAcre.Geometry.Tests/GeoCalculations_ExcludeTests.cs` with tests:
+- [X] T065 [P] Create `backend/tests/unit/SteelTree.GeoAcre.Geometry.Tests/GeoCalculations_ExcludeTests.cs` with tests:
   - Polygon with one exclude: net area = primary area - exclude area
   - Polygon with multiple excludes: net area = primary - sum(excludes)
   - Exclude polygon larger than primary: net area >= 0 (clamped)
   - Exclude polygon partially outside primary: only intersection subtracted
-- [ ] T066 Create `frontend/src/components/__tests__/ExcludePolygonEditor.test.tsx` with React Testing Library tests:
+- [X] T066 Create `frontend/src/components/__tests__/ExcludePolygonEditor.test.tsx` with React Testing Library tests:
   - Button to toggle "Add Exclude Mode"
   - Drawing exclude polygon renders with different style
   - Delete exclude polygon button removes it and updates net area
   - Display shows primary area, total excluded area, net area
-- [ ] T067 [P] Create `frontend/src/services/__tests__/polygonService.test.ts` with tests:
+- [X] T067 [P] Create `frontend/src/services/__tests__/polygonService.test.ts` with tests:
   - `calculateNetArea(primary, excludes)` returns correct difference
   - `clampArea(value)` ensures non-negative
 
 ### Implementation for User Story 3
 
-- [ ] T068 Create `frontend/src/components/ExcludePolygonEditor.tsx`:
+- [X] T068 Create `frontend/src/components/ExcludePolygonEditor.tsx`:
   - Toggle button for "Add Exclude Mode"
   - When active, draw similar to polygon editor but with different color/style
   - List of drawn exclude polygons with delete buttons
   - Displays: primary area, total excluded area, net area
-- [ ] T069 [P] Create `frontend/src/services/polygonService.ts` with functions:
+- [X] T069 [P] Create `frontend/src/services/polygonService.ts` with functions:
   - `calculateNetArea(primaryVertices: GeoPoint[], excludeVertices: GeoPoint[][]): number`
   - `clampArea(value: number): number` (ensures non-negative)
-- [ ] T070 [P] Update `frontend/src/models/index.ts` to add `excludePolygons: Polygon[]` to session state
-- [ ] T071 Update `frontend/src/pages/App.tsx` to:
+- [X] T070 [P] Update `frontend/src/models/index.ts` to add `excludePolygons: Polygon[]` to session state
+- [X] T071 Update `frontend/src/pages/App.tsx` to:
   - Track multiple polygons (primary + excludes) in state
   - Update displayed area to show net area
   - Render all polygons with distinct styles
-- [ ] T072 Update `backend/src/SteelTree.GeoAcre.Web.Api/Models/GeoTypes.cs` to add POST `/geometry/calculate-area` request body: `{ primaryVertices, excludePolygons }`
-- [ ] T073 Update `backend/src/SteelTree.GeoAcre.Web.Api/Controllers/GeometryController.cs` POST `/geometry/calculate-area` to:
+- [X] T072 Update `backend/src/SteelTree.GeoAcre.Web.Api/Models/GeoTypes.cs` to add POST `/geometry/calculate-area` request body: `{ primaryVertices, excludePolygons }`
+- [X] T073 Update `backend/src/SteelTree.GeoAcre.Web.Api/Controllers/GeometryController.cs` POST `/geometry/calculate-area` to:
   - Accept primary polygon and exclude polygons
   - Calculate net area (primary - intersection with excludes)
   - Return { areaSquareMeters, netAreaSquareMeters, excludedAreaSquareMeters, perSideLengthsMeters, hasIntersections }
-- [ ] T074 [P] Implement intersection calculation in `SteelTree.GeoAcre.Geometry/GeoCalculations.cs` if not already done
+- [X] T074 [P] Implement intersection calculation in `SteelTree.GeoAcre.Geometry/GeoCalculations.cs` if not already done
 
 **Checkpoint**: User Story 3 complete. Users can define multiple exclude areas and see the net usable area.
 

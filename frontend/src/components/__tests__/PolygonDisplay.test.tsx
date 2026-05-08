@@ -31,7 +31,7 @@ describe('PolygonDisplay', () => {
     )
 
     // Assert
-    expect(screen.getByText(/area/i)).toBeInTheDocument()
+    expect(screen.getByText(/primary area/i)).toBeInTheDocument()
   })
 
   it('should display side lengths with correct unit labels', () => {
@@ -64,6 +64,6 @@ describe('PolygonDisplay', () => {
     )
 
     // Assert - Component should render without error
-    expect(screen.getByText(/area/i)).toBeInTheDocument()
+    expect(screen.getByText(/primary area/i)).toBeInTheDocument()
   })
 })

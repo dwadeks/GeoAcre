@@ -1,10 +1,12 @@
-import { FC, useCallback, useReducer } from 'react'
+import { FC, useCallback, useMemo, useReducer, useState } from 'react'
 import type { Polygon, SessionState, UnitPreference } from '../models/GeoTypes'
 import MapContainer from '../components/MapContainer'
 import PolygonDisplay from '../components/PolygonDisplay'
 import UnitSelector from '../components/UnitSelector'
 import LocationSearch from '../components/LocationSearch'
+import ExcludePolygonEditor from '../components/ExcludePolygonEditor'
 import { calculatePolygonArea, calculateSideLengths, calculatePerimeter } from '../services/geometryService'
+import { calculateNetArea } from '../services/polygonService'
 import '../styles/globals.css'
 
 /**
@@ -25,6 +27,7 @@ type SessionAction =
   | { type: 'SET_PRIMARY_POLYGON'; payload: Polygon | undefined }
   | { type: 'ADD_EXCLUDE_POLYGON'; payload: Polygon }
   | { type: 'REMOVE_EXCLUDE_POLYGON'; payload: string }
+  | { type: 'CLEAR_EXCLUDE_POLYGONS' }
   | { type: 'UPDATE_UNIT_PREFERENCE'; payload: UnitPreference }
   | { type: 'CLEAR_ALL' }
 
@@ -45,6 +48,11 @@ function sessionReducer(state: SessionState, action: SessionAction): SessionStat
         ...state,
         excludePolygons: state.excludePolygons.filter((p) => p.id !== action.payload),
       }
+    case 'CLEAR_EXCLUDE_POLYGONS':
+      return {
+        ...state,
+        excludePolygons: [],
+      }
     case 'UPDATE_UNIT_PREFERENCE':
       return {
         ...state,
@@ -59,6 +67,7 @@ function sessionReducer(state: SessionState, action: SessionAction): SessionStat
 
 const App: FC = () => {
   const [state, dispatch] = useReducer(sessionReducer, initialState)
+  const [isExcludeMode, setIsExcludeMode] = useState(false)
   const [targetLocation, setTargetLocation] = useReducer(
     (_: { latitude: number; longitude: number } | null, next: { latitude: number; longitude: number } | null) => next,
     null
@@ -67,6 +76,7 @@ const App: FC = () => {
   const handlePolygonChange = useCallback((polygon: Polygon | undefined) => {
     if (!polygon) {
       dispatch({ type: 'SET_PRIMARY_POLYGON', payload: undefined })
+      dispatch({ type: 'CLEAR_EXCLUDE_POLYGONS' })
       return
     }
 
@@ -85,17 +95,50 @@ const App: FC = () => {
     dispatch({ type: 'SET_PRIMARY_POLYGON', payload: enrichedPolygon })
   }, [])
 
+  const handleExcludePolygonComplete = useCallback((polygon: Polygon) => {
+    const areaSquareMeters = calculatePolygonArea(polygon.vertices)
+    const perSideLengthsMeters = calculateSideLengths(polygon.vertices)
+    const perimeter = calculatePerimeter(polygon.vertices)
+
+    const enrichedPolygon: Polygon = {
+      ...polygon,
+      isExcludePolygon: true,
+      computedAreaSquareMeters: areaSquareMeters,
+      perSideLengthsMeters,
+      computedPerimeterMeters: perimeter,
+    }
+
+    dispatch({ type: 'ADD_EXCLUDE_POLYGON', payload: enrichedPolygon })
+  }, [])
+
+  const handleDeleteExcludePolygon = useCallback((polygonId: string) => {
+    dispatch({ type: 'REMOVE_EXCLUDE_POLYGON', payload: polygonId })
+  }, [])
+
+  const handleToggleExcludeMode = useCallback(() => {
+    setIsExcludeMode((prev) => !prev)
+  }, [])
+
   const handleUnitPreferenceChange = useCallback((unitPreference: UnitPreference) => {
     dispatch({ type: 'UPDATE_UNIT_PREFERENCE', payload: unitPreference })
   }, [])
 
   const handleClearAll = useCallback(() => {
     dispatch({ type: 'CLEAR_ALL' })
+    setIsExcludeMode(false)
   }, [])
 
   const handleLocationSelect = useCallback((latitude: number, longitude: number) => {
     setTargetLocation({ latitude, longitude })
   }, [])
+
+  const netAreaSquareMeters = useMemo(() => {
+    if (!state.primaryPolygon) return 0
+    return calculateNetArea(
+      state.primaryPolygon.vertices,
+      state.excludePolygons.map((p) => p.vertices)
+    )
+  }, [state.primaryPolygon, state.excludePolygons])
 
   return (
     <div className="app">
@@ -104,7 +147,14 @@ const App: FC = () => {
       </header>
       <main>
         {/* Map container */}
-        <MapContainer onPolygonChange={handlePolygonChange} panToLocation={targetLocation} />
+        <MapContainer
+          onPolygonChange={handlePolygonChange}
+          onExcludePolygonComplete={handleExcludePolygonComplete}
+          primaryPolygon={state.primaryPolygon}
+          excludePolygons={state.excludePolygons}
+          drawTarget={isExcludeMode ? 'exclude' : 'primary'}
+          panToLocation={targetLocation}
+        />
 
         {/* Control panel */}
         <div className="control-panel">
@@ -112,7 +162,7 @@ const App: FC = () => {
             <h3>Measurement</h3>
             <p className="text-muted">
               {state.primaryPolygon
-                ? `✓ Polygon with ${state.primaryPolygon.vertices.length} vertices`
+                ? `✓ Polygon with ${state.primaryPolygon.vertices.length} vertices (${state.excludePolygons.length} exclude polygons)`
                 : 'Click map to draw a polygon (≥3 points)'}
             </p>
             {state.primaryPolygon && (
@@ -130,12 +180,27 @@ const App: FC = () => {
 
           <LocationSearch onLocationSelect={handleLocationSelect} />
 
+          <ExcludePolygonEditor
+            isExcludeMode={isExcludeMode}
+            onToggleExcludeMode={handleToggleExcludeMode}
+            excludePolygons={state.excludePolygons}
+            onDeleteExcludePolygon={handleDeleteExcludePolygon}
+            primaryAreaSquareMeters={state.primaryPolygon?.computedAreaSquareMeters ?? 0}
+            netAreaSquareMeters={netAreaSquareMeters}
+            unitPreference={state.unitPreference}
+          />
+
           {/* Polygon Display */}
           <section>
             <h3>Results</h3>
             <PolygonDisplay
               polygon={state.primaryPolygon}
               unitPreference={state.unitPreference}
+              excludedAreaSquareMeters={Math.max(
+                0,
+                (state.primaryPolygon?.computedAreaSquareMeters ?? 0) - netAreaSquareMeters
+              )}
+              netAreaSquareMeters={netAreaSquareMeters}
             />
           </section>
 

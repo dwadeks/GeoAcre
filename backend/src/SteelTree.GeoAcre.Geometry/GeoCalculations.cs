@@ -241,8 +241,8 @@ public static class GeoCalculations
     /// <returns>List of vertices representing the intersection boundary</returns>
     public static List<GeoPoint> ComputeIntersection(Polygon primary, Polygon exclude)
     {
-        // Simplified implementation: find vertices of exclude that are inside primary,
-        // plus intersection points of edges
+        // Build an approximate intersection polygon from points that are inside each
+        // polygon plus segment intersection points.
         var result = new List<GeoPoint>();
 
         // Add vertices of exclude that are inside primary
@@ -257,6 +257,24 @@ public static class GeoCalculations
         {
             if (IsPointInPolygon(vertex, exclude.Vertices))
                 result.Add(vertex);
+        }
+
+        // Add edge intersection points between both polygon rings.
+        for (int i = 0; i < primary.Vertices.Count; i++)
+        {
+            var p1 = primary.Vertices[i];
+            var p2 = primary.Vertices[(i + 1) % primary.Vertices.Count];
+
+            for (int j = 0; j < exclude.Vertices.Count; j++)
+            {
+                var q1 = exclude.Vertices[j];
+                var q2 = exclude.Vertices[(j + 1) % exclude.Vertices.Count];
+
+                if (TryGetSegmentIntersection(p1, p2, q1, q2, out var intersection))
+                {
+                    result.Add(intersection);
+                }
+            }
         }
 
         // Remove duplicates and sort by angle from centroid
@@ -276,6 +294,50 @@ public static class GeoCalculations
         });
 
         return result;
+    }
+
+    private static bool TryGetSegmentIntersection(
+        GeoPoint p1,
+        GeoPoint p2,
+        GeoPoint q1,
+        GeoPoint q2,
+        out GeoPoint intersection)
+    {
+        intersection = default!;
+
+        // Planar approximation in lon/lat space for parcel-scale polygons.
+        var x1 = p1.Longitude;
+        var y1 = p1.Latitude;
+        var x2 = p2.Longitude;
+        var y2 = p2.Latitude;
+        var x3 = q1.Longitude;
+        var y3 = q1.Latitude;
+        var x4 = q2.Longitude;
+        var y4 = q2.Latitude;
+
+        var denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+        if (Math.Abs(denom) < 1e-12)
+            return false;
+
+        var pre = x1 * y2 - y1 * x2;
+        var post = x3 * y4 - y3 * x4;
+        var x = (pre * (x3 - x4) - (x1 - x2) * post) / denom;
+        var y = (pre * (y3 - y4) - (y1 - y2) * post) / denom;
+
+        if (!IsWithinSegment(x, y, x1, y1, x2, y2) || !IsWithinSegment(x, y, x3, y3, x4, y4))
+            return false;
+
+        intersection = new GeoPoint(y, x);
+        return true;
+    }
+
+    private static bool IsWithinSegment(double x, double y, double x1, double y1, double x2, double y2)
+    {
+        const double epsilon = 1e-9;
+        return x >= Math.Min(x1, x2) - epsilon &&
+               x <= Math.Max(x1, x2) + epsilon &&
+               y >= Math.Min(y1, y2) - epsilon &&
+               y <= Math.Max(y1, y2) + epsilon;
     }
 
     /// <summary>

@@ -9,9 +9,16 @@ import { formatArea, formatDistance } from '../services/geometryService'
 interface PolygonDisplayProps {
   polygon?: Polygon
   unitPreference: UnitPreference
+  excludedAreaSquareMeters?: number
+  netAreaSquareMeters?: number
 }
 
-const PolygonDisplay: FC<PolygonDisplayProps> = ({ polygon, unitPreference }) => {
+const PolygonDisplay: FC<PolygonDisplayProps> = ({
+  polygon,
+  unitPreference,
+  excludedAreaSquareMeters = 0,
+  netAreaSquareMeters,
+}) => {
   const formattedArea = useMemo(
     () => (polygon ? formatArea(polygon.computedAreaSquareMeters, unitPreference.areaUnit) : null),
     [polygon, unitPreference.areaUnit]
@@ -20,6 +27,17 @@ const PolygonDisplay: FC<PolygonDisplayProps> = ({ polygon, unitPreference }) =>
   const formattedPerimeter = useMemo(
     () => (polygon ? formatDistance(polygon.computedPerimeterMeters, unitPreference.distanceUnit) : null),
     [polygon, unitPreference.distanceUnit]
+  )
+
+  const formattedExcludedArea = useMemo(
+    () => formatArea(excludedAreaSquareMeters, unitPreference.areaUnit),
+    [excludedAreaSquareMeters, unitPreference.areaUnit]
+  )
+
+  const effectiveNetArea = netAreaSquareMeters ?? polygon?.computedAreaSquareMeters ?? 0
+  const formattedNetArea = useMemo(
+    () => formatArea(effectiveNetArea, unitPreference.areaUnit),
+    [effectiveNetArea, unitPreference.areaUnit]
   )
 
   const formattedSideLengths = useMemo(
@@ -54,10 +72,16 @@ const PolygonDisplay: FC<PolygonDisplayProps> = ({ polygon, unitPreference }) =>
 
         {/* Area Section */}
         <div style={{ marginBottom: '1.5rem' }}>
-          <h4 style={{ marginBottom: '0.5rem' }}>Area</h4>
+          <h4 style={{ marginBottom: '0.5rem' }}>Primary Area</h4>
           <p style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: '0.25rem 0' }}>{formattedArea}</p>
           <p className="text-muted" style={{ fontSize: '0.875rem', margin: '0.25rem 0' }}>
             ({formatArea(polygon.computedAreaSquareMeters, 'sqm')})
+          </p>
+          <p style={{ margin: '0.25rem 0' }}>
+            Excluded Area: <strong>{formattedExcludedArea}</strong>
+          </p>
+          <p style={{ margin: '0.25rem 0' }}>
+            Net Area: <strong>{formattedNetArea}</strong>
           </p>
         </div>
 

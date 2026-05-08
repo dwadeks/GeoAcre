@@ -47,7 +47,7 @@ namespace SteelTree.GeoAcre.Web.Api.Controllers
                 var primaryPerimeter = primaryPolygon.ComputedPerimeterMeters;
                 var perSideLengths = primaryPolygon.PerSideLengthsMeters;
 
-                // Calculate excluded area if provided
+                // Calculate excluded area if provided (subtract only overlap with primary).
                 double excludedAreaTotal = 0;
                 if (request.ExcludePolygons != null && request.ExcludePolygons.Length > 0)
                 {
@@ -66,7 +66,11 @@ namespace SteelTree.GeoAcre.Web.Api.Controllers
                             primaryPolygon.Id
                         );
 
-                        excludedAreaTotal += excludePolygon.ComputedAreaSquareMeters;
+                        var overlapVertices = GeoCalculations.ComputeIntersection(primaryPolygon, excludePolygon);
+                        if (overlapVertices.Count >= 3)
+                        {
+                            excludedAreaTotal += GeoCalculations.ComputeArea(overlapVertices);
+                        }
                     }
                 }
 
