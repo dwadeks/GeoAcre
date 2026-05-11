@@ -16,7 +16,7 @@ const SettingsPanel: FC<SettingsPanelProps> = ({ unitPreference, onUnitPreferenc
   const handleAreaUnit = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onUnitPreferenceChange({
       ...unitPreference,
-      areaUnit: e.target.value as 'acres' | 'hectares' | 'sqm',
+      areaUnit: e.target.value as 'acres' | 'hectares' | 'sqft' | 'sqm',
     })
   }
 
@@ -87,6 +87,7 @@ const SettingsPanel: FC<SettingsPanelProps> = ({ unitPreference, onUnitPreferenc
               <select value={unitPreference.areaUnit} onChange={handleAreaUnit}>
                 <option value="acres">Acres (ac)</option>
                 <option value="hectares">Hectares (ha)</option>
+                <option value="sqft">Square Feet (ft²)</option>
                 <option value="sqm">Square Meters (m²)</option>
               </select>
             </label>

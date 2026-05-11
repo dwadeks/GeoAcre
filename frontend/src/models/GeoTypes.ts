@@ -41,7 +41,7 @@ export interface Measurement {
  * User's unit preferences
  */
 export interface UnitPreference {
-  areaUnit: 'acres' | 'hectares' | 'sqm'
+  areaUnit: 'acres' | 'hectares' | 'sqft' | 'sqm'
   distanceUnit: 'feet' | 'meters' | 'miles' | 'km'
 }
 
@@ -53,6 +53,30 @@ export interface SessionState {
   excludePolygons: Polygon[]
   measurement?: Measurement
   unitPreference: UnitPreference
+}
+
+export interface SessionSnapshot {
+  schemaVersion: '1.0.0'
+  exportedAt: string
+  units: UnitPreference
+  primaryPolygon?: {
+    id: string
+    vertices: GeoPoint[]
+    areaSquareMeters: number
+    perimeterMeters: number
+    perSideLengthsMeters: number[]
+  }
+  excludePolygons: Array<{
+    id: string
+    vertices: GeoPoint[]
+    areaSquareMeters: number
+  }>
+  measurements: Array<{
+    id: string
+    vertices: GeoPoint[]
+    totalDistanceMeters: number
+    perSegmentDistancesMeters: number[]
+  }>
 }
 
 // ============================================================================

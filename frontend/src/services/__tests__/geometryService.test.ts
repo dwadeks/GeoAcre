@@ -113,6 +113,17 @@ describe('geometryService', () => {
       expect(result).toMatch(/^1\.00 hectares?$/)
     })
 
+      it('should convert square meters to square feet', () => {
+        // Arrange - 1 acre = 43,560 square feet
+        const squareMeters = 4046.8564224
+
+        // Act
+        const result = formatArea(squareMeters, 'sqft')
+
+        // Assert
+        expect(result).toMatch(/^43,560\.00 sq ft$/)
+      })
+
     it('should format square meters', () => {
       // Arrange
       const squareMeters = 5000

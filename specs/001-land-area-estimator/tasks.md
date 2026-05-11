@@ -358,14 +358,14 @@
 
 ### Tests for User Story 6
 
-- [ ] T088 [P] Create `backend/tests/unit/SteelTree.GeoAcre.Geometry.Tests/UnitConversionTests.cs` (if not already done) with comprehensive conversions
-- [ ] T089 Create `frontend/src/services/__tests__/unitService.test.ts` with Vitest tests:
+- [X] T088 [P] Create `backend/tests/unit/SteelTree.GeoAcre.Geometry.Tests/UnitConversionTests.cs` (if not already done) with comprehensive conversions
+- [X] T089 Create `frontend/src/services/__tests__/unitService.test.ts` with Vitest tests:
   - `convertArea(value, fromUnit, toUnit)` returns correct conversion
   - `convertDistance(value, fromUnit, toUnit)` returns correct conversion
   - Supported area units: acres, hectares, square feet, square meters
   - Supported distance units: feet, meters, miles, kilometers
   - Round-trip conversions match original (within rounding error)
-- [ ] T090 Create `frontend/src/components/__tests__/UnitSelector.test.tsx` with React Testing Library tests:
+- [X] T090 Create `frontend/src/components/__tests__/UnitSelector.test.tsx` with React Testing Library tests:
   - Dropdowns display all supported units
   - Changing area unit updates all area displays
   - Changing distance unit updates all distance displays
@@ -373,19 +373,19 @@
 
 ### Implementation for User Story 6
 
-- [ ] T091 Create `frontend/src/services/unitService.ts` with functions:
+- [X] T091 Create `frontend/src/services/unitService.ts` with functions:
   - `convertArea(value: number, fromUnit: AreaUnit, toUnit: AreaUnit): number`
   - `convertDistance(value: number, fromUnit: DistanceUnit, toUnit: DistanceUnit): number`
   - Uses constants from backend or hardcoded conversion factors
-- [ ] T092 Update `frontend/src/components/UnitSelector.tsx` to:
+- [X] T092 Update `frontend/src/components/UnitSelector.tsx` to:
   - Display all area unit options: acres, hectares, square feet, square meters
   - Display all distance unit options: feet, meters, miles, kilometers
   - Trigger unit change event on selection
-- [ ] T093 Update `frontend/src/pages/App.tsx` to:
+- [X] T093 Update `frontend/src/pages/App.tsx` to:
   - Track selected units in state (UnitPreference)
   - On unit change, re-render all displays using new units
   - Persist unit selection to localStorage (optional but recommended)
-- [ ] T094 [P] Update frontend service layer to use selected units when formatting area/distance (geometryService.ts, measurementService.ts)
+- [X] T094 [P] Update frontend service layer to use selected units when formatting area/distance (geometryService.ts, measurementService.ts)
 
 **Checkpoint**: User Story 6 complete. All values update dynamically when units change; app is now usable internationally.
 
@@ -399,12 +399,12 @@
 
 ### Tests for User Story 7
 
-- [ ] T095 Create `frontend/src/services/__tests__/exportService.test.ts` with Vitest tests:
+- [X] T095 Create `frontend/src/services/__tests__/exportService.test.ts` with Vitest tests:
   - `exportSessionToJSON(session)` returns valid JSON string
   - JSON schema includes: schemaVersion, primaryPolygon, excludePolygons, measurements, units, timestamp
   - Coordinates are precise (6 decimal places minimum)
   - Computed values (area, distance) included
-- [ ] T096 Create `frontend/src/components/__tests__/ExportButton.test.tsx` with React Testing Library tests:
+- [X] T096 Create `frontend/src/components/__tests__/ExportButton.test.tsx` with React Testing Library tests:
   - Button disabled when no shapes drawn
   - Download button triggers file download
   - Copy button copies JSON to clipboard
@@ -412,19 +412,19 @@
 
 ### Implementation for User Story 7
 
-- [ ] T097 Create `frontend/src/services/exportService.ts` with functions:
+- [X] T097 Create `frontend/src/services/exportService.ts` with functions:
   - `exportSessionToJSON(session: SessionState): string` (returns stringified JSON)
   - `downloadJSON(data: string, filename: string): void` (triggers browser download)
   - `copyToClipboard(data: string): Promise<void>` (copies to clipboard API)
   - JSON schema: { schemaVersion: "1.0.0", exportedAt: ISO8601, primaryPolygon: {id, vertices, area, perimeter}, excludePolygons: [...], measurements: [...], units: {areaUnit, distanceUnit} }
-- [ ] T098 Create `frontend/src/components/ExportButton.tsx`:
+- [X] T098 Create `frontend/src/components/ExportButton.tsx`:
   - Download button calls `downloadJSON()`
   - Copy button calls `copyToClipboard()`
   - Disabled state when session is empty
   - Success/error notifications
-- [ ] T099 Update `frontend/src/models/index.ts` to define JSON export schema TypeScript type: `SessionSnapshot`
-- [ ] T100 Update `frontend/src/pages/App.tsx` to integrate ExportButton
-- [ ] T101 [P] Create `frontend/src/types/schemas.ts` with JSON schema constants for version tracking
+- [X] T099 Update `frontend/src/models/index.ts` to define JSON export schema TypeScript type: `SessionSnapshot`
+- [X] T100 Update `frontend/src/pages/App.tsx` to integrate ExportButton
+- [X] T101 [P] Create `frontend/src/types/schemas.ts` with JSON schema constants for version tracking
 
 **Checkpoint**: User Story 7 complete. Users can preserve and share their session data.
 
@@ -436,64 +436,64 @@
 
 ### Self-Intersection Detection & Warning
 
-- [ ] T102 Update `frontend/src/components/MapContainer.tsx` to detect `polygon.hasIntersections` and render warning indicator (icon or banner)
-- [ ] T103 [P] Update `frontend/src/components/PolygonDisplay.tsx` to show warning message when polygon self-intersects
-- [ ] T104 Create `frontend/src/components/SelfIntersectionWarning.tsx` to display warning UI
-- [ ] T104b [P] Create integration test in `backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/SelfIntersectionTests.cs`:
+- [X] T102 Update `frontend/src/components/MapContainer.tsx` to detect `polygon.hasIntersections` and render warning indicator (icon or banner)
+- [X] T103 [P] Update `frontend/src/components/PolygonDisplay.tsx` to show warning message when polygon self-intersects
+- [X] T104 Create `frontend/src/components/SelfIntersectionWarning.tsx` to display warning UI
+- [X] T104b [P] Create integration test in `backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/SelfIntersectionTests.cs`:
   - POST /geometry/calculate-area with self-intersecting polygon returns area using even-odd rule
   - Verify integration: area calculation uses ComputeAreaEvenOddRule() AND frontend displays warning simultaneously
 
 ### Mode Switching & Confirmation Dialogs
 
-- [ ] T105 Create `frontend/src/components/ConfirmationDialog.tsx` for mode switching and polygon discard prompts
-- [ ] T106 Update `frontend/src/pages/App.tsx` to show confirmation when:
+- [X] T105 Create `frontend/src/components/ConfirmationDialog.tsx` for mode switching and polygon discard prompts
+- [X] T106 Update `frontend/src/pages/App.tsx` to show confirmation when:
   - User switches modes (Area Polygon ↔ Distance Measurement) with in-progress shape
   - User starts new polygon with existing polygon already drawn
   - Message: "You have an [unfinished/existing] shape — discard it?"
 
 ### Error Handling & User Messages
 
-- [ ] T107 Update `frontend/src/services/apiClient.ts` to handle API error responses (400, 429, 500, 503) and format user-friendly messages
-- [ ] T108 Create `frontend/src/components/ErrorNotification.tsx` to display errors
-- [ ] T109 Add `ErrorBoundary.tsx` for React error handling
-- [ ] T110 [P] Update `backend/src/SteelTree.GeoAcre.Web.Api/Middleware/ErrorHandlingMiddleware.cs` to log and format errors appropriately
+- [X] T107 Update `frontend/src/services/apiClient.ts` to handle API error responses (400, 429, 500, 503) and format user-friendly messages
+- [X] T108 Create `frontend/src/components/ErrorNotification.tsx` to display errors
+- [X] T109 Add `ErrorBoundary.tsx` for React error handling
+- [X] T110 [P] Update `backend/src/SteelTree.GeoAcre.Web.Api/Middleware/ErrorHandlingMiddleware.cs` to log and format errors appropriately
 
 ### Rate Limiting Configuration
 
-- [ ] T111 Implement rate limiting in `backend/src/SteelTree.GeoAcre.Web.Api/Middleware/RateLimitingMiddleware.cs`:
+- [X] T111 Implement rate limiting in `backend/src/SteelTree.GeoAcre.Web.Api/Middleware/RateLimitingMiddleware.cs`:
   - Geocoding: 10 req/sec per IP
   - Geometry: 100 req/sec per IP
   - Global: 1000 req/hr per IP
-- [ ] T112 [P] Add rate limit response headers (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset)
+- [X] T112 [P] Add rate limit response headers (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset)
 
 ### Responsive Design & Touch Support
 
-- [ ] T113 Update `frontend/src/styles/globals.css` for responsive layout (mobile, tablet, desktop breakpoints)
-- [ ] T114 Ensure touch event handlers in MapContainer work correctly on mobile (tap to place, long-press to drag)
+- [X] T113 Update `frontend/src/styles/globals.css` for responsive layout (mobile, tablet, desktop breakpoints)
+- [X] T114 Ensure touch event handlers in MapContainer work correctly on mobile (tap to place, long-press to drag)
 - [ ] T115 [P] Test UX on small screens; adjust vertex handle size for touch accuracy
 
 ### Documentation & Developer Setup
 
-- [ ] T116 Update `quickstart.md` with local dev setup instructions: `npm run dev`, `dotnet run`, `dotnet test`, `npm test`
-- [ ] T117 [P] Create `backend/README.md` with .NET project structure and build/test instructions
-- [ ] T118 [P] Create `frontend/README.md` with React project structure and build/test instructions
-- [ ] T119 Create or update `docker-compose.yml` for local development (optional: containerize frontend and backend services)
+- [X] T116 Update `quickstart.md` with local dev setup instructions: `npm run dev`, `dotnet run`, `dotnet test`, `npm test`
+- [X] T117 [P] Create `backend/README.md` with .NET project structure and build/test instructions
+- [X] T118 [P] Create `frontend/README.md` with React project structure and build/test instructions
+- [X] T119 Create or update `docker-compose.yml` for local development (optional: containerize frontend and backend services)
 
 ### Azure Deployment
 
-- [ ] T120 Create `frontend/staticwebapp.config.json` for Azure Static Web Apps deployment
-- [ ] T121 [P] Create GitHub Actions workflow `.github/workflows/deploy.yml` to build and deploy:
+- [X] T120 Create `frontend/staticwebapp.config.json` for Azure Static Web Apps deployment
+- [X] T121 [P] Create GitHub Actions workflow `.github/workflows/deploy.yml` to build and deploy:
   - Frontend to Azure Static Web Apps
   - Backend to Azure Functions or App Service
-- [ ] T122 [P] Create `azure-pipelines.yml` as alternative CI/CD (if using Azure Pipelines instead)
-- [ ] T123 Create `.env.example` with environment variables template (API_BASE_URL, etc.)
+- [X] T122 [P] Create `azure-pipelines.yml` as alternative CI/CD (if using Azure Pipelines instead)
+- [X] T123 Create `.env.example` with environment variables template (API_BASE_URL, etc.)
 
 ### Testing & CI/CD
 
-- [ ] T124 [P] Set up code coverage reporting in `backend/` (Coverlet)
-- [ ] T125 [P] Set up code coverage reporting in `frontend/` (Vitest coverage)
-- [ ] T126 Add pre-commit hook to run linting and unit tests locally
-- [ ] T127 [P] Configure CI/CD to run tests on each PR
+- [X] T124 [P] Set up code coverage reporting in `backend/` (Coverlet)
+- [X] T125 [P] Set up code coverage reporting in `frontend/` (Vitest coverage)
+- [X] T126 Add pre-commit hook to run linting and unit tests locally
+- [X] T127 [P] Configure CI/CD to run tests on each PR
 
 ### Final QA & Acceptance
 

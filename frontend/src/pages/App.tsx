@@ -6,6 +6,9 @@ import SettingsPanel from '../components/SettingsPanel'
 import LocationSearch from '../components/LocationSearch'
 import ExcludePolygonEditor from '../components/ExcludePolygonEditor'
 import MeasurementTool from '../components/MeasurementTool'
+import ExportButton from '../components/ExportButton'
+import ConfirmationDialog from '../components/ConfirmationDialog'
+import ErrorNotification from '../components/ErrorNotification'
 import { calculatePolygonArea, calculateSideLengths, calculatePerimeter } from '../services/geometryService'
 import { calculateNetArea } from '../services/polygonService'
 import { calculatePolylineDistance, calculateSegmentDistances } from '../services/measurementService'
@@ -19,10 +22,24 @@ import '../styles/globals.css'
 const initialState: SessionState = {
   primaryPolygon: undefined,
   excludePolygons: [],
-  unitPreference: {
-    areaUnit: 'acres',
-    distanceUnit: 'feet',
-  },
+  unitPreference: (() => {
+    try {
+      const raw = localStorage.getItem('geoacre.unitPreference')
+      if (raw) {
+        const parsed = JSON.parse(raw) as UnitPreference
+        if (parsed.areaUnit && parsed.distanceUnit) {
+          return parsed
+        }
+      }
+    } catch {
+      // no-op: fallback to defaults
+    }
+
+    return {
+      areaUnit: 'acres',
+      distanceUnit: 'feet',
+    }
+  })(),
 }
 
 type SessionAction =
@@ -77,6 +94,9 @@ const App: FC = () => {
   const [state, dispatch] = useReducer(sessionReducer, initialState)
   const [isExcludeMode, setIsExcludeMode] = useState(false)
   const [isMeasurementMode, setIsMeasurementMode] = useState(false)
+  const [showModeConfirm, setShowModeConfirm] = useState(false)
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false)
+  const [appError, setAppError] = useState<string>('')
   const [measurementPoints, setMeasurementPoints] = useState<GeoPoint[]>([])
   const [targetLocation, setTargetLocation] = useReducer(
     (_: { latitude: number; longitude: number } | null, next: { latitude: number; longitude: number } | null) => next,
@@ -130,12 +150,25 @@ const App: FC = () => {
   }, [])
 
   const handleUnitPreferenceChange = useCallback((unitPreference: UnitPreference) => {
+    localStorage.setItem('geoacre.unitPreference', JSON.stringify(unitPreference))
     dispatch({ type: 'UPDATE_UNIT_PREFERENCE', payload: unitPreference })
   }, [])
 
   const handleClearAll = useCallback(() => {
+    if (state.primaryPolygon || state.excludePolygons.length > 0 || measurementPoints.length > 0) {
+      setShowDiscardConfirm(true)
+      return
+    }
+
     dispatch({ type: 'CLEAR_ALL' })
     setIsExcludeMode(false)
+  }, [state.primaryPolygon, state.excludePolygons.length, measurementPoints.length])
+
+  const handleConfirmDiscard = useCallback(() => {
+    setShowDiscardConfirm(false)
+    dispatch({ type: 'CLEAR_ALL' })
+    setIsExcludeMode(false)
+    setMeasurementPoints([])
   }, [])
 
   const handleLocationSelect = useCallback((latitude: number, longitude: number) => {
@@ -146,14 +179,11 @@ const App: FC = () => {
     const hasInProgressWork = Boolean(state.primaryPolygon) || measurementPoints.length > 0
 
     if (hasInProgressWork) {
-      const shouldSwitch = window.confirm(
-        'You have an existing shape. Switching modes may discard in-progress work. Continue?'
-      )
-      if (!shouldSwitch) {
-        return
-      }
+      setShowModeConfirm(true)
+      return
     }
 
+    setAppError('')
     setIsMeasurementMode((prev) => {
       const next = !prev
       if (!next) {
@@ -163,6 +193,11 @@ const App: FC = () => {
       return next
     })
   }, [state.primaryPolygon, measurementPoints.length])
+
+  const handleConfirmModeSwitch = useCallback(() => {
+    setShowModeConfirm(false)
+    setIsMeasurementMode((prev) => !prev)
+  }, [])
 
   const handleMeasurementPointsChange = useCallback((vertices: GeoPoint[]) => {
     setMeasurementPoints(vertices)
@@ -195,6 +230,28 @@ const App: FC = () => {
 
   return (
     <div className="app">
+      {appError ? <ErrorNotification message={appError} onDismiss={() => setAppError('')} /> : null}
+
+      <ConfirmationDialog
+        open={showModeConfirm}
+        title="Switch Measurement Mode?"
+        message="You have an unfinished or existing shape. Discard it and switch modes?"
+        confirmText="Discard and Switch"
+        cancelText="Keep Editing"
+        onConfirm={handleConfirmModeSwitch}
+        onCancel={() => setShowModeConfirm(false)}
+      />
+
+      <ConfirmationDialog
+        open={showDiscardConfirm}
+        title="Discard Existing Shape?"
+        message="You have an existing shape. Discard it?"
+        confirmText="Discard"
+        cancelText="Cancel"
+        onConfirm={handleConfirmDiscard}
+        onCancel={() => setShowDiscardConfirm(false)}
+      />
+
       <header>
         <h1>🗺️ Land Area Estimator</h1>
       </header>
@@ -274,6 +331,9 @@ const App: FC = () => {
               netAreaSquareMeters={netAreaSquareMeters}
             />
           </section>
+
+          {/* Info Section */}
+          <ExportButton session={state} />
 
           {/* Info Section */}
           <section>

@@ -31,16 +31,19 @@ public class ErrorHandlingMiddleware
     {
         context.Response.ContentType = "application/json";
 
+        var traceId = context.TraceIdentifier;
+
         var response = new ErrorResponse
         {
             Message = exception.Message,
-            Details = exception.GetType().Name
+            Details = $"{exception.GetType().Name} (traceId: {traceId})"
         };
 
         return exception switch
         {
             ArgumentException => RespondWithError(context, 400, response, "Bad Request"),
             InvalidOperationException => RespondWithError(context, 400, response, "Bad Request"),
+            HttpRequestException => RespondWithError(context, 503, response, "Service Unavailable"),
             _ => RespondWithError(context, 500, response, "Internal Server Error")
         };
     }

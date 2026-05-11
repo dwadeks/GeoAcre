@@ -19,6 +19,23 @@ interface ApiResponse<T> {
   }
 }
 
+function getFriendlyMessage(status: number, fallback?: string): string {
+  switch (status) {
+    case 400:
+      return fallback || 'The request was invalid. Please verify your input and try again.'
+    case 429:
+      return 'Too many requests. Please wait a moment and retry.'
+    case 500:
+      return 'Server error. Please try again in a few moments.'
+    case 503:
+      return 'Service temporarily unavailable. Please retry shortly.'
+    case 0:
+      return fallback || 'Network error. Check your connection and try again.'
+    default:
+      return fallback || 'Request failed. Please try again.'
+  }
+}
+
 /**
  * Make a typed API request
  */
@@ -48,6 +65,7 @@ async function apiRequest<T>(
       return {
         error: {
           status: response.status,
+          message: getFriendlyMessage(response.status, errorData?.message ?? response.statusText),
           ...errorData,
         },
       }
@@ -59,7 +77,7 @@ async function apiRequest<T>(
     return {
       error: {
         status: 0,
-        message: err instanceof Error ? err.message : 'Network error',
+        message: getFriendlyMessage(0, err instanceof Error ? err.message : undefined),
       },
     }
   }

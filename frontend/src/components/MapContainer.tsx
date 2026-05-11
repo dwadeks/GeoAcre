@@ -9,6 +9,8 @@ import * as mapService from '../services/mapService'
 import type { BaseLayerMode, MapInstance } from '../services/mapService'
 import * as dragService from '../services/dragService'
 import type { DragState } from '../services/dragService'
+import { detectSelfIntersections } from '../services/geometryService'
+import SelfIntersectionWarning from './SelfIntersectionWarning'
 import L from 'leaflet'
 import { v4 as uuidv4 } from 'uuid'
 import 'leaflet/dist/leaflet.css'
@@ -50,6 +52,7 @@ const MapContainer: FC<MapContainerProps> = ({
   const [baseLayer, setBaseLayer] = useState<BaseLayerMode>('street')
   const [dragState, setDragState] = useState<DragState | null>(null)
   const [isLayersOpen, setIsLayersOpen] = useState(false)
+  const [hasCurrentIntersections, setHasCurrentIntersections] = useState(false)
   const markersRef = useRef<L.Marker[]>([])
   const dragJustEndedRef = useRef(false)
   const dragSourceRef = useRef<'inprogress' | 'primary' | null>(null)
@@ -172,6 +175,19 @@ const MapContainer: FC<MapContainerProps> = ({
       setVertices(updatedVertices)
     }
 
+    const handleTouchMove = (e: any) => {
+      if (!dragState || mode !== 'draw') return
+      const touch = e?.latlng
+      if (!touch) return
+
+      const updatedVertices = dragService.updateVertexPosition(dragState, {
+        latitude: touch.lat,
+        longitude: touch.lng,
+      })
+
+      setVertices(updatedVertices)
+    }
+
     const handleMouseUp = () => {
       if (!dragState) return
       dragService.endDrag(dragState)
@@ -196,11 +212,15 @@ const MapContainer: FC<MapContainerProps> = ({
 
     mapInstanceRef.current.map.on('mousemove', handleMouseMove)
     mapInstanceRef.current.map.on('mouseup', handleMouseUp)
+    mapInstanceRef.current.map.on('touchmove', handleTouchMove)
+    mapInstanceRef.current.map.on('touchend', handleMouseUp)
 
     return () => {
       if (mapInstanceRef.current?.map?.off) {
         mapInstanceRef.current.map.off('mousemove', handleMouseMove)
         mapInstanceRef.current.map.off('mouseup', handleMouseUp)
+        mapInstanceRef.current.map.off('touchmove', handleTouchMove)
+        mapInstanceRef.current.map.off('touchend', handleMouseUp)
       }
 
       // Safety net in case the effect is torn down while dragging.
@@ -255,12 +275,14 @@ const MapContainer: FC<MapContainerProps> = ({
             v.longitude,
             `Vertex ${idx + 1}`
           )
-          marker.on('mousedown', (e: any) => {
+          const startDrag = (e: any) => {
             L.DomEvent.stop(e)
             dragSourceRef.current = 'primary'
             disableMapDraggingForVertexDrag()
             setDragState(dragService.startDrag(idx, primaryPolygon.vertices))
-          })
+          }
+          marker.on('mousedown', startDrag)
+          marker.on('touchstart', startDrag)
           markersRef.current.push(marker)
         })
       }
@@ -289,19 +311,25 @@ const MapContainer: FC<MapContainerProps> = ({
           v.longitude,
           `Vertex ${idx + 1}`
         )
-        marker.on('mousedown', (e: any) => {
+        const startDrag = (e: any) => {
           L.DomEvent.stop(e)
           dragSourceRef.current = 'inprogress'
           disableMapDraggingForVertexDrag()
           setDragState(dragService.startDrag(idx, vertices))
-        })
+        }
+        marker.on('mousedown', startDrag)
+        marker.on('touchstart', startDrag)
         markersRef.current.push(marker)
       })
     }
 
     if (vertices.length < 3) {
+      setHasCurrentIntersections(false)
       return
     }
+
+    const intersects = detectSelfIntersections(vertices)
+    setHasCurrentIntersections(intersects)
 
     const isExcludeTarget = drawTargetRef.current === 'exclude'
     mapService.drawPolygon(mapInstanceRef.current, vertices, {
@@ -317,7 +345,7 @@ const MapContainer: FC<MapContainerProps> = ({
         vertices,
         isExcludePolygon: false,
         isValid: vertices.length >= 3,
-        hasIntersections: false,
+        hasIntersections: intersects,
         computedAreaSquareMeters: 0,
         computedPerimeterMeters: 0,
         perSideLengthsMeters: [],
@@ -360,7 +388,7 @@ const MapContainer: FC<MapContainerProps> = ({
       vertices,
       isExcludePolygon: isExcludeTarget,
       isValid: true,
-      hasIntersections: false,
+      hasIntersections: detectSelfIntersections(vertices),
       computedAreaSquareMeters: 0,
       computedPerimeterMeters: 0,
       perSideLengthsMeters: [],
@@ -387,6 +415,12 @@ const MapContainer: FC<MapContainerProps> = ({
           backgroundColor: '#fff',
         }}
       />
+
+      {hasCurrentIntersections ? (
+        <div style={{ position: 'absolute', left: '1rem', top: '1rem', zIndex: 1200, maxWidth: '520px' }}>
+          <SelfIntersectionWarning message="Current polygon self-intersects. Continue editing or move vertices to resolve overlaps." />
+        </div>
+      ) : null}
 
       {/* Map controls overlay */}
       <div

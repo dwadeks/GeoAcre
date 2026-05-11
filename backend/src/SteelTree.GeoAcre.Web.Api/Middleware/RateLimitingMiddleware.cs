@@ -10,8 +10,12 @@ public class RateLimitingMiddleware
 {
     private readonly RequestDelegate _next;
     private static readonly ConcurrentDictionary<string, Queue<DateTime>> RequestsByIp = new();
-    private const int MaxRequestsPerSecond = 10;
-    private static readonly TimeSpan Window = TimeSpan.FromSeconds(1);
+    private static readonly (string Scope, string Prefix, int Limit, TimeSpan Window)[] Rules =
+    [
+        ("geocoding", "/api/geocoding", 10, TimeSpan.FromSeconds(1)),
+        ("geometry", "/api/geometry", 100, TimeSpan.FromSeconds(1)),
+        ("global", "/api", 1000, TimeSpan.FromHours(1)),
+    ];
 
     public RateLimitingMiddleware(RequestDelegate next)
     {
@@ -21,7 +25,7 @@ public class RateLimitingMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         var path = context.Request.Path.Value ?? string.Empty;
-        if (!path.StartsWith("/api/geocode", StringComparison.OrdinalIgnoreCase))
+        if (!path.StartsWith("/api", StringComparison.OrdinalIgnoreCase))
         {
             await _next(context);
             return;
@@ -30,28 +34,54 @@ public class RateLimitingMiddleware
         var ip = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
         var now = DateTime.UtcNow;
 
-        var queue = RequestsByIp.GetOrAdd(ip, _ => new Queue<DateTime>());
-        lock (queue)
+        foreach (var rule in Rules)
         {
-            while (queue.Count > 0 && now - queue.Peek() > Window)
+            if (!path.StartsWith(rule.Prefix, StringComparison.OrdinalIgnoreCase))
             {
-                queue.Dequeue();
+                continue;
             }
 
-            if (queue.Count >= MaxRequestsPerSecond)
+            var queueKey = $"{rule.Scope}:{ip}";
+            var queue = RequestsByIp.GetOrAdd(queueKey, _ => new Queue<DateTime>());
+            int remaining;
+            DateTime resetAt;
+            bool exceeded;
+
+            lock (queue)
+            {
+                while (queue.Count > 0 && now - queue.Peek() > rule.Window)
+                {
+                    queue.Dequeue();
+                }
+
+                exceeded = queue.Count >= rule.Limit;
+
+                if (!exceeded)
+                {
+                    queue.Enqueue(now);
+                }
+
+                remaining = Math.Max(0, rule.Limit - queue.Count);
+                resetAt = queue.Count > 0 ? queue.Peek().Add(rule.Window) : now.Add(rule.Window);
+            }
+
+            context.Response.Headers["X-RateLimit-Limit"] = rule.Limit.ToString();
+            context.Response.Headers["X-RateLimit-Remaining"] = remaining.ToString();
+            context.Response.Headers["X-RateLimit-Reset"] =
+                new DateTimeOffset(resetAt).ToUnixTimeSeconds().ToString();
+
+            if (exceeded)
             {
                 context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
                 context.Response.ContentType = "application/json";
-                context.Response.WriteAsJsonAsync(new
+                await context.Response.WriteAsJsonAsync(new
                 {
                     status = 429,
                     title = "Too Many Requests",
-                    message = "Geocoding rate limit exceeded. Try again shortly."
-                }).GetAwaiter().GetResult();
+                    message = $"Rate limit exceeded for {rule.Scope}. Try again shortly.",
+                });
                 return;
             }
-
-            queue.Enqueue(now);
         }
 
         await _next(context);

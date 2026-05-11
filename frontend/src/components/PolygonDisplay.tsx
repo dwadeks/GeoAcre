@@ -5,6 +5,7 @@
 import { FC, useMemo } from 'react'
 import type { Polygon, UnitPreference } from '../models/GeoTypes'
 import { formatArea, formatDistance } from '../services/geometryService'
+import SelfIntersectionWarning from './SelfIntersectionWarning'
 
 interface PolygonDisplayProps {
   polygon?: Polygon
@@ -63,12 +64,9 @@ const PolygonDisplay: FC<PolygonDisplayProps> = ({
       <div className="card-body">
         <div className="alert alert-info" style={{ marginBottom: '1rem' }}>
           <strong>⚠️ Note:</strong> Measurements are calculated using spherical geometry (geodetic calculations).
-          {polygon.hasIntersections && (
-            <div style={{ marginTop: '0.5rem' }}>
-              ⚠️ This polygon has self-intersections. Area uses even-odd rule.
-            </div>
-          )}
         </div>
+
+        {polygon.hasIntersections ? <SelfIntersectionWarning /> : null}
 
         {/* Area Section */}
         <div style={{ marginBottom: '1.5rem' }}>

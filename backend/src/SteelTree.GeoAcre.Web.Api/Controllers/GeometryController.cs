@@ -41,9 +41,12 @@ namespace SteelTree.GeoAcre.Web.Api.Controllers
 
                 // Create primary polygon
                 var primaryPolygon = new Polygon(vertices, false, null);
+                var hasIntersections = primaryPolygon.HasIntersections;
 
                 // Calculate primary area
-                var primaryArea = primaryPolygon.ComputedAreaSquareMeters;
+                var primaryArea = hasIntersections
+                    ? GeoCalculations.ComputeAreaEvenOddRule(primaryPolygon.Vertices)
+                    : primaryPolygon.ComputedAreaSquareMeters;
                 var primaryPerimeter = primaryPolygon.ComputedPerimeterMeters;
                 var perSideLengths = primaryPolygon.PerSideLengthsMeters;
 
@@ -82,7 +85,7 @@ namespace SteelTree.GeoAcre.Web.Api.Controllers
                     NetAreaSquareMeters = netArea,
                     ExcludedAreaSquareMeters = excludedAreaTotal,
                     PerSideLengthsMeters = perSideLengths.ToArray(),
-                    HasIntersections = primaryPolygon.HasIntersections
+                    HasIntersections = hasIntersections
                 });
             }
             catch (InvalidCoordinateException ex)

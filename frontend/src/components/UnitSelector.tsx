@@ -17,7 +17,7 @@ const UnitSelector: FC<UnitSelectorProps> = ({
   const handleAreaUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onUnitPreferenceChange({
       ...unitPreference,
-      areaUnit: e.target.value as 'acres' | 'hectares' | 'sqm',
+      areaUnit: e.target.value as 'acres' | 'hectares' | 'sqft' | 'sqm',
     })
   }
 
@@ -38,6 +38,7 @@ const UnitSelector: FC<UnitSelectorProps> = ({
           <select value={unitPreference.areaUnit} onChange={handleAreaUnitChange}>
             <option value="acres">📍 Acres (ac)</option>
             <option value="hectares">📍 Hectares (ha)</option>
+            <option value="sqft">📍 Square Feet (ft²)</option>
             <option value="sqm">📍 Square Meters (m²)</option>
           </select>
         </label>

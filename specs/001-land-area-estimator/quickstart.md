@@ -33,6 +33,26 @@ cd ..
 
 ## 2. Local Development Setup
 
+### Essential Commands
+
+```bash
+# Frontend
+cd frontend
+npm run dev
+npm run test -- --run
+
+# Backend
+cd ../backend
+dotnet run --project src/SteelTree.GeoAcre.Web.Api/SteelTree.GeoAcre.Web.Api.csproj
+dotnet test
+```
+
+Optional local hook setup:
+
+```bash
+git config core.hooksPath .githooks
+```
+
 ### Frontend (React + TypeScript + Leaflet)
 
 ```bash

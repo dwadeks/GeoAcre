@@ -5,6 +5,7 @@
 
 import * as turf from '@turf/turf'
 import type { GeoPoint } from '../models/GeoTypes'
+import { convertArea, convertDistance, type AreaUnit, type DistanceUnit } from './unitService'
 
 /**
  * Earth's radius in meters (WGS84 mean radius)
@@ -90,35 +91,61 @@ export function calculatePerimeter(vertices: GeoPoint[]): number {
   return sideLengths.reduce((sum, length) => sum + length, 0)
 }
 
+function ccw(a: GeoPoint, b: GeoPoint, c: GeoPoint): boolean {
+  return (c.latitude - a.latitude) * (b.longitude - a.longitude) >
+    (b.latitude - a.latitude) * (c.longitude - a.longitude)
+}
+
+function segmentsIntersect(p1: GeoPoint, p2: GeoPoint, p3: GeoPoint, p4: GeoPoint): boolean {
+  const d1 = ccw(p1, p3, p4)
+  const d2 = ccw(p2, p3, p4)
+  const d3 = ccw(p3, p1, p2)
+  const d4 = ccw(p4, p1, p2)
+  return d1 !== d2 && d3 !== d4
+}
+
+export function detectSelfIntersections(vertices: GeoPoint[]): boolean {
+  if (!vertices || vertices.length < 4) {
+    return false
+  }
+
+  for (let i = 0; i < vertices.length; i++) {
+    const p1 = vertices[i]
+    const p2 = vertices[(i + 1) % vertices.length]
+
+    for (let j = i + 2; j < vertices.length; j++) {
+      if (j === vertices.length - 1 && i === 0) {
+        continue
+      }
+
+      const p3 = vertices[j]
+      const p4 = vertices[(j + 1) % vertices.length]
+
+      if (segmentsIntersect(p1, p2, p3, p4)) {
+        return true
+      }
+    }
+  }
+
+  return false
+}
+
 /**
  * Format area value with unit conversion and localization
  */
 export function formatArea(
   squareMeters: number,
-  unit: 'acres' | 'hectares' | 'sqm'
+  unit: AreaUnit
 ): string {
-  let value: number
-  let label: string
-
-  switch (unit) {
-    case 'acres':
-      value = squareMeters / 4046.8564224
-      label = 'acres'
-      break
-    case 'hectares':
-      value = squareMeters / 10000
-      label = 'hectares'
-      break
-    case 'sqm':
-      value = squareMeters
-      label = 'sq m'
-      break
-    default:
-      value = squareMeters
-      label = 'sq m'
+  const value = convertArea(squareMeters, 'sqm', unit)
+  const labelMap: Record<AreaUnit, string> = {
+    acres: 'acres',
+    hectares: 'hectares',
+    sqft: 'sq ft',
+    sqm: 'sq m',
   }
 
-  return `${value.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} ${label}`
+  return `${value.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} ${labelMap[unit]}`
 }
 
 /**
@@ -126,31 +153,17 @@ export function formatArea(
  */
 export function formatDistance(
   meters: number,
-  unit: 'feet' | 'meters' | 'miles' | 'km'
+  unit: DistanceUnit
 ): string {
-  let value: number
-  let label: string
-
-  switch (unit) {
-    case 'feet':
-      value = meters * 3.28084
-      label = 'ft'
-      break
-    case 'miles':
-      value = meters / 1609.344
-      label = 'mi'
-      break
-    case 'km':
-      value = meters / 1000
-      label = 'km'
-      break
-    case 'meters':
-    default:
-      value = meters
-      label = 'm'
+  const value = convertDistance(meters, 'meters', unit)
+  const labelMap: Record<DistanceUnit, string> = {
+    feet: 'ft',
+    meters: 'm',
+    miles: 'mi',
+    km: 'km',
   }
 
-  return `${value.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} ${label}`
+  return `${value.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} ${labelMap[unit]}`
 }
 
 /**
