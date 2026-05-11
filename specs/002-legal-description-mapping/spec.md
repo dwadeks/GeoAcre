@@ -44,9 +44,10 @@ As a user, I can switch between Draw Boundary, Legal Description, and Measure Di
 
 **Acceptance Scenarios**:
 
-1. **Given** a user opens the app, **When** they choose a mode, **Then** the sidebar displays only controls and instructional text for that mode.
-2. **Given** a user has in-progress work in one mode, **When** they attempt to switch modes, **Then** the system warns about potential data loss and asks for confirmation.
-3. **Given** a user confirms mode switch, **When** the app transitions to the new mode, **Then** prior in-progress state is handled according to the mode-switch policy and the new mode is fully active.
+1. **Given** a user opens the app, **When** they view the mode selector, **Then** it presents modes in this order: Draw Boundary, Legal Description, Measure Distance.
+2. **Given** a user chooses one mode, **When** the mode becomes active, **Then** the sidebar displays only controls and instructional text for that mode.
+3. **Given** a user has in-progress work in one mode, **When** they attempt to switch modes, **Then** the system warns about potential data loss and asks for confirmation.
+4. **Given** a user confirms mode switch, **When** the app transitions to the new mode, **Then** prior in-progress state is handled according to the mode-switch policy and the new mode is fully active.
 
 ---
 
@@ -60,9 +61,9 @@ As a user, I can export JSON in a structure specific to the active mode so downs
 
 **Acceptance Scenarios**:
 
-1. **Given** the user is in tract-drawing mode with completed shape data, **When** they export, **Then** JSON matches the drawing-mode schema.
-2. **Given** the user is in distance-measurement mode with line data, **When** they export, **Then** JSON matches the measurement-mode schema.
-3. **Given** the user is in legal-description mode with interpreted tract output, **When** they export, **Then** JSON matches the legal-description-mode schema.
+1. **Given** the user is in Draw Boundary mode with completed shape data, **When** they export, **Then** JSON matches the draw-boundary schema.
+2. **Given** the user is in Legal Description mode with interpreted tract output, **When** they export, **Then** JSON matches the legal-description schema.
+3. **Given** the user is in Measure Distance mode with line data, **When** they export, **Then** JSON matches the measure-distance schema.
 
 ### Edge Cases
 
