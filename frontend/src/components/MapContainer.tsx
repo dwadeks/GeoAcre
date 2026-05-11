@@ -43,6 +43,28 @@ const MapContainer: FC<MapContainerProps> = ({
   const markersRef = useRef<L.Marker[]>([])
   const dragJustEndedRef = useRef(false)
   const dragSourceRef = useRef<'inprogress' | 'primary' | null>(null)
+  const mapDragWasEnabledRef = useRef(false)
+
+  const disableMapDraggingForVertexDrag = () => {
+    const map = mapInstanceRef.current?.map
+    if (!map) return
+
+    mapDragWasEnabledRef.current = map.dragging.enabled()
+    if (mapDragWasEnabledRef.current) {
+      map.dragging.disable()
+    }
+  }
+
+  const restoreMapDraggingAfterVertexDrag = () => {
+    const map = mapInstanceRef.current?.map
+    if (!map) return
+
+    if (mapDragWasEnabledRef.current) {
+      map.dragging.enable()
+    }
+    mapDragWasEnabledRef.current = false
+  }
+
   useEffect(() => {
     onPolygonChangeRef.current = onPolygonChange
   }, [onPolygonChange])
@@ -135,6 +157,7 @@ const MapContainer: FC<MapContainerProps> = ({
       }
 
       dragSourceRef.current = null
+      restoreMapDraggingAfterVertexDrag()
 
       // Mark that drag just ended to prevent click from placing vertex
       dragJustEndedRef.current = true
@@ -151,6 +174,9 @@ const MapContainer: FC<MapContainerProps> = ({
         mapInstanceRef.current.map.off('mousemove', handleMouseMove)
         mapInstanceRef.current.map.off('mouseup', handleMouseUp)
       }
+
+      // Safety net in case the effect is torn down while dragging.
+      restoreMapDraggingAfterVertexDrag()
     }
   }, [dragState, mode, primaryPolygon])
 
@@ -180,6 +206,7 @@ const MapContainer: FC<MapContainerProps> = ({
           marker.on('mousedown', (e: any) => {
             L.DomEvent.stop(e)
             dragSourceRef.current = 'primary'
+            disableMapDraggingForVertexDrag()
             setDragState(dragService.startDrag(idx, primaryPolygon.vertices))
           })
           markersRef.current.push(marker)
@@ -213,6 +240,7 @@ const MapContainer: FC<MapContainerProps> = ({
         marker.on('mousedown', (e: any) => {
           L.DomEvent.stop(e)
           dragSourceRef.current = 'inprogress'
+          disableMapDraggingForVertexDrag()
           setDragState(dragService.startDrag(idx, vertices))
         })
         markersRef.current.push(marker)
