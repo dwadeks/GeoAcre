@@ -9,20 +9,26 @@ vi.mock('../../services/geocodingService', () => ({
 
 import * as geocodingService from '../../services/geocodingService'
 
+/** Helper: open the location search modal */
+function openModal() {
+  fireEvent.click(screen.getByRole('button', { name: /go to location/i }))
+}
+
 describe('LocationSearch', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it('accepts input text and submits search query', async () => {
+  it('accepts input text and submits address search query', async () => {
     vi.mocked(geocodingService.searchAddress).mockResolvedValue([])
     const onLocationSelect = vi.fn()
 
     render(<LocationSearch onLocationSelect={onLocationSelect} />)
+    openModal()
 
-    const input = screen.getByLabelText(/location query/i)
+    const input = screen.getByLabelText(/^address$/i)
     fireEvent.change(input, { target: { value: 'Springfield, IL' } })
-    fireEvent.click(screen.getByRole('button', { name: /search/i }))
+    fireEvent.click(screen.getByRole('button', { name: /search address/i }))
 
     await waitFor(() => {
       expect(geocodingService.searchAddress).toHaveBeenCalledWith('Springfield, IL', 5)
@@ -42,11 +48,12 @@ describe('LocationSearch', () => {
 
     const onLocationSelect = vi.fn()
     render(<LocationSearch onLocationSelect={onLocationSelect} />)
+    openModal()
 
-    fireEvent.change(screen.getByLabelText(/location query/i), {
+    fireEvent.change(screen.getByLabelText(/^address$/i), {
       target: { value: '123 Main St, Springfield, IL' },
     })
-    fireEvent.click(screen.getByRole('button', { name: /search/i }))
+    fireEvent.click(screen.getByRole('button', { name: /search address/i }))
 
     const resultButton = await screen.findByRole('button', {
       name: /123 main st, springfield, il/i,
@@ -56,14 +63,18 @@ describe('LocationSearch', () => {
     expect(onLocationSelect).toHaveBeenCalledWith(39.7817, -89.6501, '123 Main St, Springfield, IL')
   })
 
-  it('accepts lat/lon coordinates directly', async () => {
+  it('accepts separate lat and lon coordinates and navigates', async () => {
     const onLocationSelect = vi.fn()
     render(<LocationSearch onLocationSelect={onLocationSelect} />)
+    openModal()
 
-    fireEvent.change(screen.getByLabelText(/location query/i), {
-      target: { value: '39.7817, -89.6501' },
+    fireEvent.change(screen.getByLabelText(/^latitude$/i), {
+      target: { value: '39.7817' },
     })
-    fireEvent.click(screen.getByRole('button', { name: /search/i }))
+    fireEvent.change(screen.getByLabelText(/^longitude$/i), {
+      target: { value: '-89.6501' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /go to coordinates/i }))
 
     await waitFor(() => {
       expect(onLocationSelect).toHaveBeenCalledWith(39.7817, -89.6501, '39.7817, -89.6501')

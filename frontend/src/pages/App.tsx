@@ -2,7 +2,7 @@ import { FC, useCallback, useMemo, useReducer, useState } from 'react'
 import type { Polygon, SessionState, UnitPreference } from '../models/GeoTypes'
 import MapContainer from '../components/MapContainer'
 import PolygonDisplay from '../components/PolygonDisplay'
-import UnitSelector from '../components/UnitSelector'
+import SettingsPanel from '../components/SettingsPanel'
 import LocationSearch from '../components/LocationSearch'
 import ExcludePolygonEditor from '../components/ExcludePolygonEditor'
 import { calculatePolygonArea, calculateSideLengths, calculatePerimeter } from '../services/geometryService'
@@ -159,7 +159,13 @@ const App: FC = () => {
         {/* Control panel */}
         <div className="control-panel">
           <section>
-            <h3>Measurement</h3>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+              <h3 style={{ margin: 0, borderBottom: 'none', paddingBottom: 0 }}>Measurement</h3>
+              <SettingsPanel
+                unitPreference={state.unitPreference}
+                onUnitPreferenceChange={handleUnitPreferenceChange}
+              />
+            </div>
             <p className="text-muted">
               {state.primaryPolygon
                 ? `✓ Polygon with ${state.primaryPolygon.vertices.length} vertices (${state.excludePolygons.length} exclude polygons)`
@@ -172,13 +178,9 @@ const App: FC = () => {
             )}
           </section>
 
-          {/* Unit Selector */}
-          <UnitSelector
-            unitPreference={state.unitPreference}
-            onUnitPreferenceChange={handleUnitPreferenceChange}
-          />
-
-          <LocationSearch onLocationSelect={handleLocationSelect} />
+          <section style={{ marginBottom: '1.5rem' }}>
+            <LocationSearch onLocationSelect={handleLocationSelect} />
+          </section>
 
           <ExcludePolygonEditor
             isExcludeMode={isExcludeMode}

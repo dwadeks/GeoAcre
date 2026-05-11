@@ -40,6 +40,7 @@ const MapContainer: FC<MapContainerProps> = ({
   const [mode, setMode] = useState<'draw' | 'view'>('draw')
   const [baseLayer, setBaseLayer] = useState<BaseLayerMode>('street')
   const [dragState, setDragState] = useState<DragState | null>(null)
+  const [isLayersOpen, setIsLayersOpen] = useState(false)
   const markersRef = useRef<L.Marker[]>([])
   const dragJustEndedRef = useRef(false)
   const dragSourceRef = useRef<'inprogress' | 'primary' | null>(null)
@@ -351,16 +352,6 @@ const MapContainer: FC<MapContainerProps> = ({
           Target: <strong>{drawTarget === 'exclude' ? 'Exclude Polygon' : 'Primary Polygon'}</strong>
         </p>
         <button
-          className="btn-secondary btn-sm"
-          onClick={() =>
-            setBaseLayer((current) =>
-              current === 'street' ? 'satellite' : 'street'
-            )
-          }
-        >
-          {baseLayer === 'street' ? '🛰 Satellite' : '🗺 Streets'}
-        </button>
-        <button
           className="btn-success btn-sm"
           onClick={handleCompleteShape}
           disabled={vertices.length < 3 || mode !== 'draw'}
@@ -376,6 +367,165 @@ const MapContainer: FC<MapContainerProps> = ({
         <p style={{ fontSize: '0.875rem', margin: 0, padding: '0.5rem 0', borderTop: '1px solid #eee' }}>
           Vertices: <strong>{vertices.length}</strong>
         </p>
+      </div>
+
+      {/* Layer selector — bottom-left */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '1.5rem',
+          left: '0.625rem',
+          zIndex: 1000,
+        }}
+      >
+        {/* Layers button (always visible) */}
+        <button
+          onClick={() => setIsLayersOpen((prev) => !prev)}
+          title="Select map layer"
+          style={{
+            width: '42px',
+            height: '36px',
+            padding: '0.4rem',
+            fontSize: '0.85rem',
+            fontWeight: 600,
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            background: 'white',
+            color: '#333',
+            boxShadow: '0 1px 5px rgba(0,0,0,0.4)',
+            transition: 'all 0.15s',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = '#f5f5f5')}
+          onMouseLeave={(e) => (e.currentTarget.style.background = 'white')}
+        >
+          �
+        </button>
+
+        {/* Expanded layers panel */}
+        {isLayersOpen && (
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '100%',
+              left: 0,
+              marginBottom: '0.5rem',
+              background: 'white',
+              borderRadius: '4px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
+              padding: '0.75rem',
+              minWidth: '160px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+            }}
+          >
+            {/* Street view option */}
+            <button
+              onClick={() => {
+                setBaseLayer('street')
+                setIsLayersOpen(false)
+              }}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.4rem',
+                padding: '0.5rem',
+                border: baseLayer === 'street' ? '2px solid #3498db' : '2px solid #ddd',
+                borderRadius: '4px',
+                background: baseLayer === 'street' ? '#e8f4f8' : 'white',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={(e) => {
+                if (baseLayer !== 'street') {
+                  e.currentTarget.style.borderColor = '#bbb'
+                  e.currentTarget.style.background = '#f9f9f9'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (baseLayer !== 'street') {
+                  e.currentTarget.style.borderColor = '#ddd'
+                  e.currentTarget.style.background = 'white'
+                }
+              }}
+            >
+              {/* Street preview */}
+              <div
+                style={{
+                  width: '100px',
+                  height: '60px',
+                  background: 'linear-gradient(135deg, #f0e68c 0%, #f5f5dc 50%, #daa520 100%)',
+                  borderRadius: '3px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '2rem',
+                  color: '#fff',
+                  textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+                }}
+              >
+                🗺️
+              </div>
+              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#333' }}>Streets</span>
+            </button>
+
+            {/* Satellite view option */}
+            <button
+              onClick={() => {
+                setBaseLayer('satellite')
+                setIsLayersOpen(false)
+              }}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.4rem',
+                padding: '0.5rem',
+                border: baseLayer === 'satellite' ? '2px solid #3498db' : '2px solid #ddd',
+                borderRadius: '4px',
+                background: baseLayer === 'satellite' ? '#e8f4f8' : 'white',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={(e) => {
+                if (baseLayer !== 'satellite') {
+                  e.currentTarget.style.borderColor = '#bbb'
+                  e.currentTarget.style.background = '#f9f9f9'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (baseLayer !== 'satellite') {
+                  e.currentTarget.style.borderColor = '#ddd'
+                  e.currentTarget.style.background = 'white'
+                }
+              }}
+            >
+              {/* Satellite preview */}
+              <div
+                style={{
+                  width: '100px',
+                  height: '60px',
+                  background: 'radial-gradient(circle at 20% 30%, #4fb3d9 0%, #2c5aa0 40%, #1a3a5c 100%)',
+                  borderRadius: '3px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '2rem',
+                  color: '#fff',
+                  textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+                }}
+              >
+                🛰️
+              </div>
+              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#333' }}>Satellite</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

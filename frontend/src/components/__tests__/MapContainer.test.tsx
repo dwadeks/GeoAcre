@@ -91,13 +91,10 @@ describe('MapContainer', () => {
     expect(screen.getByTestId('map')).toBeInTheDocument()
   })
 
-  it('shows a satellite toggle and switches label when clicked', () => {
+  it('shows a layers button with satellite and street view options', () => {
     render(<MapContainer onPolygonChange={vi.fn()} />)
 
-    const toggle = screen.getByRole('button', { name: /satellite/i })
-    fireEvent.click(toggle)
-
-    expect(screen.getByRole('button', { name: /streets/i })).toBeInTheDocument()
+    expect(screen.getByTitle('Select map layer')).toBeInTheDocument()
   })
 
   it('disables map dragging during vertex drag and restores it on mouse up', async () => {
