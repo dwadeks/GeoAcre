@@ -315,6 +315,16 @@ FakesAssemblies/
 .ntvs_analysis.dat
 node_modules/
 
+# Frontend build artifacts and environment files
+frontend/dist/
+frontend/build/
+.env*
+
+# OS/editor temporary files
+.DS_Store
+Thumbs.db
+*.swp
+
 # Visual Studio 6 build log
 *.plg
 
@@ -397,6 +407,31 @@ MSBuild_Logs/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+# Frontend build outputs
+frontend/dist/
+frontend/build/
+frontend/coverage/
+
+# IDE and Editor
+.vscode/
+.idea/
+*.code-workspace
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Package lock files (using pnpm)
+pnpm-lock.yaml
+yarn.lock
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*~
 
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
