@@ -1,12 +1,14 @@
 import { FC, useCallback, useMemo, useReducer, useState } from 'react'
-import type { Polygon, SessionState, UnitPreference } from '../models/GeoTypes'
+import type { GeoPoint, Polygon, SessionState, UnitPreference, Measurement } from '../models/GeoTypes'
 import MapContainer from '../components/MapContainer'
 import PolygonDisplay from '../components/PolygonDisplay'
 import SettingsPanel from '../components/SettingsPanel'
 import LocationSearch from '../components/LocationSearch'
 import ExcludePolygonEditor from '../components/ExcludePolygonEditor'
+import MeasurementTool from '../components/MeasurementTool'
 import { calculatePolygonArea, calculateSideLengths, calculatePerimeter } from '../services/geometryService'
 import { calculateNetArea } from '../services/polygonService'
+import { calculatePolylineDistance, calculateSegmentDistances } from '../services/measurementService'
 import '../styles/globals.css'
 
 /**
@@ -30,6 +32,7 @@ type SessionAction =
   | { type: 'CLEAR_EXCLUDE_POLYGONS' }
   | { type: 'UPDATE_UNIT_PREFERENCE'; payload: UnitPreference }
   | { type: 'CLEAR_ALL' }
+  | { type: 'SET_MEASUREMENT'; payload: Measurement | undefined }
 
 function sessionReducer(state: SessionState, action: SessionAction): SessionState {
   switch (action.type) {
@@ -60,6 +63,11 @@ function sessionReducer(state: SessionState, action: SessionAction): SessionStat
       }
     case 'CLEAR_ALL':
       return initialState
+    case 'SET_MEASUREMENT':
+      return {
+        ...state,
+        measurement: action.payload,
+      }
     default:
       return state
   }
@@ -68,6 +76,8 @@ function sessionReducer(state: SessionState, action: SessionAction): SessionStat
 const App: FC = () => {
   const [state, dispatch] = useReducer(sessionReducer, initialState)
   const [isExcludeMode, setIsExcludeMode] = useState(false)
+  const [isMeasurementMode, setIsMeasurementMode] = useState(false)
+  const [measurementPoints, setMeasurementPoints] = useState<GeoPoint[]>([])
   const [targetLocation, setTargetLocation] = useReducer(
     (_: { latitude: number; longitude: number } | null, next: { latitude: number; longitude: number } | null) => next,
     null
@@ -132,6 +142,49 @@ const App: FC = () => {
     setTargetLocation({ latitude, longitude })
   }, [])
 
+  const handleToggleMeasurementMode = useCallback(() => {
+    const hasInProgressWork = Boolean(state.primaryPolygon) || measurementPoints.length > 0
+
+    if (hasInProgressWork) {
+      const shouldSwitch = window.confirm(
+        'You have an existing shape. Switching modes may discard in-progress work. Continue?'
+      )
+      if (!shouldSwitch) {
+        return
+      }
+    }
+
+    setIsMeasurementMode((prev) => {
+      const next = !prev
+      if (!next) {
+        setMeasurementPoints([])
+        dispatch({ type: 'SET_MEASUREMENT', payload: undefined })
+      }
+      return next
+    })
+  }, [state.primaryPolygon, measurementPoints.length])
+
+  const handleMeasurementPointsChange = useCallback((vertices: GeoPoint[]) => {
+    setMeasurementPoints(vertices)
+    
+    if (vertices.length >= 2) {
+      const totalDistance = calculatePolylineDistance(vertices)
+      const segmentDistances = calculateSegmentDistances(vertices)
+      
+      const measurement: Measurement = {
+        id: `measurement-${Date.now()}`,
+        vertices,
+        isValid: vertices.length >= 2,
+        totalDistanceMeters: totalDistance,
+        perSegmentDistancesMeters: segmentDistances,
+      }
+      
+      dispatch({ type: 'SET_MEASUREMENT', payload: measurement })
+    } else {
+      dispatch({ type: 'SET_MEASUREMENT', payload: undefined })
+    }
+  }, [])
+
   const netAreaSquareMeters = useMemo(() => {
     if (!state.primaryPolygon) return 0
     return calculateNetArea(
@@ -150,8 +203,11 @@ const App: FC = () => {
         <MapContainer
           onPolygonChange={handlePolygonChange}
           onExcludePolygonComplete={handleExcludePolygonComplete}
+          onMeasurementPointsChange={handleMeasurementPointsChange}
           primaryPolygon={state.primaryPolygon}
           excludePolygons={state.excludePolygons}
+          measurementPoints={measurementPoints}
+          interactionMode={isMeasurementMode ? 'measurement' : 'polygon'}
           drawTarget={isExcludeMode ? 'exclude' : 'primary'}
           panToLocation={targetLocation}
         />
@@ -191,6 +247,19 @@ const App: FC = () => {
             netAreaSquareMeters={netAreaSquareMeters}
             unitPreference={state.unitPreference}
           />
+
+          {/* Distance Measurement Tool */}
+          <section style={{ marginBottom: '1.5rem' }}>
+            <MeasurementTool
+              isActive={isMeasurementMode}
+              onToggle={handleToggleMeasurementMode}
+              onMeasurementChange={handleMeasurementPointsChange}
+              measurementPoints={measurementPoints}
+              totalDistance={state.measurement?.totalDistanceMeters ?? 0}
+              segmentDistances={state.measurement?.perSegmentDistancesMeters ?? []}
+              distanceUnit={state.unitPreference.distanceUnit}
+            />
+          </section>
 
           {/* Polygon Display */}
           <section>

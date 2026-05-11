@@ -51,6 +51,7 @@ export interface UnitPreference {
 export interface SessionState {
   primaryPolygon?: Polygon
   excludePolygons: Polygon[]
+  measurement?: Measurement
   unitPreference: UnitPreference
 }
 

@@ -101,5 +101,55 @@ namespace SteelTree.GeoAcre.Web.Api.Controllers
                 return StatusCode(500, new { error = "Internal server error" });
             }
         }
+
+        /// <summary>
+        /// Calculate polyline distance for distance measurement
+        /// </summary>
+        /// <param name="request">Vertices for the measurement polyline</param>
+        /// <returns>Total distance and per-segment distances in meters</returns>
+        [HttpPost("calculate-distance")]
+        public ActionResult<CalculateDistanceResponse> CalculateDistance(
+            [FromBody, Required] CalculateDistanceRequest request
+        )
+        {
+            try
+            {
+                // Validate input
+                if (request?.Vertices == null || request.Vertices.Length < 2)
+                {
+                    return BadRequest(new { error = "Measurement polyline must have at least 2 vertices" });
+                }
+
+                // Convert DTOs to domain models
+                var vertices = request.Vertices
+                    .Select(v => new GeoPoint(v.Latitude, v.Longitude))
+                    .ToList();
+
+                // Create measurement
+                var measurement = new Measurement(vertices);
+
+                return Ok(new CalculateDistanceResponse
+                {
+                    TotalDistanceMeters = measurement.TotalDistanceMeters,
+                    PerSegmentDistancesMeters = measurement.PerSegmentDistancesMeters.ToArray()
+                });
+            }
+            catch (InvalidCoordinateException ex)
+            {
+                _logger.LogWarning(ex, "Invalid coordinates provided");
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogWarning(ex, "Invalid argument");
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error calculating distance");
+                return StatusCode(500, new { error = "Internal server error" });
+            }
+        }
     }
 }
+

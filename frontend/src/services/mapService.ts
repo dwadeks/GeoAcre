@@ -24,7 +24,7 @@ L.Marker.prototype.setIcon(DefaultIcon)
 
 export interface MapInstance {
   map: L.Map
-  polygons: L.Polygon[]
+  polygons: L.Layer[]
   markers: L.Marker[]
   baseLayers: Record<BaseLayerMode, L.TileLayer>
   activeBaseLayer: BaseLayerMode
@@ -123,6 +123,28 @@ export function drawPolygon(
 }
 
 /**
+ * Draw a polyline on the map (used for distance measurement)
+ */
+export function drawPolyline(
+  mapInstance: MapInstance,
+  vertices: GeoPoint[],
+  options?: L.PolylineOptions
+): L.Polyline {
+  const latlngs = vertices.map((v) => [v.latitude, v.longitude] as [number, number])
+
+  const polyline = L.polyline(latlngs, {
+    color: options?.color || '#dc2626',
+    weight: options?.weight || 3,
+    opacity: options?.opacity || 0.9,
+    dashArray: options?.dashArray || '6, 4',
+    ...options,
+  }).addTo(mapInstance.map)
+
+  mapInstance.polygons.push(polyline)
+  return polyline
+}
+
+/**
  * Add popup to a marker
  */
 export function addPopup(marker: L.Marker, content: string): void {
@@ -191,6 +213,7 @@ export default {
   setBaseLayer,
   addMarker,
   drawPolygon,
+  drawPolyline,
   addPopup,
   panTo,
   clearPolygons,

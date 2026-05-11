@@ -16,8 +16,11 @@ import 'leaflet/dist/leaflet.css'
 interface MapContainerProps {
   onPolygonChange?: (polygon: Polygon | undefined) => void
   onExcludePolygonComplete?: (polygon: Polygon) => void
+  onMeasurementPointsChange?: (points: GeoPoint[]) => void
   primaryPolygon?: Polygon
   excludePolygons?: Polygon[]
+  measurementPoints?: GeoPoint[]
+  interactionMode?: 'polygon' | 'measurement'
   drawTarget?: 'primary' | 'exclude'
   panToLocation?: GeoPoint | null
 }
@@ -25,8 +28,11 @@ interface MapContainerProps {
 const MapContainer: FC<MapContainerProps> = ({
   onPolygonChange,
   onExcludePolygonComplete,
+  onMeasurementPointsChange,
   primaryPolygon,
   excludePolygons = [],
+  measurementPoints = [],
+  interactionMode = 'polygon',
   drawTarget = 'primary',
   panToLocation,
 }) => {
@@ -34,6 +40,9 @@ const MapContainer: FC<MapContainerProps> = ({
   const mapInstanceRef = useRef<MapInstance | null>(null)
   const onPolygonChangeRef = useRef(onPolygonChange)
   const onExcludePolygonCompleteRef = useRef(onExcludePolygonComplete)
+  const onMeasurementPointsChangeRef = useRef(onMeasurementPointsChange)
+  const measurementPointsRef = useRef<GeoPoint[]>(measurementPoints)
+  const interactionModeRef = useRef<'polygon' | 'measurement'>(interactionMode)
   const drawTargetRef = useRef<'primary' | 'exclude'>(drawTarget)
   const modeRef = useRef<'draw' | 'view'>('draw')
   const [vertices, setVertices] = useState<GeoPoint[]>([])
@@ -75,6 +84,18 @@ const MapContainer: FC<MapContainerProps> = ({
   }, [onExcludePolygonComplete])
 
   useEffect(() => {
+    onMeasurementPointsChangeRef.current = onMeasurementPointsChange
+  }, [onMeasurementPointsChange])
+
+  useEffect(() => {
+    measurementPointsRef.current = measurementPoints
+  }, [measurementPoints])
+
+  useEffect(() => {
+    interactionModeRef.current = interactionMode
+  }, [interactionMode])
+
+  useEffect(() => {
     drawTargetRef.current = drawTarget
   }, [drawTarget])
 
@@ -96,6 +117,12 @@ const MapContainer: FC<MapContainerProps> = ({
 
       const { lat, lng } = e.latlng
       const newVertex: GeoPoint = { latitude: lat, longitude: lng }
+
+      if (interactionModeRef.current === 'measurement') {
+        const nextPoints = [...measurementPointsRef.current, newVertex]
+        onMeasurementPointsChangeRef.current?.(nextPoints)
+        return
+      }
 
       setVertices((prev) => [...prev, newVertex])
     })
@@ -189,6 +216,30 @@ const MapContainer: FC<MapContainerProps> = ({
     mapService.clearMarkers(mapInstanceRef.current)
     markersRef.current = []
 
+    if (interactionMode === 'measurement') {
+      if (measurementPoints.length > 0) {
+        measurementPoints.forEach((v, idx) => {
+          mapService.addMarker(
+            mapInstanceRef.current!,
+            v.latitude,
+            v.longitude,
+            `Point ${idx + 1}`
+          )
+        })
+      }
+
+      if (measurementPoints.length >= 2) {
+        mapService.drawPolyline(mapInstanceRef.current, measurementPoints, {
+          color: '#dc2626',
+          weight: 3,
+          opacity: 0.9,
+          dashArray: '6, 4',
+        })
+      }
+
+      return
+    }
+
     if (primaryPolygon && primaryPolygon.vertices.length >= 3) {
       mapService.drawPolygon(mapInstanceRef.current, primaryPolygon.vertices, {
         color: '#3388ff',
@@ -274,9 +325,14 @@ const MapContainer: FC<MapContainerProps> = ({
 
       onPolygonChangeRef.current?.(newPolygon)
     }
-  }, [vertices, mode, primaryPolygon, excludePolygons])
+  }, [vertices, mode, primaryPolygon, excludePolygons, interactionMode, measurementPoints])
 
   const handleClear = () => {
+    if (interactionMode === 'measurement') {
+      onMeasurementPointsChangeRef.current?.([])
+      return
+    }
+
     setVertices([])
     if (drawTargetRef.current === 'primary') {
       onPolygonChangeRef.current?.(undefined)
@@ -284,6 +340,12 @@ const MapContainer: FC<MapContainerProps> = ({
   }
 
   const handleUndo = () => {
+    if (interactionMode === 'measurement') {
+      const nextPoints = measurementPoints.slice(0, -1)
+      onMeasurementPointsChangeRef.current?.(nextPoints)
+      return
+    }
+
     if (vertices.length > 0) {
       setVertices((prev) => prev.slice(0, -1))
     }
@@ -349,12 +411,12 @@ const MapContainer: FC<MapContainerProps> = ({
           {mode === 'draw' ? '✓ Drawing' : '👁️ View'}
         </button>
         <p style={{ fontSize: '0.8rem', margin: 0 }}>
-          Target: <strong>{drawTarget === 'exclude' ? 'Exclude Polygon' : 'Primary Polygon'}</strong>
+          Target: <strong>{interactionMode === 'measurement' ? 'Distance Measurement' : (drawTarget === 'exclude' ? 'Exclude Polygon' : 'Primary Polygon')}</strong>
         </p>
         <button
           className="btn-success btn-sm"
           onClick={handleCompleteShape}
-          disabled={vertices.length < 3 || mode !== 'draw'}
+          disabled={interactionMode === 'measurement' || vertices.length < 3 || mode !== 'draw'}
         >
           ✓ Complete Shape
         </button>
@@ -365,7 +427,7 @@ const MapContainer: FC<MapContainerProps> = ({
           🗑️ Clear
         </button>
         <p style={{ fontSize: '0.875rem', margin: 0, padding: '0.5rem 0', borderTop: '1px solid #eee' }}>
-          Vertices: <strong>{vertices.length}</strong>
+          {interactionMode === 'measurement' ? 'Points' : 'Vertices'}: <strong>{interactionMode === 'measurement' ? measurementPoints.length : vertices.length}</strong>
         </p>
       </div>
 

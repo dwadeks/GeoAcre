@@ -315,6 +315,16 @@ FakesAssemblies/
 .ntvs_analysis.dat
 node_modules/
 
+# Frontend build artifacts and environment files
+frontend/dist/
+frontend/build/
+.env*
+
+# OS/editor temporary files
+.DS_Store
+Thumbs.db
+*.swp
+
 # Visual Studio 6 build log
 *.plg
 

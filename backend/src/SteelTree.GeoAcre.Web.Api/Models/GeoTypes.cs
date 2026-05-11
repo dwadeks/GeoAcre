@@ -157,3 +157,33 @@ public class LatLngDto
     /// </summary>
     public required double Longitude { get; set; }
 }
+
+/// <summary>
+/// Request DTO for polyline distance calculation.
+/// </summary>
+public class CalculateDistanceRequest
+{
+    /// <summary>
+    /// Vertices of the polyline in order (latitude, longitude).
+    /// Must have at least 2 vertices.
+    /// </summary>
+    public required LatLngDto[] Vertices { get; set; }
+}
+
+/// <summary>
+/// Response DTO for polyline distance calculation.
+/// </summary>
+public class CalculateDistanceResponse
+{
+    /// <summary>
+    /// Total distance along the polyline in meters.
+    /// </summary>
+    public required double TotalDistanceMeters { get; set; }
+
+    /// <summary>
+    /// Distance of each segment in the polyline in meters.
+    /// Array has length = vertices.length - 1
+    /// </summary>
+    public required double[] PerSegmentDistancesMeters { get; set; }
+}
+

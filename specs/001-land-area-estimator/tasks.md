@@ -314,11 +314,11 @@
 
 ### Tests for User Story 5
 
-- [ ] T081 [P] Create `frontend/src/services/__tests__/measurementService.test.ts` with tests:
+- [X] T081 [P] Create `frontend/src/services/__tests__/measurementService.test.ts` with tests:
   - `calculatePolylineDistance(vertices)` returns total distance in meters
   - `calculateSegmentDistances(vertices)` returns array of per-segment distances
   - Symmetry: Distance from A→B→A matches 2×Distance(A, B)
-- [ ] T082 Create `frontend/src/components/__tests__/MeasurementTool.test.tsx` with React Testing Library tests:
+- [X] T082 Create `frontend/src/components/__tests__/MeasurementTool.test.tsx` with React Testing Library tests:
   - Mode toggle button switches to Distance Measurement Mode
   - Clicking map places measurement points
   - Measurement Polyline renders with segment labels
@@ -327,22 +327,22 @@
 
 ### Implementation for User Story 5
 
-- [ ] T083 Create `frontend/src/services/measurementService.ts` with functions:
+- [X] T083 Create `frontend/src/services/measurementService.ts` with functions:
   - `calculatePolylineDistance(vertices: GeoPoint[]): number`
   - `calculateSegmentDistances(vertices: GeoPoint[]): number[]`
-- [ ] T084 Create `frontend/src/components/MeasurementTool.tsx`:
+- [X] T084 Create `frontend/src/components/MeasurementTool.tsx`:
   - Toggle button to activate/deactivate Distance Measurement Mode
   - When active, clicking map adds measurement point
   - Renders Measurement Polyline with segment labels and total distance
   - Clear button to reset
-- [ ] T085 Update `frontend/src/pages/App.tsx` to:
+- [X] T085 Update `frontend/src/pages/App.tsx` to:
   - Track current mode (polygon vs. Distance Measurement)
   - Display confirmation prompt when switching modes mid-draw
   - Render appropriate editor based on mode
-- [ ] T086 Update `backend/src/SteelTree.GeoAcre.Web.Api/Controllers/GeometryController.cs` to add optional POST `/geometry/calculate-distance` endpoint:
+- [X] T086 Update `backend/src/SteelTree.GeoAcre.Web.Api/Controllers/GeometryController.cs` to add optional POST `/geometry/calculate-distance` endpoint:
   - Body: { vertices: [lat, lon][] }
   - Response: { totalDistanceMeters, perSegmentDistancesMeters }
-- [ ] T087 [P] Create `backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/DistanceControllerTests.cs` with tests:
+- [X] T087 [P] Create `backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/DistanceControllerTests.cs` with tests:
   - POST /geometry/calculate-distance returns correct distance
   - Invalid input (< 2 vertices) returns 400 Bad Request
 

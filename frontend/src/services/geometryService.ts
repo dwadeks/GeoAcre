@@ -7,6 +7,11 @@ import * as turf from '@turf/turf'
 import type { GeoPoint } from '../models/GeoTypes'
 
 /**
+ * Earth's radius in meters (WGS84 mean radius)
+ */
+export const EARTH_RADIUS_METERS = 6371008.8
+
+/**
  * Convert GeoPoint array to Turf.js coordinate array
  */
 function toTurfCoordinates(vertices: GeoPoint[]): Array<[number, number]> {
