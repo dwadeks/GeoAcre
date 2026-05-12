@@ -12,6 +12,17 @@
 - Run tests: dotnet test
 - Run tests with coverage: dotnet test --collect:"XPlat Code Coverage"
 
+## OCR Integration Tests
+- Copy `tests/integration/.env.ocr.local.example` to `tests/integration/.env.ocr.local`.
+- Fill in these required values:
+	- `AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT`
+	- `AZURE_DOCUMENT_INTELLIGENCE_API_KEY`
+- Run the helper script from the backend folder:
+	- `pwsh ./tests/integration/Run-OcrIntegrationTests.ps1`
+- Optional flags:
+	- `pwsh ./tests/integration/Run-OcrIntegrationTests.ps1 -NoBuild`
+	- `pwsh ./tests/integration/Run-OcrIntegrationTests.ps1 -EnvFile ./tests/integration/.env.ocr.local`
+
 ## Notes
 - Target framework: net10.0.
 - Test framework: MSTest.
