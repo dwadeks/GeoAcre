@@ -1,4 +1,4 @@
-using SteelTree.GeoAcre.Ocr;
+using SteelTree.Ocr;
 
 namespace SteelTree.GeoAcre.Geocoding;
 

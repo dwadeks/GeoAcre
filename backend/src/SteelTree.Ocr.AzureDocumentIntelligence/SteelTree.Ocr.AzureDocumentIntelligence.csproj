@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../SteelTree.GeoAcre.Geocoding/SteelTree.GeoAcre.Geocoding.csproj" />
+    <ProjectReference Include="../SteelTree.Ocr/SteelTree.Ocr.csproj" />
   </ItemGroup>
 
   <ItemGroup>

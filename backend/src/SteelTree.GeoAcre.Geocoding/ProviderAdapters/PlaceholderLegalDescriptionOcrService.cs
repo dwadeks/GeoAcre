@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Options;
 using SteelTree.GeoAcre.Geocoding;
-using SteelTree.GeoAcre.Ocr;
+using SteelTree.Ocr;
 
-namespace SteelTree.GeoAcre.Ocr.ProviderAdapters;
+namespace SteelTree.GeoAcre.Geocoding.ProviderAdapters;
 
 public sealed class PlaceholderLegalDescriptionOcrService : ILegalDescriptionOcrService
 {

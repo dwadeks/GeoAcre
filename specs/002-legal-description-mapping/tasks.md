@@ -41,16 +41,16 @@
 
 **Purpose**: Align implementation with the updated plan by extracting OCR abstractions/implementation into standalone projects.
 
-- [ ] T013 Create standalone OCR abstraction project backend/src/SteelTree.Ocr/SteelTree.Ocr.csproj
-- [ ] T014 [P] Move OCR contracts (`ILegalDescriptionOcrService`, `OcrExtractionResult`, `OcrProviderOptions`) from backend/src/SteelTree.GeoAcre.Geocoding/ to backend/src/SteelTree.Ocr/
-- [ ] T015 Create standalone Azure OCR implementation project backend/src/SteelTree.Ocr.AzureDocumentIntelligence/SteelTree.Ocr.AzureDocumentIntelligence.csproj
-- [ ] T016 [P] Move Azure OCR implementation and DI extensions from backend/src/SteelTree.GeoAcre.Ocr.AzureDocumentIntelligence/ to backend/src/SteelTree.Ocr.AzureDocumentIntelligence/
-- [ ] T017 Add new OCR projects to backend/GeoAcre.sln and remove backend/src/SteelTree.GeoAcre.Ocr.AzureDocumentIntelligence/SteelTree.GeoAcre.Ocr.AzureDocumentIntelligence.csproj
-- [ ] T018 [P] Update project references and namespaces in backend/src/SteelTree.GeoAcre/SteelTree.GeoAcre.csproj and backend/src/SteelTree.GeoAcre.Web.Api/SteelTree.GeoAcre.Web.Api.csproj
-- [ ] T019 [P] Update OCR contract imports in tests under backend/tests/SteelTree.GeoAcre.Web.Api.Tests/ and backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/
-- [ ] T020 Create OCR integration test project backend/tests/integration/SteelTree.Ocr.AzureDocumentIntelligence.Tests/SteelTree.Ocr.AzureDocumentIntelligence.Tests.csproj
+- [X] T013 Create standalone OCR abstraction project backend/src/SteelTree.Ocr/SteelTree.Ocr.csproj
+- [X] T014 [P] Move OCR contracts (`ILegalDescriptionOcrService`, `OcrExtractionResult`, `OcrProviderOptions`) from backend/src/SteelTree.GeoAcre.Geocoding/ to backend/src/SteelTree.Ocr/
+- [X] T015 Create standalone Azure OCR implementation project backend/src/SteelTree.Ocr.AzureDocumentIntelligence/SteelTree.Ocr.AzureDocumentIntelligence.csproj
+- [X] T016 [P] Move Azure OCR implementation and DI extensions from backend/src/SteelTree.GeoAcre.Ocr.AzureDocumentIntelligence/ to backend/src/SteelTree.Ocr.AzureDocumentIntelligence/
+- [X] T017 Add new OCR projects to backend/GeoAcre.sln and remove backend/src/SteelTree.GeoAcre.Ocr.AzureDocumentIntelligence/SteelTree.GeoAcre.Ocr.AzureDocumentIntelligence.csproj
+- [X] T018 [P] Update project references and namespaces in backend/src/SteelTree.GeoAcre/SteelTree.GeoAcre.csproj and backend/src/SteelTree.GeoAcre.Web.Api/SteelTree.GeoAcre.Web.Api.csproj
+- [X] T019 [P] Update OCR contract imports in tests under backend/tests/SteelTree.GeoAcre.Web.Api.Tests/ and backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/
+- [X] T020 Create OCR integration test project backend/tests/integration/SteelTree.Ocr.AzureDocumentIntelligence.Tests/SteelTree.Ocr.AzureDocumentIntelligence.Tests.csproj
 - [X] T021 [P] Add OCR integration sample files in backend/tests/integration/SteelTree.Ocr.AzureDocumentIntelligence.Tests/TestData/
-- [ ] T022 Add OCR integration tests in backend/tests/integration/SteelTree.Ocr.AzureDocumentIntelligence.Tests/AzureDocumentIntelligenceOcrServiceTests.cs
+- [X] T022 Add OCR integration tests in backend/tests/integration/SteelTree.Ocr.AzureDocumentIntelligence.Tests/AzureDocumentIntelligenceOcrServiceTests.cs
 
 **Checkpoint**: OCR architecture matches updated plan and is packaging-ready.
 

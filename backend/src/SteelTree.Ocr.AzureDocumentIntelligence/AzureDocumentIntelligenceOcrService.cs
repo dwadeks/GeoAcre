@@ -1,12 +1,12 @@
-namespace SteelTree.GeoAcre.Ocr.AzureDocumentIntelligence;
+namespace SteelTree.Ocr.AzureDocumentIntelligence;
 
 public sealed class AzureDocumentIntelligenceOcrService : ILegalDescriptionOcrService
 {
-    private readonly LegalDescriptionProviderOptions _options;
+    private readonly OcrProviderOptions _options;
     private readonly ILogger<AzureDocumentIntelligenceOcrService> _logger;
 
     public AzureDocumentIntelligenceOcrService(
-        IOptions<LegalDescriptionProviderOptions> options,
+        IOptions<OcrProviderOptions> options,
         ILogger<AzureDocumentIntelligenceOcrService> logger)
     {
         _options = options.Value;
@@ -37,10 +37,7 @@ public sealed class AzureDocumentIntelligenceOcrService : ILegalDescriptionOcrSe
                     0);
             }
 
-            var endpoint = _options.Ocr.Endpoint;
-            var apiKey = _options.Ocr.ApiKey;
-
-            if (string.IsNullOrWhiteSpace(endpoint) || string.IsNullOrWhiteSpace(apiKey))
+            if (string.IsNullOrWhiteSpace(_options.Endpoint) || string.IsNullOrWhiteSpace(_options.ApiKey))
             {
                 _logger.LogError("Azure Document Intelligence endpoint or API key is not configured.");
                 return new OcrExtractionResult(
@@ -51,9 +48,9 @@ public sealed class AzureDocumentIntelligenceOcrService : ILegalDescriptionOcrSe
             }
 
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            cts.CancelAfter(TimeSpan.FromSeconds(_options.Ocr.TimeoutSeconds));
+            cts.CancelAfter(TimeSpan.FromSeconds(_options.TimeoutSeconds));
 
-            var client = new DocumentAnalysisClient(new Uri(endpoint), new AzureKeyCredential(apiKey));
+            var client = new DocumentAnalysisClient(new Uri(_options.Endpoint), new AzureKeyCredential(_options.ApiKey));
             using var imageStream = new MemoryStream(source.ImageBytes, writable: false);
 
             AnalyzeDocumentOperation operation = await client.AnalyzeDocumentAsync(

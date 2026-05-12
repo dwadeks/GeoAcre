@@ -1,5 +1,5 @@
 using SteelTree.GeoAcre.Geocoding;
-using SteelTree.GeoAcre.Ocr;
+using SteelTree.Ocr;
 
 namespace SteelTree.GeoAcre.Services;
 

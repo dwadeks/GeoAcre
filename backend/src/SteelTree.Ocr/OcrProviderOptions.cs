@@ -1,4 +1,4 @@
-namespace SteelTree.GeoAcre.Ocr;
+namespace SteelTree.Ocr;
 
 public sealed class OcrProviderOptions
 {

@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../SteelTree.GeoAcre.Geometry/SteelTree.GeoAcre.Geometry.csproj" />
+    <ProjectReference Include="../SteelTree.Ocr/SteelTree.Ocr.csproj" />
   </ItemGroup>
 
   <ItemGroup>

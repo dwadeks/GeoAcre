@@ -1,4 +1,4 @@
-namespace SteelTree.GeoAcre.Ocr.AzureDocumentIntelligence;
+namespace SteelTree.Ocr.AzureDocumentIntelligence;
 
 public static class AzureDocumentIntelligenceOcrServiceCollectionExtensions
 {
