@@ -15,7 +15,7 @@ import L from 'leaflet'
 import { v4 as uuidv4 } from 'uuid'
 import 'leaflet/dist/leaflet.css'
 
-interface MapContainerProps {
+type MapContainerProps = {
   onPolygonChange?: (polygon: Polygon | undefined) => void
   onExcludePolygonComplete?: (polygon: Polygon) => void
   onMeasurementPointsChange?: (points: GeoPoint[]) => void

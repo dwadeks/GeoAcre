@@ -1,9 +1,5 @@
 import React from 'react'
-
-interface ErrorBoundaryState {
-  hasError: boolean
-  errorMessage?: string
-}
+import type { ErrorBoundaryState } from './ErrorBoundaryState'
 
 class ErrorBoundary extends React.Component<React.PropsWithChildren, ErrorBoundaryState> {
   public constructor(props: React.PropsWithChildren) {

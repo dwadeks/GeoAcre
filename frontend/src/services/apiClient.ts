@@ -3,21 +3,9 @@
  * Provides typed HTTP methods for communicating with the backend API
  */
 
+import type { ApiResponse } from './ApiResponse'
+import type { RequestOptions } from './RequestOptions'
 import { API_BASE_URL } from './config'
-
-interface RequestOptions extends RequestInit {
-  headers?: Record<string, string>
-}
-
-interface ApiResponse<T> {
-  data?: T
-  error?: {
-    status: number
-    title?: string
-    message?: string
-    details?: string
-  }
-}
 
 function getFriendlyMessage(status: number, fallback?: string): string {
   switch (status) {
@@ -36,9 +24,6 @@ function getFriendlyMessage(status: number, fallback?: string): string {
   }
 }
 
-/**
- * Make a typed API request
- */
 async function apiRequest<T>(
   endpoint: string,
   options: RequestOptions = {}
@@ -83,16 +68,10 @@ async function apiRequest<T>(
   }
 }
 
-/**
- * GET request
- */
 export async function apiGet<T>(endpoint: string): Promise<ApiResponse<T>> {
   return apiRequest<T>(endpoint, { method: 'GET' })
 }
 
-/**
- * POST request
- */
 export async function apiPost<T>(
   endpoint: string,
   body?: unknown
@@ -103,9 +82,6 @@ export async function apiPost<T>(
   })
 }
 
-/**
- * PUT request
- */
 export async function apiPut<T>(
   endpoint: string,
   body?: unknown
@@ -116,9 +92,6 @@ export async function apiPut<T>(
   })
 }
 
-/**
- * DELETE request
- */
 export async function apiDelete<T>(endpoint: string): Promise<ApiResponse<T>> {
   return apiRequest<T>(endpoint, { method: 'DELETE' })
 }

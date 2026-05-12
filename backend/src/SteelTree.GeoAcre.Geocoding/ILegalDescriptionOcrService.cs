@@ -6,10 +6,3 @@ public interface ILegalDescriptionOcrService
         LegalDescriptionSource source,
         CancellationToken cancellationToken = default);
 }
-
-public interface ILegalDescriptionInterpreter
-{
-    Task<LegalInterpretationResult> InterpretAsync(
-        string normalizedLegalText,
-        CancellationToken cancellationToken = default);
-}

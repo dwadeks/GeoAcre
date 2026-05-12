@@ -3,7 +3,7 @@ import {
   calculatePolylineDistance,
   calculateSegmentDistances,
 } from '../measurementService';
-import { GeoPoint } from '../../models/GeoTypes';
+import type { GeoPoint } from '../../models/GeoTypes';
 
 describe('measurementService', () => {
   describe('calculatePolylineDistance', () => {

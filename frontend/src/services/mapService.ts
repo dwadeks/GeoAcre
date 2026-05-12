@@ -5,8 +5,11 @@
 
 import L from 'leaflet'
 import type { GeoPoint } from '../models/GeoTypes'
+import type { BaseLayerMode } from './BaseLayerMode'
+import type { MapInstance } from './MapInstance'
 
-export type BaseLayerMode = 'street' | 'satellite'
+export type { BaseLayerMode } from './BaseLayerMode'
+export type { MapInstance } from './MapInstance'
 
 // Default Leaflet marker icon fix (Vite issue)
 const DefaultIcon = L.icon({
@@ -21,14 +24,6 @@ const DefaultIcon = L.icon({
 })
 
 L.Marker.prototype.setIcon(DefaultIcon)
-
-export interface MapInstance {
-  map: L.Map
-  polygons: L.Layer[]
-  markers: L.Marker[]
-  baseLayers: Record<BaseLayerMode, L.TileLayer>
-  activeBaseLayer: BaseLayerMode
-}
 
 function createStreetLayer(): L.TileLayer {
   return L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -53,7 +48,7 @@ function createSatelliteLayer(): L.TileLayer {
  * Initialize map in the specified container
  */
 export function initMap(containerId: string): MapInstance {
-  const map = L.map(containerId).setView([39.8283, -98.5795], 4) // Center on USA
+  const map = L.map(containerId).setView([39.8283, -98.5795], 4)
 
   const baseLayers: Record<BaseLayerMode, L.TileLayer> = {
     street: createStreetLayer(),

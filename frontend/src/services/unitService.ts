@@ -1,5 +1,8 @@
-export type AreaUnit = 'acres' | 'hectares' | 'sqft' | 'sqm'
-export type DistanceUnit = 'feet' | 'meters' | 'miles' | 'km'
+import type { AreaUnit } from './AreaUnit'
+import type { DistanceUnit } from './DistanceUnit'
+
+export type { AreaUnit } from './AreaUnit'
+export type { DistanceUnit } from './DistanceUnit'
 
 const AREA_TO_SQM: Record<AreaUnit, number> = {
   acres: 4046.8564224,

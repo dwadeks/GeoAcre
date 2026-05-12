@@ -1,6 +1,6 @@
 import type { FC } from 'react'
 
-interface SelfIntersectionWarningProps {
+type SelfIntersectionWarningProps = {
   message?: string
 }
 

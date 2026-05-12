@@ -8,7 +8,7 @@ import type { GeoPoint } from '../models/GeoTypes'
 /**
  * Represents the state of an active vertex drag operation
  */
-export interface DragState {
+export type DragState = {
   /** Index of the vertex being dragged */
   vertexIndex: number
   /** Original position of the vertex before drag started */

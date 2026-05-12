@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GeoPoint, Measurement } from '../models/GeoTypes';
+import type { GeoPoint } from '../models/GeoTypes';
 import {
   calculatePolylineDistance,
   calculateSegmentDistances,
@@ -8,7 +8,7 @@ import {
 } from '../services/measurementService';
 import { formatDistance } from '../services/geometryService';
 
-interface MeasurementToolProps {
+type MeasurementToolProps = {
   isActive: boolean;
   onToggle: () => void;
   onMeasurementChange: (vertices: GeoPoint[]) => void;

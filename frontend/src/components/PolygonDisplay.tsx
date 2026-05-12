@@ -7,7 +7,7 @@ import type { Polygon, UnitPreference } from '../models/GeoTypes'
 import { formatArea, formatDistance } from '../services/geometryService'
 import SelfIntersectionWarning from './SelfIntersectionWarning'
 
-interface PolygonDisplayProps {
+type PolygonDisplayProps = {
   polygon?: Polygon
   unitPreference: UnitPreference
   excludedAreaSquareMeters?: number

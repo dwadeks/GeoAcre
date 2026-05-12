@@ -1,4 +1,4 @@
-import { GeoPoint } from '../models/GeoTypes';
+import type { GeoPoint } from '../models/GeoTypes';
 import { EARTH_RADIUS_METERS } from './geometryService';
 
 /**

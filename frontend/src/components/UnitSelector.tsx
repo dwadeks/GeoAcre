@@ -5,7 +5,7 @@
 import { FC } from 'react'
 import type { UnitPreference } from '../models/GeoTypes'
 
-interface UnitSelectorProps {
+type UnitSelectorProps = {
   unitPreference: UnitPreference
   onUnitPreferenceChange: (preference: UnitPreference) => void
 }

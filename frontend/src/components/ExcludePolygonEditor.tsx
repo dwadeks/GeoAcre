@@ -2,7 +2,7 @@ import { FC, useMemo } from 'react'
 import type { Polygon, UnitPreference } from '../models/GeoTypes'
 import { formatArea } from '../services/geometryService'
 
-interface ExcludePolygonEditorProps {
+type ExcludePolygonEditorProps = {
   isExcludeMode: boolean
   onToggleExcludeMode: () => void
   excludePolygons: Polygon[]

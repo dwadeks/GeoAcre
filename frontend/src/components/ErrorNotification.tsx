@@ -1,6 +1,6 @@
 import type { FC } from 'react'
 
-interface ErrorNotificationProps {
+type ErrorNotificationProps = {
   message: string
   onDismiss?: () => void
 }

@@ -2,7 +2,7 @@ import { FC, FormEvent, useMemo, useState } from 'react'
 import type { GeocodeResult } from '../models/index'
 import * as geocodingService from '../services/geocodingService'
 
-interface LocationSearchProps {
+type LocationSearchProps = {
   onLocationSelect: (latitude: number, longitude: number, label?: string) => void
 }
 

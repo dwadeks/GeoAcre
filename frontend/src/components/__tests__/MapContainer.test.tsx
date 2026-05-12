@@ -28,11 +28,10 @@ const mapStub = {
   },
 }
 
-type MarkerHandler = (event: unknown) => void
-interface MarkerStub {
+type MarkerStub = {
   on: ReturnType<typeof vi.fn>
   off: ReturnType<typeof vi.fn>
-  handlers: Record<string, MarkerHandler | undefined>
+  handlers: Record<string, ((event: unknown) => void) | undefined>
 }
 
 const createdMarkers: MarkerStub[] = []
@@ -52,10 +51,10 @@ vi.mock('../../services/mapService', () => ({
   clearPolygons: vi.fn(),
   clearMarkers: vi.fn(),
   addMarker: vi.fn(() => {
-    const handlers: Record<string, MarkerHandler | undefined> = {}
+    const handlers: Record<string, ((event: unknown) => void) | undefined> = {}
     const marker: MarkerStub = {
       handlers,
-      on: vi.fn((event: string, handler: MarkerHandler) => {
+      on: vi.fn((event: string, handler: (event: unknown) => void) => {
         handlers[event] = handler
       }),
       off: vi.fn((event: string) => {

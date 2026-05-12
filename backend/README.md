@@ -16,3 +16,5 @@
 - Test framework: MSTest.
 - Assertions: FluentAssertions.
 - Hand-authored backend code must keep exactly one top-level class or one top-level interface per file.
+- Code files containing a single class or interface MUST be named identically to that artifact.
+	For example, a class `Polygon` goes in `Polygon.cs`; an interface `IGeocodeService` goes in `IGeocodeService.cs`.

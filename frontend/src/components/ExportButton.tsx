@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import type { SessionState } from '../models/GeoTypes'
 import { copyToClipboard, downloadJSON, exportSessionToJSON } from '../services/exportService'
 
-interface ExportButtonProps {
+type ExportButtonProps = {
   session: SessionState
 }
 

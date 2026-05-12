@@ -5,7 +5,7 @@
 import { FC, useState } from 'react'
 import type { UnitPreference } from '../models/GeoTypes'
 
-interface SettingsPanelProps {
+type SettingsPanelProps = {
   unitPreference: UnitPreference
   onUnitPreferenceChange: (preference: UnitPreference) => void
 }

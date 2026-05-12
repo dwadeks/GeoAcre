@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import MeasurementTool from '../MeasurementTool';
-import { GeoPoint } from '../../models/GeoTypes';
+import type { GeoPoint } from '../../models/GeoTypes';
 
 describe('MeasurementTool', () => {
   beforeEach(() => {

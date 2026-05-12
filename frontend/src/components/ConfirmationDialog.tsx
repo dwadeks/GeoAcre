@@ -1,6 +1,6 @@
 import type { FC } from 'react'
 
-interface ConfirmationDialogProps {
+type ConfirmationDialogProps = {
   open: boolean
   title?: string
   message: string

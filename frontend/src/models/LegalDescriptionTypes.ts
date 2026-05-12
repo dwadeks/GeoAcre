@@ -1,65 +1,9 @@
-import type { GeoPoint } from './GeoTypes'
-import type { AppMode } from './ModeTypes'
-
-export type LegalDescriptionSourceType = 'PastedText' | 'UploadedImage'
-export type LegalDescriptionInterpretationStatus = 'Succeeded' | 'Failed' | 'NeedsRetry'
-
-export interface LegalDescriptionSource {
-  type: LegalDescriptionSourceType
-  text?: string
-  fileName?: string
-  contentType?: string
-  base64Content?: string
-}
-
-export interface LegalDescriptionInterpretOptions {
-  maxVertices?: number
-  confidenceThreshold?: number
-}
-
-export interface LegalDescriptionInterpretRequest {
-  source: LegalDescriptionSource
-  options?: LegalDescriptionInterpretOptions
-}
-
-export interface LegalDescriptionInterpretation {
-  status: LegalDescriptionInterpretationStatus
-  confidence: number
-  diagnostics: string[]
-}
-
-export interface LegalDescriptionBoundary {
-  provenance: 'LegalInterpretation'
-  isReadOnly: boolean
-  vertices: GeoPoint[]
-  areaSquareMeters: number
-  perimeterMeters: number
-  hasSelfIntersection: boolean
-}
-
-export interface RetryGuidance {
-  allowed: boolean
-  message: string
-}
-
-export interface LegalDescriptionInterpretResponse {
-  mode: Extract<AppMode, 'LegalDescription'>
-  schemaVersion: string
-  interpretation: LegalDescriptionInterpretation
-  boundary?: LegalDescriptionBoundary
-  retry?: RetryGuidance
-}
-
-export interface ExportSnapshotRequest {
-  activeMode: AppMode
-  state: {
-    legalDescriptionResultId?: string
-  }
-}
-
-export interface ExportSnapshotResponse<TPayload = unknown> {
-  schemaVersion: string
-  mode: AppMode
-  exportedAtUtc: string
-  payload: TPayload
-}
+export type { LegalDescriptionSource } from './LegalDescriptionSource'
+export type { LegalDescriptionInterpretOptions } from './LegalDescriptionInterpretOptions'
+export type { LegalDescriptionInterpretRequest } from './LegalDescriptionInterpretRequest'
+export type { LegalDescriptionInterpretation } from './LegalDescriptionInterpretation'
+export type { LegalDescriptionBoundary } from './LegalDescriptionBoundary'
+export type { RetryGuidance } from './RetryGuidance'
+export type { LegalDescriptionInterpretResponse } from './LegalDescriptionInterpretResponse'
+export type { ExportSnapshotRequest } from './ExportSnapshotRequest'
+export type { ExportSnapshotResponse } from './ExportSnapshotResponse'

@@ -18,7 +18,9 @@ description: "Task list template for feature implementation"
 - **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3)
 - Include exact file paths in descriptions
 - When generating code tasks, split work so each hand-authored code file ends with
-  exactly one top-level class or one top-level interface, per the constitution
+  exactly one top-level class or one top-level interface, per the constitution.
+  File names MUST match the class or interface they contain (e.g., Polygon.cs for
+  class Polygon, GeoPoint.ts for interface GeoPoint)
 
 ## Path Conventions
 

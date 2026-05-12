@@ -1,20 +1,19 @@
 <!--
    SYNC IMPACT REPORT
-   Version change: 1.0.1 → 1.1.0
-   Modified principles: III. Object-Oriented Design → III. Object-Oriented Design
+   Version change: 1.1.0 → 1.2.0
+   Modified principles: III. Object-Oriented Design → III. Object-Oriented Design (added naming convention)
    Added sections: N/A
    Removed sections: N/A
-   Changes: Added a mandatory single-class-or-interface-per-file rule for hand-authored code;
-                clarified file-organization expectations for OOD compliance.
+   Changes: Extended Principle III to require that code files containing a single class or interface
+                MUST be named identically to the class or interface they declare.
    Templates updated:
-      ✅ .specify/memory/constitution.md — amended principle and governance metadata
-      ✅ .specify/templates/plan-template.md — Constitution Check now calls out single-class/interface-per-file compliance
-      ✅ .specify/templates/tasks-template.md — task guidance now requires file-splitting work to respect the one-type-per-file rule
-      ✅ backend/README.md — backend guidance now reflects the file-organization rule
-      ✅ frontend/README.md — frontend guidance now reflects the file-organization rule
-      ✅ .specify/templates/spec-template.md — reviewed; no change required because the amendment adds no new spec sections
+      ✅ .specify/memory/constitution.md — amended Principle III with naming convention requirement
+      ✅ .specify/templates/plan-template.md — Constitution Check updated to verify naming compliance
+      ✅ .specify/templates/tasks-template.md — task guidance reinforces file naming matches artifact name
+      ✅ backend/README.md — backend guidance updated with naming convention
+      ✅ frontend/README.md — frontend guidance updated with naming convention
+      ✅ .specify/templates/spec-template.md — reviewed; no change required
    Deferred items: None
--->
 
 # GeoAcre Constitution
 
@@ -59,9 +58,16 @@ Code MUST be organized using object-oriented principles:
 - Each hand-authored code file MUST declare exactly one top-level class or exactly
    one top-level interface. Records count as classes for this rule. Additional
    top-level types in the same file are prohibited unless the file is generated.
+- A code file containing a single class or interface MUST be named identically to
+   that class or interface, with appropriate language-specific extension. For example,
+   a C# class `Polygon` MUST be in a file named `Polygon.cs`; a TypeScript interface
+   `GeoPoint` MUST be in a file named `GeoPoint.ts`. Exceptions: nested/inner classes
+   stay with their parent; files declared via barrel or re-export patterns are exempt.
 
-Rationale: keeping one top-level class or interface per file reduces hidden coupling,
-improves discoverability, and makes review scope easier to reason about.
+Rationale: one top-level class/interface per file reduces hidden coupling,
+improves discoverability, and makes review scope easier to reason about. Naming
+files after their contained type ensures artifacts can be located by name without
+reading file contents and improves IDE navigation and code search.
 
 ### IV. Integration Testing
 
@@ -141,4 +147,4 @@ All PRs and code reviews MUST verify compliance with the principles above.
 Complexity violations MUST be documented in the feature plan's Complexity Tracking
 table before the PR is approved.
 
-**Version**: 1.1.0 | **Ratified**: 2026-05-07 | **Last Amended**: 2026-05-11
+**Version**: 1.2.0 | **Ratified**: 2026-05-07 | **Last Amended**: 2026-05-11
