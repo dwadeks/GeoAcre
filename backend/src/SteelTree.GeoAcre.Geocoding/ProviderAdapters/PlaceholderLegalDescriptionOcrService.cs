@@ -35,7 +35,7 @@ public sealed class PlaceholderLegalDescriptionOcrService : ILegalDescriptionOcr
                 0));
         }
 
-        var extractedText = $"Placeholder OCR text from {_options.Ocr.Provider}: {source.FileName ?? "uploaded-image"}";
+        var extractedText = $"Placeholder OCR text from {source.FileName ?? "uploaded-image"}";
         return Task.FromResult(new OcrExtractionResult(true, extractedText, [], 0.25));
     }
 }

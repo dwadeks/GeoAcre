@@ -41,7 +41,6 @@ public class AzureDocumentIntelligenceOcrServiceTests
     {
         var options = new OcrProviderOptions
         {
-            Provider = "AzureDocumentIntelligence",
             Endpoint = GetRequiredEnvironmentVariable("AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT"),
             ApiKey = GetRequiredEnvironmentVariable("AZURE_DOCUMENT_INTELLIGENCE_API_KEY"),
             TimeoutSeconds = 60,
