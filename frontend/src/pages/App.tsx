@@ -1,5 +1,7 @@
 import { FC, useCallback, useMemo, useReducer, useState } from 'react'
 import type { GeoPoint, Polygon, SessionState, UnitPreference, Measurement } from '../models/GeoTypes'
+import type { AppMode } from '../models/AppMode'
+import type { LegalDescriptionInterpretRequest } from '../models/LegalDescriptionInterpretRequest'
 import MapContainer from '../components/MapContainer'
 import PolygonDisplay from '../components/PolygonDisplay'
 import SettingsPanel from '../components/SettingsPanel'
@@ -9,9 +11,18 @@ import MeasurementTool from '../components/MeasurementTool'
 import ExportButton from '../components/ExportButton'
 import ConfirmationDialog from '../components/ConfirmationDialog'
 import ErrorNotification from '../components/ErrorNotification'
+import ModeSelector from '../components/ModeSelector'
+import Sidebar from '../components/Sidebar'
+import LegalDescriptionPanel from '../components/LegalDescriptionPanel'
+import LegalDescriptionBoundaryLayer from '../components/LegalDescriptionBoundaryLayer'
 import { calculatePolygonArea, calculateSideLengths, calculatePerimeter } from '../services/geometryService'
 import { calculateNetArea } from '../services/polygonService'
 import { calculatePolylineDistance, calculateSegmentDistances } from '../services/measurementService'
+import { resolveModeTransition, shouldConfirmModeTransition } from '../services/modeTransitionService'
+import {
+  createInitialLegalDescriptionWorkflowState,
+  submitLegalDescriptionRequest,
+} from '../services/legalDescriptionState'
 import '../styles/globals.css'
 
 /**
@@ -92,6 +103,11 @@ function sessionReducer(state: SessionState, action: SessionAction): SessionStat
 
 const App: FC = () => {
   const [state, dispatch] = useReducer(sessionReducer, initialState)
+  const [activeMode, setActiveMode] = useState<AppMode>('DrawBoundary')
+  const [pendingMode, setPendingMode] = useState<AppMode | null>(null)
+  const [isModeSwitchOpen, setIsModeSwitchOpen] = useState(false)
+  const [hasInProgressWork, setHasInProgressWork] = useState(false)
+  const [legalDescriptionState, setLegalDescriptionState] = useState(createInitialLegalDescriptionWorkflowState())
   const [isExcludeMode, setIsExcludeMode] = useState(false)
   const [isMeasurementMode, setIsMeasurementMode] = useState(false)
   const [showModeConfirm, setShowModeConfirm] = useState(false)
@@ -102,6 +118,59 @@ const App: FC = () => {
     (_: { latitude: number; longitude: number } | null, next: { latitude: number; longitude: number } | null) => next,
     null
   )
+
+  const handleModeSelect = (nextMode: AppMode) => {
+    if (
+      shouldConfirmModeTransition({
+        currentMode: activeMode,
+        nextMode,
+        hasInProgressWork,
+      })
+    ) {
+      setPendingMode(nextMode)
+      setIsModeSwitchOpen(true)
+      return
+    }
+
+    setActiveMode(nextMode)
+  }
+
+  const handleModeConfirm = () => {
+    if (!pendingMode) {
+      setIsModeSwitchOpen(false)
+      return
+    }
+
+    const nextMode = resolveModeTransition(
+      {
+        currentMode: activeMode,
+        nextMode: pendingMode,
+        hasInProgressWork,
+      },
+      true
+    )
+    setActiveMode(nextMode)
+    setPendingMode(null)
+    setHasInProgressWork(false)
+    setIsModeSwitchOpen(false)
+  }
+
+  const handleModeCancel = () => {
+    setPendingMode(null)
+    setIsModeSwitchOpen(false)
+  }
+
+  const handleLegalDescriptionSubmit = async (request: LegalDescriptionInterpretRequest) => {
+    setLegalDescriptionState((prev) => ({
+      ...prev,
+      status: 'submitting',
+      errorMessage: null,
+    }))
+
+    const nextState = await submitLegalDescriptionRequest(request)
+    setLegalDescriptionState(nextState)
+    setHasInProgressWork(false)
+  }
 
   const handlePolygonChange = useCallback((polygon: Polygon | undefined) => {
     if (!polygon) {
@@ -233,6 +302,16 @@ const App: FC = () => {
       {appError ? <ErrorNotification message={appError} onDismiss={() => setAppError('')} /> : null}
 
       <ConfirmationDialog
+        open={isModeSwitchOpen}
+        title="Confirm Mode Switch"
+        message="Switching modes will discard in-progress work. Continue?"
+        confirmText="Confirm"
+        cancelText="Cancel"
+        onConfirm={handleModeConfirm}
+        onCancel={handleModeCancel}
+      />
+
+      <ConfirmationDialog
         open={showModeConfirm}
         title="Switch Measurement Mode?"
         message="You have an unfinished or existing shape. Discard it and switch modes?"
@@ -256,94 +335,115 @@ const App: FC = () => {
         <h1>🗺️ Land Area Estimator</h1>
       </header>
       <main>
-        {/* Map container */}
-        <MapContainer
-          onPolygonChange={handlePolygonChange}
-          onExcludePolygonComplete={handleExcludePolygonComplete}
-          onMeasurementPointsChange={handleMeasurementPointsChange}
-          primaryPolygon={state.primaryPolygon}
-          excludePolygons={state.excludePolygons}
-          measurementPoints={measurementPoints}
-          interactionMode={isMeasurementMode ? 'measurement' : 'polygon'}
-          drawTarget={isExcludeMode ? 'exclude' : 'primary'}
-          panToLocation={targetLocation}
-        />
+        <ModeSelector activeMode={activeMode} onModeSelect={handleModeSelect} />
 
-        {/* Control panel */}
-        <div className="control-panel">
-          <section>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-              <h3 style={{ margin: 0, borderBottom: 'none', paddingBottom: 0 }}>Measurement</h3>
-              <SettingsPanel
-                unitPreference={state.unitPreference}
-                onUnitPreferenceChange={handleUnitPreferenceChange}
-              />
-            </div>
-            <p className="text-muted">
-              {state.primaryPolygon
-                ? `✓ Polygon with ${state.primaryPolygon.vertices.length} vertices (${state.excludePolygons.length} exclude polygons)`
-                : 'Click map to draw a polygon (≥3 points)'}
-            </p>
-            {state.primaryPolygon && (
-              <button className="btn-danger btn-sm btn-block" onClick={handleClearAll}>
-                🗑️ Clear Polygon
-              </button>
-            )}
-          </section>
-
-          <section style={{ marginBottom: '1.5rem' }}>
-            <LocationSearch onLocationSelect={handleLocationSelect} />
-          </section>
-
-          <ExcludePolygonEditor
-            isExcludeMode={isExcludeMode}
-            onToggleExcludeMode={handleToggleExcludeMode}
-            excludePolygons={state.excludePolygons}
-            onDeleteExcludePolygon={handleDeleteExcludePolygon}
-            primaryAreaSquareMeters={state.primaryPolygon?.computedAreaSquareMeters ?? 0}
-            netAreaSquareMeters={netAreaSquareMeters}
-            unitPreference={state.unitPreference}
+        {activeMode === 'LegalDescription' ? (
+          <Sidebar
+            activeMode={activeMode}
+            legalModeContent={
+              <>
+                <LegalDescriptionPanel
+                  onSubmit={handleLegalDescriptionSubmit}
+                  isSubmitting={legalDescriptionState.status === 'submitting'}
+                  errorMessage={legalDescriptionState.errorMessage ?? undefined}
+                  onDirtyChange={setHasInProgressWork}
+                />
+                <LegalDescriptionBoundaryLayer result={legalDescriptionState.result} />
+              </>
+            }
           />
-
-          {/* Distance Measurement Tool */}
-          <section style={{ marginBottom: '1.5rem' }}>
-            <MeasurementTool
-              isActive={isMeasurementMode}
-              onToggle={handleToggleMeasurementMode}
-              onMeasurementChange={handleMeasurementPointsChange}
+        ) : (
+          <>
+            {/* Map container for Draw and Measure modes */}
+            <MapContainer
+              onPolygonChange={handlePolygonChange}
+              onExcludePolygonComplete={handleExcludePolygonComplete}
+              onMeasurementPointsChange={handleMeasurementPointsChange}
+              primaryPolygon={state.primaryPolygon}
+              excludePolygons={state.excludePolygons}
               measurementPoints={measurementPoints}
-              totalDistance={state.measurement?.totalDistanceMeters ?? 0}
-              segmentDistances={state.measurement?.perSegmentDistancesMeters ?? []}
-              distanceUnit={state.unitPreference.distanceUnit}
+              interactionMode={isMeasurementMode ? 'measurement' : 'polygon'}
+              drawTarget={isExcludeMode ? 'exclude' : 'primary'}
+              panToLocation={targetLocation}
             />
-          </section>
 
-          {/* Polygon Display */}
-          <section>
-            <h3>Results</h3>
-            <PolygonDisplay
-              polygon={state.primaryPolygon}
-              unitPreference={state.unitPreference}
-              excludedAreaSquareMeters={Math.max(
-                0,
-                (state.primaryPolygon?.computedAreaSquareMeters ?? 0) - netAreaSquareMeters
-              )}
-              netAreaSquareMeters={netAreaSquareMeters}
-            />
-          </section>
+            {/* Control panel */}
+            <div className="control-panel">
+              <section>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                  <h3 style={{ margin: 0, borderBottom: 'none', paddingBottom: 0 }}>Measurement</h3>
+                  <SettingsPanel
+                    unitPreference={state.unitPreference}
+                    onUnitPreferenceChange={handleUnitPreferenceChange}
+                  />
+                </div>
+                <p className="text-muted">
+                  {state.primaryPolygon
+                    ? `✓ Polygon with ${state.primaryPolygon.vertices.length} vertices (${state.excludePolygons.length} exclude polygons)`
+                    : 'Click map to draw a polygon (≥3 points)'}
+                </p>
+                {state.primaryPolygon && (
+                  <button className="btn-danger btn-sm btn-block" onClick={handleClearAll}>
+                    🗑️ Clear Polygon
+                  </button>
+                )}
+              </section>
 
-          {/* Info Section */}
-          <ExportButton session={state} />
+              <section style={{ marginBottom: '1.5rem' }}>
+                <LocationSearch onLocationSelect={handleLocationSelect} />
+              </section>
 
-          {/* Info Section */}
-          <section>
-            <h3>About</h3>
-            <p className="text-muted" style={{ fontSize: '0.875rem' }}>
-              <strong>Phase 1 MVP</strong> - Draw polygons on the map to measure area in acres and view side
-              lengths in feet. All measurements use geodetic (spherical) calculations for accuracy.
-            </p>
-          </section>
-        </div>
+              <ExcludePolygonEditor
+                isExcludeMode={isExcludeMode}
+                onToggleExcludeMode={handleToggleExcludeMode}
+                excludePolygons={state.excludePolygons}
+                onDeleteExcludePolygon={handleDeleteExcludePolygon}
+                primaryAreaSquareMeters={state.primaryPolygon?.computedAreaSquareMeters ?? 0}
+                netAreaSquareMeters={netAreaSquareMeters}
+                unitPreference={state.unitPreference}
+              />
+
+              {/* Distance Measurement Tool */}
+              <section style={{ marginBottom: '1.5rem' }}>
+                <MeasurementTool
+                  isActive={isMeasurementMode}
+                  onToggle={handleToggleMeasurementMode}
+                  onMeasurementChange={handleMeasurementPointsChange}
+                  measurementPoints={measurementPoints}
+                  totalDistance={state.measurement?.totalDistanceMeters ?? 0}
+                  segmentDistances={state.measurement?.perSegmentDistancesMeters ?? []}
+                  distanceUnit={state.unitPreference.distanceUnit}
+                />
+              </section>
+
+              {/* Polygon Display */}
+              <section>
+                <h3>Results</h3>
+                <PolygonDisplay
+                  polygon={state.primaryPolygon}
+                  unitPreference={state.unitPreference}
+                  excludedAreaSquareMeters={Math.max(
+                    0,
+                    (state.primaryPolygon?.computedAreaSquareMeters ?? 0) - netAreaSquareMeters
+                  )}
+                  netAreaSquareMeters={netAreaSquareMeters}
+                />
+              </section>
+
+              {/* Info Section */}
+              <ExportButton session={state} />
+
+              {/* Info Section */}
+              <section>
+                <h3>About</h3>
+                <p className="text-muted" style={{ fontSize: '0.875rem' }}>
+                  <strong>Phase 2 MVP</strong> - Switch between Draw Boundary, Legal Description, and Measure Distance modes. Draw
+                  polygons, interpret legal descriptions, or measure distances on the map.
+                </p>
+              </section>
+            </div>
+          </>
+        )}
       </main>
     </div>
   )

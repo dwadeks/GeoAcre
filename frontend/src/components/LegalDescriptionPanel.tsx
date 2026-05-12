@@ -5,12 +5,14 @@ type LegalDescriptionPanelProps = {
   onSubmit: (request: LegalDescriptionInterpretRequest) => void | Promise<void>
   isSubmitting?: boolean
   errorMessage?: string
+  onDirtyChange?: (isDirty: boolean) => void
 }
 
 export default function LegalDescriptionPanel({
   onSubmit,
   isSubmitting = false,
   errorMessage,
+  onDirtyChange,
 }: LegalDescriptionPanelProps) {
   const [text, setText] = useState('')
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -19,6 +21,13 @@ export default function LegalDescriptionPanel({
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const nextFile = event.target.files?.[0] ?? null
     setImageFile(nextFile)
+    onDirtyChange?.(nextFile !== null || text.trim().length > 0)
+  }
+
+  const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const nextText = event.target.value
+    setText(nextText)
+    onDirtyChange?.(nextText.trim().length > 0 || imageFile !== null)
   }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -34,6 +43,7 @@ export default function LegalDescriptionPanel({
     }
 
     setValidationError(null)
+    onDirtyChange?.(false)
 
     if (hasText) {
       await onSubmit({
@@ -71,7 +81,7 @@ export default function LegalDescriptionPanel({
           <textarea
             id="legal-description-text"
             value={text}
-            onChange={(event) => setText(event.target.value)}
+            onChange={handleTextChange}
             rows={6}
             placeholder="Paste tract legal description text..."
             style={{ width: '100%', marginTop: '0.5rem' }}

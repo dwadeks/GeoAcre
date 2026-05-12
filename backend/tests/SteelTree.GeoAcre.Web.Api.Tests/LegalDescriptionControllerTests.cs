@@ -51,6 +51,9 @@ public class LegalDescriptionControllerTests
         var payload = await response.Content.ReadFromJsonAsync<LegalDescriptionInterpretResponse>();
         payload.Should().NotBeNull();
         payload!.Interpretation.Status.Should().Be("Succeeded");
+        payload.Audit.Should().NotBeNull();
+        payload.Audit!.ActiveMode.Should().Be("LegalDescription");
+        payload.Audit.Provenance.Should().Be("LegalInterpretation");
     }
 
     [TestMethod]

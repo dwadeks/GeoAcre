@@ -74,17 +74,17 @@
 
 ### Tests for User Story 2 (write first and confirm failing)
 
-- [ ] T026 [P] [US2] Add frontend tests for mode selector order and active-mode exclusivity in frontend/src/tests/components/ModeSelector.test.tsx
-- [ ] T027 [P] [US2] Add frontend tests for sidebar conditional rendering by mode in frontend/src/tests/components/SidebarModeContent.test.tsx
-- [ ] T028 [P] [US2] Add frontend tests for mode-switch confirmation behavior with in-progress work in frontend/src/tests/components/ModeSwitchConfirmation.test.tsx
+- [X] T026 [P] [US2] Add frontend tests for mode selector order and active-mode exclusivity in frontend/src/tests/components/ModeSelector.test.tsx
+- [X] T027 [P] [US2] Add frontend tests for sidebar conditional rendering by mode in frontend/src/tests/components/SidebarModeContent.test.tsx
+- [X] T028 [P] [US2] Add frontend tests for mode-switch confirmation behavior with in-progress work in frontend/src/tests/components/ModeSwitchConfirmation.test.tsx
 
 ### Implementation for User Story 2
 
-- [ ] T029 [US2] Implement mode selector component with fixed order and active state in frontend/src/components/ModeSelector.tsx
-- [ ] T030 [US2] Implement mode transition guard/confirmation policy in frontend/src/services/modeTransitionService.ts
-- [ ] T031 [US2] Refactor sidebar to render mode-scoped controls only in frontend/src/components/Sidebar.tsx
-- [ ] T032 [US2] Integrate mode selector and transition state into root app workflow in frontend/src/App.tsx
-- [ ] T033 [US2] Add API-side mode audit metadata support for interpreted output provenance in backend/src/SteelTree.GeoAcre.Web.Api/Models/GeoTypes.cs
+- [X] T029 [US2] Implement mode selector component with fixed order and active state in frontend/src/components/ModeSelector.tsx
+- [X] T030 [US2] Implement mode transition guard/confirmation policy in frontend/src/services/modeTransitionService.ts
+- [X] T031 [US2] Refactor sidebar to render mode-scoped controls only in frontend/src/components/Sidebar.tsx
+- [X] T032 [US2] Integrate mode selector and transition state into root app workflow in frontend/src/App.tsx
+- [X] T033 [US2] Add API-side mode audit metadata support for interpreted output provenance in backend/src/SteelTree.GeoAcre.Web.Api/Models/ModeAuditMetadataDto.cs
 
 **Checkpoint**: User Stories 1 and 2 are independently functional.
 

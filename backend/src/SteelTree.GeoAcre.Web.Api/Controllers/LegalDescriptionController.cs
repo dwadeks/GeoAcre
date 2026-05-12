@@ -71,6 +71,11 @@ public class LegalDescriptionController : ControllerBase
                             Allowed = result.Response.Retry.Allowed,
                             Message = result.Response.Retry.Message,
                         },
+                    Audit = new ModeAuditMetadataDto
+                    {
+                        ActiveMode = result.Response.Mode,
+                        Provenance = result.Response.Boundary?.Provenance,
+                    },
                 };
 
                 return StatusCode(result.StatusCode, payload);

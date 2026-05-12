@@ -11,4 +11,6 @@ public sealed class LegalDescriptionInterpretResponse
     public LegalDescriptionBoundaryDto? Boundary { get; set; }
 
     public RetryGuidanceDto? Retry { get; set; }
+
+    public ModeAuditMetadataDto? Audit { get; set; }
 }
