@@ -1,5 +1,6 @@
 using SteelTree.GeoAcre.Geocoding;
 using SteelTree.GeoAcre.Geometry;
+using SteelTree.GeoAcre.Ocr;
 using SteelTree.GeoAcre.Services;
 using Microsoft.AspNetCore.Http;
 

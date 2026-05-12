@@ -1,3 +1,5 @@
+using SteelTree.GeoAcre.Ocr;
+
 namespace SteelTree.GeoAcre.Geocoding;
 
 public sealed class LegalDescriptionProviderOptions

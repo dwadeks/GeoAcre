@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../SteelTree.GeoAcre/SteelTree.GeoAcre.csproj" />
+    <ProjectReference Include="../SteelTree.GeoAcre.Ocr.AzureDocumentIntelligence/SteelTree.GeoAcre.Ocr.AzureDocumentIntelligence.csproj" />
   </ItemGroup>
 
 </Project>

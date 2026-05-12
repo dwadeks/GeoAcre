@@ -1,5 +1,6 @@
 using SteelTree.GeoAcre.Geocoding;
 using SteelTree.GeoAcre.Geocoding.ProviderAdapters;
+using SteelTree.GeoAcre.Ocr.AzureDocumentIntelligence;
 using SteelTree.GeoAcre.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,7 +29,7 @@ builder.Services.AddHttpClient<IGeocodeService, NominatimGeocodeService>();
 
 builder.Services.Configure<LegalDescriptionProviderOptions>(
     builder.Configuration.GetSection("LegalDescriptionProviders"));
-builder.Services.AddSingleton<ILegalDescriptionOcrService, PlaceholderLegalDescriptionOcrService>();
+builder.Services.AddAzureDocumentIntelligenceOcr();
 builder.Services.AddSingleton<ILegalDescriptionInterpreter, PlaceholderLegalDescriptionInterpreter>();
 builder.Services.AddSingleton<ILegalDescriptionBoundaryMapper, LegalDescriptionBoundaryMapper>();
 builder.Services.AddScoped<ILegalDescriptionService, LegalDescriptionService>();

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SteelTree.GeoAcre.Geocoding;
 using SteelTree.GeoAcre.Geometry;
+using SteelTree.GeoAcre.Ocr;
 using SteelTree.GeoAcre.Web.Api.Models;
 
 namespace SteelTree.GeoAcre.Web.Api.Tests;

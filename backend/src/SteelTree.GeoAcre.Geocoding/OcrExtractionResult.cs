@@ -1,4 +1,4 @@
-namespace SteelTree.GeoAcre.Geocoding;
+namespace SteelTree.GeoAcre.Ocr;
 
 public sealed record OcrExtractionResult(
     bool Success,
