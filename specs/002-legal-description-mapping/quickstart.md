@@ -43,6 +43,20 @@ Expected local URLs:
 
 ## 4. Validate legal-description mode inputs
 
+Use the shared sample fixtures:
+- Backend integration fixture: `backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/TestData/legal-description-samples.json`
+- Frontend test fixture: `frontend/src/tests/fixtures/legalDescriptionSamples.ts`
+- Backend image fixtures: `backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/TestData/images/`
+- Frontend image fixtures: `frontend/src/tests/fixtures/images/`
+
+Included samples:
+- `tract-ii` (written text + image provided by stakeholder)
+- `tract-iv` (written text + image provided by stakeholder)
+
+Correlation rule:
+- `samples[].id` matches `samples[].image.correlationId`
+- Each sample uses a tract-specific image file (`tract-ii-sample.svg`, `tract-iv-sample.svg`)
+
 Pasted text path:
 
 ```text

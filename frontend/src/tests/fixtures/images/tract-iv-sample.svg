@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1800" viewBox="0 0 1400 1800">
+  <rect width="1400" height="1800" fill="#f7f4ec" />
+  <rect x="60" y="60" width="1280" height="1680" fill="#fffdf8" stroke="#6f6657" stroke-width="3" />
+  <text x="100" y="150" font-family="Georgia, serif" font-size="44" fill="#2f2a24">GeoAcre Legal Description Sample</text>
+  <text x="100" y="220" font-family="Georgia, serif" font-size="34" fill="#2f2a24">Tract IV</text>
+  <text x="100" y="285" font-family="Courier New, monospace" font-size="24" fill="#4a4338">correlation-id: tract-iv</text>
+</svg>

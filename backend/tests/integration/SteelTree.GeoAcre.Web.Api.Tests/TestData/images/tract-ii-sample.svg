@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1800" viewBox="0 0 1400 1800">
+  <rect width="1400" height="1800" fill="#f7f4ec" />
+  <rect x="60" y="60" width="1280" height="1680" fill="#fffdf8" stroke="#6f6657" stroke-width="3" />
+  <text x="100" y="150" font-family="Georgia, serif" font-size="44" fill="#2f2a24">GeoAcre Legal Description Sample</text>
+  <text x="100" y="220" font-family="Georgia, serif" font-size="34" fill="#2f2a24">Tract II</text>
+  <text x="100" y="285" font-family="Courier New, monospace" font-size="24" fill="#4a4338">correlation-id: tract-ii</text>
+  <text x="100" y="360" font-family="Times New Roman, serif" font-size="28" fill="#2f2a24">Beginning at the Northwest Corner of Lot Three (3), Block Seven (7),</text>
+  <text x="100" y="405" font-family="Times New Roman, serif" font-size="28" fill="#2f2a24">Original Plat, Crestline, Cherokee County, Kansas, thence West (W)</text>
+  <text x="100" y="450" font-family="Times New Roman, serif" font-size="28" fill="#2f2a24">Three Hundred Seventy (370') feet, thence North (N) Three Hundred</text>
+  <text x="100" y="495" font-family="Times New Roman, serif" font-size="28" fill="#2f2a24">Ninety (390') feet, more or less...</text>
+  <text x="100" y="1650" font-family="Courier New, monospace" font-size="22" fill="#6b6254">fixture-file: backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/TestData/images/tract-ii-sample.svg</text>
+</svg>
