@@ -16,3 +16,6 @@
 
 ## Environment
 Set VITE_API_URL to backend API base URL (defaults to http://localhost:5000/api).
+
+## Notes
+- Hand-authored frontend code must keep exactly one top-level class or one top-level interface per file.

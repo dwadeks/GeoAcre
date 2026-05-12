@@ -8,7 +8,13 @@
     },
     "chat.tools.terminal.autoApprove": {
         ".specify/scripts/bash/": true,
-        ".specify/scripts/powershell/": true
+        ".specify/scripts/powershell/": true,
+        "dotnet build": true,
+        "npm run build": true,
+        "/^cd \\.\\.; pwsh \\.\\\\\\.specify\\\\extensions\\\\git\\\\scripts\\\\powershell\\\\initialize-repo\\.ps1$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
     }
 }
 

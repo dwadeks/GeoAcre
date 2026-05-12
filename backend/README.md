@@ -15,3 +15,4 @@
 - Target framework: net10.0.
 - Test framework: MSTest.
 - Assertions: FluentAssertions.
+- Hand-authored backend code must keep exactly one top-level class or one top-level interface per file.

@@ -11,10 +11,10 @@
 
 **Purpose**: Add feature-level configuration and scaffolding for legal-description workflow.
 
-- [ ] T001 Add legal-description provider configuration keys in backend/src/SteelTree.GeoAcre.Web.Api/appsettings.json
-- [ ] T002 [P] Add local-safe legal-description provider defaults in backend/src/SteelTree.GeoAcre.Web.Api/appsettings.Development.json
-- [ ] T003 [P] Add frontend API configuration entries for legal-description endpoints in frontend/src/services/config.ts
-- [ ] T004 [P] Add feature constants for legal-description limits (file size, supported content types, confidence threshold) in frontend/src/models/LegalDescriptionConstants.ts
+- [X] T001 Add legal-description provider configuration keys in backend/src/SteelTree.GeoAcre.Web.Api/appsettings.json
+- [X] T002 [P] Add local-safe legal-description provider defaults in backend/src/SteelTree.GeoAcre.Web.Api/appsettings.Development.json
+- [X] T003 [P] Add frontend API configuration entries for legal-description endpoints in frontend/src/services/config.ts
+- [X] T004 [P] Add feature constants for legal-description limits (file size, supported content types, confidence threshold) in frontend/src/models/LegalDescriptionConstants.ts
 
 ---
 
@@ -24,14 +24,14 @@
 
 **⚠️ CRITICAL**: No user story work should begin before these tasks are complete.
 
-- [ ] T005 Create legal-description domain contracts (`LegalInputType`, `LegalDescriptionSource`, `LegalInterpretationResult`) in backend/src/SteelTree.GeoAcre.Geocoding/LegalDescriptionContracts.cs
-- [ ] T006 Create provider abstraction interfaces (`ILegalDescriptionOcrService`, `ILegalDescriptionInterpreter`) in backend/src/SteelTree.GeoAcre.Geocoding/ILegalDescriptionProviders.cs
-- [ ] T007 [P] Add placeholder adapter implementations for OCR and interpretation providers in backend/src/SteelTree.GeoAcre.Geocoding/ProviderAdapters/PlaceholderLegalDescriptionProviders.cs
-- [ ] T008 Register legal-description services and options binding in backend/src/SteelTree.GeoAcre.Web.Api/Program.cs
-- [ ] T009 [P] Add API DTOs for legal-description interpret/export requests and responses in backend/src/SteelTree.GeoAcre.Web.Api/Models/LegalDescriptionDtos.cs
-- [ ] T010 [P] Create frontend mode and export discriminated unions in frontend/src/models/ModeTypes.ts
-- [ ] T011 [P] Create frontend legal-description request/response types in frontend/src/models/LegalDescriptionTypes.ts
-- [ ] T012 Add frontend API client methods for interpret/export contracts in frontend/src/services/legalDescriptionApi.ts
+- [X] T005 Create legal-description domain contracts (`LegalInputType`, `LegalDescriptionSource`, `LegalInterpretationResult`) in backend/src/SteelTree.GeoAcre.Geocoding/LegalDescriptionContracts.cs
+- [X] T006 Create provider abstraction interfaces (`ILegalDescriptionOcrService`, `ILegalDescriptionInterpreter`) in backend/src/SteelTree.GeoAcre.Geocoding/ILegalDescriptionProviders.cs
+- [X] T007 [P] Add placeholder adapter implementations for OCR and interpretation providers in backend/src/SteelTree.GeoAcre.Geocoding/ProviderAdapters/PlaceholderLegalDescriptionProviders.cs
+- [X] T008 Register legal-description services and options binding in backend/src/SteelTree.GeoAcre.Web.Api/Program.cs
+- [X] T009 [P] Add API DTOs for legal-description interpret/export requests and responses in backend/src/SteelTree.GeoAcre.Web.Api/Models/LegalDescriptionDtos.cs
+- [X] T010 [P] Create frontend mode and export discriminated unions in frontend/src/models/ModeTypes.ts
+- [X] T011 [P] Create frontend legal-description request/response types in frontend/src/models/LegalDescriptionTypes.ts
+- [X] T012 Add frontend API client methods for interpret/export contracts in frontend/src/services/legalDescriptionApi.ts
 
 **Checkpoint**: Foundation is ready for independently testable user-story work.
 

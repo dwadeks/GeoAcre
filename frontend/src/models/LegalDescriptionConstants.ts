@@ -1,0 +1,11 @@
+export const LEGAL_DESCRIPTION_MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024
+
+export const LEGAL_DESCRIPTION_SUPPORTED_CONTENT_TYPES = [
+  'image/png',
+  'image/jpeg',
+  'image/webp',
+] as const
+
+export const LEGAL_DESCRIPTION_DEFAULT_CONFIDENCE_THRESHOLD = 0.7
+
+export const LEGAL_DESCRIPTION_MAX_VERTICES = 500

@@ -1,3 +1,6 @@
+using SteelTree.GeoAcre.Geocoding;
+using SteelTree.GeoAcre.Geocoding.ProviderAdapters;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
@@ -16,6 +19,11 @@ builder.Services.AddCors(options =>
 
 // Add HTTP client for geocoding
 builder.Services.AddHttpClient<SteelTree.GeoAcre.Web.Api.Services.IGeocodeService, SteelTree.GeoAcre.Web.Api.Services.NominatimGeocodeService>();
+
+builder.Services.Configure<LegalDescriptionProviderOptions>(
+    builder.Configuration.GetSection("LegalDescriptionProviders"));
+builder.Services.AddSingleton<ILegalDescriptionOcrService, PlaceholderLegalDescriptionOcrService>();
+builder.Services.AddSingleton<ILegalDescriptionInterpreter, PlaceholderLegalDescriptionInterpreter>();
 
 // Add logging
 builder.Logging.AddConsole();

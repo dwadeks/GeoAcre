@@ -3,7 +3,7 @@
  * Provides typed HTTP methods for communicating with the backend API
  */
 
-const API_BASE_URL = process.env.VITE_API_URL || 'http://localhost:5000/api'
+import { API_BASE_URL } from './config'
 
 interface RequestOptions extends RequestInit {
   headers?: Record<string, string>

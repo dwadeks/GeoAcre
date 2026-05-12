@@ -1,17 +1,19 @@
 <!--
-  SYNC IMPACT REPORT
-  Version change: 1.0.0 → 1.0.1
-  Modified principles: N/A
-  Added sections: N/A
-  Removed sections: N/A
-  Changes: C# library naming convention added (SteelTree.GeoAcre prefix);
-           unit test tooling updated to Microsoft Testing Platform.
-  Templates updated:
-    ✅ .specify/memory/constitution.md — this file
-    ⚠ .specify/templates/plan-template.md — Constitution Check gates should reference principles below
-    ⚠ .specify/templates/spec-template.md — no changes required at this time
-    ⚠ .specify/templates/tasks-template.md — test tasks should reflect TDD mandate (P3 note already present)
-  Deferred items: None
+   SYNC IMPACT REPORT
+   Version change: 1.0.1 → 1.1.0
+   Modified principles: III. Object-Oriented Design → III. Object-Oriented Design
+   Added sections: N/A
+   Removed sections: N/A
+   Changes: Added a mandatory single-class-or-interface-per-file rule for hand-authored code;
+                clarified file-organization expectations for OOD compliance.
+   Templates updated:
+      ✅ .specify/memory/constitution.md — amended principle and governance metadata
+      ✅ .specify/templates/plan-template.md — Constitution Check now calls out single-class/interface-per-file compliance
+      ✅ .specify/templates/tasks-template.md — task guidance now requires file-splitting work to respect the one-type-per-file rule
+      ✅ backend/README.md — backend guidance now reflects the file-organization rule
+      ✅ frontend/README.md — frontend guidance now reflects the file-organization rule
+      ✅ .specify/templates/spec-template.md — reviewed; no change required because the amendment adds no new spec sections
+   Deferred items: None
 -->
 
 # GeoAcre Constitution
@@ -54,6 +56,12 @@ Code MUST be organized using object-oriented principles:
 - Prefer composition over inheritance; use interfaces/protocols to express contracts.
 - Single Responsibility Principle MUST be applied at the class level.
 - Side-effectful and pure logic MUST be separated (e.g., domain model vs. I/O layer).
+- Each hand-authored code file MUST declare exactly one top-level class or exactly
+   one top-level interface. Records count as classes for this rule. Additional
+   top-level types in the same file are prohibited unless the file is generated.
+
+Rationale: keeping one top-level class or interface per file reduces hidden coupling,
+improves discoverability, and makes review scope easier to reason about.
 
 ### IV. Integration Testing
 
@@ -133,4 +141,4 @@ All PRs and code reviews MUST verify compliance with the principles above.
 Complexity violations MUST be documented in the feature plan's Complexity Tracking
 table before the PR is approved.
 
-**Version**: 1.0.1 | **Ratified**: 2026-05-07 | **Last Amended**: 2026-05-07
+**Version**: 1.1.0 | **Ratified**: 2026-05-07 | **Last Amended**: 2026-05-11

@@ -17,6 +17,8 @@ description: "Task list template for feature implementation"
 - **[P]**: Can run in parallel (different files, no dependencies)
 - **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3)
 - Include exact file paths in descriptions
+- When generating code tasks, split work so each hand-authored code file ends with
+  exactly one top-level class or one top-level interface, per the constitution
 
 ## Path Conventions
 
@@ -182,6 +184,8 @@ Examples of foundational tasks (adjust based on your project):
 - Models before services
 - Services before endpoints
 - Core implementation before integration
+- Split multi-type code into separate files before or during implementation when
+  needed to satisfy the one-class-or-interface-per-file rule
 - Story complete before moving to next priority
 
 ### Parallel Opportunities
