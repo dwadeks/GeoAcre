@@ -12,7 +12,6 @@ import ExportButton from '../components/ExportButton'
 import ConfirmationDialog from '../components/ConfirmationDialog'
 import ErrorNotification from '../components/ErrorNotification'
 import ModeSelector from '../components/ModeSelector'
-import Sidebar from '../components/Sidebar'
 import LegalDescriptionPanel from '../components/LegalDescriptionPanel'
 import LegalDescriptionBoundaryLayer from '../components/LegalDescriptionBoundaryLayer'
 import { calculatePolygonArea, calculateSideLengths, calculatePerimeter } from '../services/geometryService'
@@ -334,115 +333,113 @@ const App: FC = () => {
       <header>
         <h1>🗺️ Land Area Estimator</h1>
       </header>
-      <main>
+      <main style={{ display: 'flex', gap: '1rem', position: 'relative' }}>
         <ModeSelector activeMode={activeMode} onModeSelect={handleModeSelect} />
 
+        {/* Map always visible as the primary container */}
+        <MapContainer
+          onPolygonChange={handlePolygonChange}
+          onExcludePolygonComplete={handleExcludePolygonComplete}
+          onMeasurementPointsChange={handleMeasurementPointsChange}
+          primaryPolygon={state.primaryPolygon}
+          excludePolygons={state.excludePolygons}
+          measurementPoints={measurementPoints}
+          interactionMode={isMeasurementMode ? 'measurement' : 'polygon'}
+          drawTarget={isExcludeMode ? 'exclude' : 'primary'}
+          panToLocation={targetLocation}
+        />
+
+        {/* Boundary layer for legal description mode */}
+        {activeMode === 'LegalDescription' && <LegalDescriptionBoundaryLayer result={legalDescriptionState.result} />}
+
+        {/* Mode-specific control panels */}
         {activeMode === 'LegalDescription' ? (
-          <Sidebar
-            activeMode={activeMode}
-            legalModeContent={
-              <>
-                <LegalDescriptionPanel
-                  onSubmit={handleLegalDescriptionSubmit}
-                  isSubmitting={legalDescriptionState.status === 'submitting'}
-                  errorMessage={legalDescriptionState.errorMessage ?? undefined}
-                  onDirtyChange={setHasInProgressWork}
-                />
-                <LegalDescriptionBoundaryLayer result={legalDescriptionState.result} />
-              </>
-            }
-          />
+          <div className="control-panel" style={{ flex: '0 0 auto', maxWidth: '400px' }}>
+            <section>
+              <h3>Legal Description</h3>
+              <LegalDescriptionPanel
+                onSubmit={handleLegalDescriptionSubmit}
+                isSubmitting={legalDescriptionState.status === 'submitting'}
+                errorMessage={legalDescriptionState.errorMessage ?? undefined}
+                onDirtyChange={setHasInProgressWork}
+              />
+            </section>
+          </div>
         ) : (
-          <>
-            {/* Map container for Draw and Measure modes */}
-            <MapContainer
-              onPolygonChange={handlePolygonChange}
-              onExcludePolygonComplete={handleExcludePolygonComplete}
-              onMeasurementPointsChange={handleMeasurementPointsChange}
-              primaryPolygon={state.primaryPolygon}
+          <div className="control-panel">
+            <section>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <h3 style={{ margin: 0, borderBottom: 'none', paddingBottom: 0 }}>Measurement</h3>
+                <SettingsPanel
+                  unitPreference={state.unitPreference}
+                  onUnitPreferenceChange={handleUnitPreferenceChange}
+                />
+              </div>
+              <p className="text-muted">
+                {state.primaryPolygon
+                  ? `✓ Polygon with ${state.primaryPolygon.vertices.length} vertices (${state.excludePolygons.length} exclude polygons)`
+                  : 'Click map to draw a polygon (≥3 points)'}
+              </p>
+              {state.primaryPolygon && (
+                <button className="btn-danger btn-sm btn-block" onClick={handleClearAll}>
+                  🗑️ Clear Polygon
+                </button>
+              )}
+            </section>
+
+            <section style={{ marginBottom: '1.5rem' }}>
+              <LocationSearch onLocationSelect={handleLocationSelect} />
+            </section>
+
+            <ExcludePolygonEditor
+              isExcludeMode={isExcludeMode}
+              onToggleExcludeMode={handleToggleExcludeMode}
               excludePolygons={state.excludePolygons}
-              measurementPoints={measurementPoints}
-              interactionMode={isMeasurementMode ? 'measurement' : 'polygon'}
-              drawTarget={isExcludeMode ? 'exclude' : 'primary'}
-              panToLocation={targetLocation}
+              onDeleteExcludePolygon={handleDeleteExcludePolygon}
+              primaryAreaSquareMeters={state.primaryPolygon?.computedAreaSquareMeters ?? 0}
+              netAreaSquareMeters={netAreaSquareMeters}
+              unitPreference={state.unitPreference}
             />
 
-            {/* Control panel */}
-            <div className="control-panel">
-              <section>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                  <h3 style={{ margin: 0, borderBottom: 'none', paddingBottom: 0 }}>Measurement</h3>
-                  <SettingsPanel
-                    unitPreference={state.unitPreference}
-                    onUnitPreferenceChange={handleUnitPreferenceChange}
-                  />
-                </div>
-                <p className="text-muted">
-                  {state.primaryPolygon
-                    ? `✓ Polygon with ${state.primaryPolygon.vertices.length} vertices (${state.excludePolygons.length} exclude polygons)`
-                    : 'Click map to draw a polygon (≥3 points)'}
-                </p>
-                {state.primaryPolygon && (
-                  <button className="btn-danger btn-sm btn-block" onClick={handleClearAll}>
-                    🗑️ Clear Polygon
-                  </button>
-                )}
-              </section>
-
-              <section style={{ marginBottom: '1.5rem' }}>
-                <LocationSearch onLocationSelect={handleLocationSelect} />
-              </section>
-
-              <ExcludePolygonEditor
-                isExcludeMode={isExcludeMode}
-                onToggleExcludeMode={handleToggleExcludeMode}
-                excludePolygons={state.excludePolygons}
-                onDeleteExcludePolygon={handleDeleteExcludePolygon}
-                primaryAreaSquareMeters={state.primaryPolygon?.computedAreaSquareMeters ?? 0}
-                netAreaSquareMeters={netAreaSquareMeters}
-                unitPreference={state.unitPreference}
+            {/* Distance Measurement Tool */}
+            <section style={{ marginBottom: '1.5rem' }}>
+              <MeasurementTool
+                isActive={isMeasurementMode}
+                onToggle={handleToggleMeasurementMode}
+                onMeasurementChange={handleMeasurementPointsChange}
+                measurementPoints={measurementPoints}
+                totalDistance={state.measurement?.totalDistanceMeters ?? 0}
+                segmentDistances={state.measurement?.perSegmentDistancesMeters ?? []}
+                distanceUnit={state.unitPreference.distanceUnit}
               />
+            </section>
 
-              {/* Distance Measurement Tool */}
-              <section style={{ marginBottom: '1.5rem' }}>
-                <MeasurementTool
-                  isActive={isMeasurementMode}
-                  onToggle={handleToggleMeasurementMode}
-                  onMeasurementChange={handleMeasurementPointsChange}
-                  measurementPoints={measurementPoints}
-                  totalDistance={state.measurement?.totalDistanceMeters ?? 0}
-                  segmentDistances={state.measurement?.perSegmentDistancesMeters ?? []}
-                  distanceUnit={state.unitPreference.distanceUnit}
-                />
-              </section>
+            {/* Polygon Display */}
+            <section>
+              <h3>Results</h3>
+              <PolygonDisplay
+                polygon={state.primaryPolygon}
+                unitPreference={state.unitPreference}
+                excludedAreaSquareMeters={Math.max(
+                  0,
+                  (state.primaryPolygon?.computedAreaSquareMeters ?? 0) - netAreaSquareMeters
+                )}
+                netAreaSquareMeters={netAreaSquareMeters}
+              />
+            </section>
 
-              {/* Polygon Display */}
-              <section>
-                <h3>Results</h3>
-                <PolygonDisplay
-                  polygon={state.primaryPolygon}
-                  unitPreference={state.unitPreference}
-                  excludedAreaSquareMeters={Math.max(
-                    0,
-                    (state.primaryPolygon?.computedAreaSquareMeters ?? 0) - netAreaSquareMeters
-                  )}
-                  netAreaSquareMeters={netAreaSquareMeters}
-                />
-              </section>
+            {/* Info Section */}
+            <ExportButton session={state} />
 
-              {/* Info Section */}
-              <ExportButton session={state} />
-
-              {/* Info Section */}
-              <section>
-                <h3>About</h3>
-                <p className="text-muted" style={{ fontSize: '0.875rem' }}>
-                  <strong>Phase 2 MVP</strong> - Switch between Draw Boundary, Legal Description, and Measure Distance modes. Draw
-                  polygons, interpret legal descriptions, or measure distances on the map.
-                </p>
-              </section>
-            </div>
-          </>
+            {/* Info Section */}
+            <section>
+              <h3>About</h3>
+              <p className="text-muted" style={{ fontSize: '0.875rem' }}>
+                <strong>Phase 2 MVP</strong> - Switch between Draw Boundary, Legal Description, and Measure Distance modes. Draw
+                polygons, interpret legal descriptions, or measure distances on the map.
+              </p>
+            </section>
+          </div>
         )}
       </main>
     </div>
