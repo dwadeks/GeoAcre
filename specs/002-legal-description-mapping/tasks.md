@@ -45,22 +45,22 @@
 
 ### Tests for User Story 1 (write first and confirm failing)
 
-- [ ] T013 [P] [US1] Add unit tests for legal input source validation rules in backend/tests/SteelTree.GeoAcre.Web.Api.Tests/LegalDescriptionInputValidationTests.cs
-- [ ] T014 [P] [US1] Add API controller tests for interpret success/failure/retry responses in backend/tests/SteelTree.GeoAcre.Web.Api.Tests/LegalDescriptionControllerTests.cs
-- [ ] T015 [P] [US1] Add integration tests for legal-description interpret endpoint with fake providers in backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/LegalDescriptionInterpretationIntegrationTests.cs
-- [ ] T016 [P] [US1] Add frontend component tests for legal-description submit flows (text, image, invalid both) in frontend/src/tests/components/LegalDescriptionPanel.test.tsx
-- [ ] T017 [P] [US1] Add frontend map behavior tests for read-only interpreted boundary rendering in frontend/src/tests/components/LegalDescriptionMapOverlay.test.tsx
+- [X] T013 [P] [US1] Add unit tests for legal input source validation rules in backend/tests/SteelTree.GeoAcre.Web.Api.Tests/LegalDescriptionInputValidationTests.cs
+- [X] T014 [P] [US1] Add API controller tests for interpret success/failure/retry responses in backend/tests/SteelTree.GeoAcre.Web.Api.Tests/LegalDescriptionControllerTests.cs
+- [X] T015 [P] [US1] Add integration tests for legal-description interpret endpoint with fake providers in backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/LegalDescriptionInterpretationIntegrationTests.cs
+- [X] T016 [P] [US1] Add frontend component tests for legal-description submit flows (text, image, invalid both) in frontend/src/tests/components/LegalDescriptionPanel.test.tsx
+- [X] T017 [P] [US1] Add frontend map behavior tests for read-only interpreted boundary rendering in frontend/src/tests/components/LegalDescriptionMapOverlay.test.tsx
 
 ### Implementation for User Story 1
 
-- [ ] T018 [US1] Implement legal-description application service orchestration (source validation, OCR, interpretation, geometry finalization) in backend/src/SteelTree.GeoAcre.Web.Api/Services/LegalDescriptionService.cs
-- [ ] T019 [US1] Add legal-description interpret API endpoint and structured retry/failure responses in backend/src/SteelTree.GeoAcre.Web.Api/Controllers/LegalDescriptionController.cs
-- [ ] T020 [US1] Implement boundary finalization and read-only provenance mapping in backend/src/SteelTree.GeoAcre.Web.Api/Services/LegalDescriptionBoundaryMapper.cs
-- [ ] T021 [US1] Register controller/service wiring and request limits for upload payloads in backend/src/SteelTree.GeoAcre.Web.Api/Program.cs
-- [ ] T022 [US1] Implement legal-description input panel (text paste/upload, one-source enforcement, retry messaging) in frontend/src/components/LegalDescriptionPanel.tsx
-- [ ] T023 [US1] Implement interpreted boundary overlay with read-only lock behavior in frontend/src/components/LegalDescriptionBoundaryLayer.tsx
-- [ ] T024 [US1] Implement legal-description workflow state management (submission, status, diagnostics, confidence) in frontend/src/services/legalDescriptionState.ts
-- [ ] T025 [US1] Integrate legal-description panel and map overlay into app page flow in frontend/src/App.tsx
+- [X] T018 [US1] Implement legal-description application service orchestration (source validation, OCR, interpretation, geometry finalization) in backend/src/SteelTree.GeoAcre.Web.Api/Services/LegalDescriptionService.cs
+- [X] T019 [US1] Add legal-description interpret API endpoint and structured retry/failure responses in backend/src/SteelTree.GeoAcre.Web.Api/Controllers/LegalDescriptionController.cs
+- [X] T020 [US1] Implement boundary finalization and read-only provenance mapping in backend/src/SteelTree.GeoAcre.Web.Api/Services/LegalDescriptionBoundaryMapper.cs
+- [X] T021 [US1] Register controller/service wiring and request limits for upload payloads in backend/src/SteelTree.GeoAcre.Web.Api/Program.cs
+- [X] T022 [US1] Implement legal-description input panel (text paste/upload, one-source enforcement, retry messaging) in frontend/src/components/LegalDescriptionPanel.tsx
+- [X] T023 [US1] Implement interpreted boundary overlay with read-only lock behavior in frontend/src/components/LegalDescriptionBoundaryLayer.tsx
+- [X] T024 [US1] Implement legal-description workflow state management (submission, status, diagnostics, confidence) in frontend/src/services/legalDescriptionState.ts
+- [X] T025 [US1] Integrate legal-description panel and map overlay into app page flow in frontend/src/App.tsx
 
 **Checkpoint**: User Story 1 works as an MVP independent increment.
 

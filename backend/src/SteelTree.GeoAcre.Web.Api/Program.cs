@@ -1,7 +1,13 @@
 using SteelTree.GeoAcre.Geocoding;
 using SteelTree.GeoAcre.Geocoding.ProviderAdapters;
+using SteelTree.GeoAcre.Web.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 10 * 1024 * 1024;
+});
 
 // Add services to the container
 builder.Services.AddControllers();
@@ -24,6 +30,8 @@ builder.Services.Configure<LegalDescriptionProviderOptions>(
     builder.Configuration.GetSection("LegalDescriptionProviders"));
 builder.Services.AddSingleton<ILegalDescriptionOcrService, PlaceholderLegalDescriptionOcrService>();
 builder.Services.AddSingleton<ILegalDescriptionInterpreter, PlaceholderLegalDescriptionInterpreter>();
+builder.Services.AddSingleton<ILegalDescriptionBoundaryMapper, LegalDescriptionBoundaryMapper>();
+builder.Services.AddScoped<ILegalDescriptionService, LegalDescriptionService>();
 
 // Add logging
 builder.Logging.AddConsole();
