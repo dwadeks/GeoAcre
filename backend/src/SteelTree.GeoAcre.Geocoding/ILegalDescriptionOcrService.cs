@@ -1,4 +1,6 @@
-namespace SteelTree.Ocr;
+namespace SteelTree.GeoAcre.Geocoding;
+
+using SteelTree.Ocr;
 
 public interface ILegalDescriptionOcrService
 {

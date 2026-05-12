@@ -33,6 +33,7 @@ builder.Services.Configure<LegalDescriptionProviderOptions>(
 builder.Services.Configure<OcrProviderOptions>(
     builder.Configuration.GetSection("LegalDescriptionProviders:Ocr"));
 builder.Services.AddAzureDocumentIntelligenceOcr();
+builder.Services.AddSingleton<ILegalDescriptionOcrService, LegalDescriptionOcrAdapter>();
 builder.Services.AddSingleton<ILegalDescriptionInterpreter, PlaceholderLegalDescriptionInterpreter>();
 builder.Services.AddSingleton<ILegalDescriptionBoundaryMapper, LegalDescriptionBoundaryMapper>();
 builder.Services.AddScoped<ILegalDescriptionService, LegalDescriptionService>();

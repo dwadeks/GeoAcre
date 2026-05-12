@@ -4,7 +4,7 @@ public static class AzureDocumentIntelligenceOcrServiceCollectionExtensions
 {
     public static IServiceCollection AddAzureDocumentIntelligenceOcr(this IServiceCollection services)
     {
-        services.AddSingleton<ILegalDescriptionOcrService, AzureDocumentIntelligenceOcrService>();
+        services.AddSingleton<IOcrService, AzureDocumentIntelligenceOcrService>();
         return services;
     }
 }

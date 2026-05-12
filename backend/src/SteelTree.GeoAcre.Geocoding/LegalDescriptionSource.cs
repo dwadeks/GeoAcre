@@ -1,4 +1,4 @@
-namespace SteelTree.Ocr;
+namespace SteelTree.GeoAcre.Geocoding;
 
 public sealed record LegalDescriptionSource(
     LegalInputType Type,

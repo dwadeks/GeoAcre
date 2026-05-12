@@ -1,6 +1,6 @@
 namespace SteelTree.Ocr.AzureDocumentIntelligence;
 
-public sealed class AzureDocumentIntelligenceOcrService : ILegalDescriptionOcrService
+public sealed class AzureDocumentIntelligenceOcrService : IOcrService
 {
     private readonly OcrProviderOptions _options;
     private readonly ILogger<AzureDocumentIntelligenceOcrService> _logger;
@@ -14,26 +14,17 @@ public sealed class AzureDocumentIntelligenceOcrService : ILegalDescriptionOcrSe
     }
 
     public async Task<OcrExtractionResult> ExtractTextAsync(
-        LegalDescriptionSource source,
+        OcrDocument document,
         CancellationToken cancellationToken = default)
     {
         try
         {
-            if (source.Type != LegalInputType.UploadedImage)
+            if (document.ImageBytes is null || document.ImageBytes.Length == 0)
             {
                 return new OcrExtractionResult(
                     false,
                     string.Empty,
-                    ["Azure Document Intelligence OCR only accepts uploaded image sources."],
-                    0);
-            }
-
-            if (source.ImageBytes is null || source.ImageBytes.Length == 0)
-            {
-                return new OcrExtractionResult(
-                    false,
-                    string.Empty,
-                    ["Uploaded image is empty or missing content."],
+                    ["Image is empty or missing content."],
                     0);
             }
 
@@ -51,7 +42,7 @@ public sealed class AzureDocumentIntelligenceOcrService : ILegalDescriptionOcrSe
             cts.CancelAfter(TimeSpan.FromSeconds(_options.TimeoutSeconds));
 
             var client = new DocumentAnalysisClient(new Uri(_options.Endpoint), new AzureKeyCredential(_options.ApiKey));
-            using var imageStream = new MemoryStream(source.ImageBytes, writable: false);
+            using var imageStream = new MemoryStream(document.ImageBytes, writable: false);
 
             AnalyzeDocumentOperation operation = await client.AnalyzeDocumentAsync(
                 WaitUntil.Completed,
@@ -64,11 +55,11 @@ public sealed class AzureDocumentIntelligenceOcrService : ILegalDescriptionOcrSe
 
             if (string.IsNullOrWhiteSpace(extractedText))
             {
-                _logger.LogInformation("No text detected in image '{FileName}'.", source.FileName);
+                _logger.LogInformation("No text detected in image '{FileName}'.", document.FileName);
                 return new OcrExtractionResult(
                     false,
                     string.Empty,
-                    ["No text detected in the uploaded image."],
+                    ["No text detected in the image."],
                     0);
             }
 
@@ -77,7 +68,7 @@ public sealed class AzureDocumentIntelligenceOcrService : ILegalDescriptionOcrSe
             _logger.LogInformation(
                 "Successfully extracted {CharacterCount} characters from image '{FileName}' with confidence {Confidence}.",
                 extractedText.Length,
-                source.FileName,
+                document.FileName,
                 confidence);
 
             return new OcrExtractionResult(
@@ -88,7 +79,7 @@ public sealed class AzureDocumentIntelligenceOcrService : ILegalDescriptionOcrSe
         }
         catch (OperationCanceledException ex)
         {
-            _logger.LogError(ex, "Azure Document Intelligence OCR request timed out for image '{FileName}'.", source.FileName);
+            _logger.LogError(ex, "Azure Document Intelligence OCR request timed out for image '{FileName}'.", document.FileName);
             return new OcrExtractionResult(
                 false,
                 string.Empty,
@@ -102,7 +93,7 @@ public sealed class AzureDocumentIntelligenceOcrService : ILegalDescriptionOcrSe
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error during Azure Document Intelligence OCR extraction for image '{FileName}'.", source.FileName);
+            _logger.LogError(ex, "Unexpected error during Azure Document Intelligence OCR extraction for image '{FileName}'.", document.FileName);
             return new OcrExtractionResult(
                 false,
                 string.Empty,
