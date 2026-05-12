@@ -1,11 +1,8 @@
-using SteelTree.GeoAcre.Web.Api.Models;
+using Microsoft.Extensions.Logging;
 
-namespace SteelTree.GeoAcre.Web.Api.Services;
+namespace SteelTree.GeoAcre.Services;
 
-/// <summary>
-/// Geocoding service implementation using Nominatim (OpenStreetMap).
-/// </summary>
-public class NominatimGeocodeService : IGeocodeService
+public sealed class NominatimGeocodeService : IGeocodeService
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<NominatimGeocodeService> _logger;

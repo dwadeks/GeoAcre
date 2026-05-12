@@ -13,8 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../SteelTree.GeoAcre.Geometry/SteelTree.GeoAcre.Geometry.csproj" />
-    <ProjectReference Include="../SteelTree.GeoAcre.Geocoding/SteelTree.GeoAcre.Geocoding.csproj" />
+    <ProjectReference Include="../SteelTree.GeoAcre/SteelTree.GeoAcre.csproj" />
   </ItemGroup>
 
 </Project>

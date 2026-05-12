@@ -35,7 +35,10 @@
 test-first coverage, integration-test obligations, simplicity constraints, verification
 that hand-authored code changes keep exactly one top-level class or one top-level
 interface per file, and confirmation that files containing a single class or interface
-are named identically to that class or interface]
+are named identically to that class or interface. For backend web applications,
+service contracts/implementations should be planned in a core library namespace
+(`SteelTree.GeoAcre.Services`) while API projects remain focused on bootstrapping
+and HTTP translation.]
 
 ## Project Structure
 

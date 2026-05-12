@@ -1,6 +1,4 @@
-using SteelTree.GeoAcre.Web.Api.Models;
-
-namespace SteelTree.GeoAcre.Web.Api.Services;
+namespace SteelTree.GeoAcre.Services;
 
 public sealed class LegalDescriptionProcessingResult
 {
@@ -10,5 +8,5 @@ public sealed class LegalDescriptionProcessingResult
 
     public string? Code { get; init; }
 
-    public LegalDescriptionInterpretResponse? Response { get; init; }
+    public LegalDescriptionInterpretationResult? Response { get; init; }
 }

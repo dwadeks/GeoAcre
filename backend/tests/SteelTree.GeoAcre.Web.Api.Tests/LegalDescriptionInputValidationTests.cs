@@ -1,7 +1,6 @@
 using SteelTree.GeoAcre.Geocoding;
 using SteelTree.GeoAcre.Geometry;
-using SteelTree.GeoAcre.Web.Api.Models;
-using SteelTree.GeoAcre.Web.Api.Services;
+using SteelTree.GeoAcre.Services;
 using Microsoft.AspNetCore.Http;
 
 namespace SteelTree.GeoAcre.Web.Api.Tests;
@@ -13,16 +12,13 @@ public class LegalDescriptionInputValidationTests
     public async Task InterpretAsync_WithBothTextAndImageProperties_ReturnsBadRequest()
     {
         var service = CreateService();
-        var request = new LegalDescriptionInterpretRequest
+        var request = new LegalDescriptionInterpretCommand
         {
-            Source = new LegalDescriptionSourceDto
-            {
-                Type = "PastedText",
-                Text = "Tract text",
-                FileName = "tract.png",
-                ContentType = "image/png",
-                Base64Content = Convert.ToBase64String([1, 2, 3]),
-            },
+            SourceType = "PastedText",
+            Text = "Tract text",
+            FileName = "tract.png",
+            ContentType = "image/png",
+            Base64Content = Convert.ToBase64String([1, 2, 3]),
         };
 
         var result = await service.InterpretAsync(request);
@@ -35,20 +31,17 @@ public class LegalDescriptionInputValidationTests
     public async Task InterpretAsync_WithValidPastedText_ReturnsSuccessResponse()
     {
         var service = CreateService();
-        var request = new LegalDescriptionInterpretRequest
+        var request = new LegalDescriptionInterpretCommand
         {
-            Source = new LegalDescriptionSourceDto
-            {
-                Type = "PastedText",
-                Text = "Beginning at the northwest corner...",
-            },
+            SourceType = "PastedText",
+            Text = "Beginning at the northwest corner...",
         };
 
         var result = await service.InterpretAsync(request);
 
         result.StatusCode.Should().Be(StatusCodes.Status200OK);
         result.Response.Should().NotBeNull();
-        result.Response!.Interpretation.Status.Should().Be("Succeeded");
+        result.Response!.Status.Should().Be("Succeeded");
         result.Response.Boundary.Should().NotBeNull();
         result.Response.Boundary!.IsReadOnly.Should().BeTrue();
     }
@@ -61,22 +54,19 @@ public class LegalDescriptionInputValidationTests
             new FakeInterpreter(),
             new LegalDescriptionBoundaryMapper());
 
-        var request = new LegalDescriptionInterpretRequest
+        var request = new LegalDescriptionInterpretCommand
         {
-            Source = new LegalDescriptionSourceDto
-            {
-                Type = "UploadedImage",
-                FileName = "tract.svg",
-                ContentType = "image/svg+xml",
-                Base64Content = Convert.ToBase64String("fake image bytes"u8.ToArray()),
-            },
+            SourceType = "UploadedImage",
+            FileName = "tract.svg",
+            ContentType = "image/svg+xml",
+            Base64Content = Convert.ToBase64String("fake image bytes"u8.ToArray()),
         };
 
         var result = await service.InterpretAsync(request);
 
         result.StatusCode.Should().Be(StatusCodes.Status422UnprocessableEntity);
         result.Response.Should().NotBeNull();
-        result.Response!.Interpretation.Status.Should().Be("NeedsRetry");
+        result.Response!.Status.Should().Be("NeedsRetry");
         result.Response.Retry.Should().NotBeNull();
         result.Response.Retry!.Allowed.Should().BeTrue();
     }

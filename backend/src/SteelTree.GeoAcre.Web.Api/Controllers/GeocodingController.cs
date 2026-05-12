@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using SteelTree.GeoAcre.Services;
 using SteelTree.GeoAcre.Web.Api.Models;
-using SteelTree.GeoAcre.Web.Api.Services;
+using ApiGeocodeResult = SteelTree.GeoAcre.Web.Api.Models.GeocodeResult;
 
 namespace SteelTree.GeoAcre.Web.Api.Controllers;
 
@@ -28,7 +29,20 @@ public class GeocodingController : ControllerBase
         try
         {
             var results = await _geocodeService.SearchAsync(request.Query, request.MaxResults);
-            return Ok(new GeocodeSearchResponse { Results = [.. results] });
+            return Ok(new GeocodeSearchResponse
+            {
+                Results =
+                [
+                    .. results.Select(result => new ApiGeocodeResult
+                    {
+                        Id = result.Id,
+                        DisplayName = result.DisplayName,
+                        Latitude = result.Latitude,
+                        Longitude = result.Longitude,
+                        BoundingBox = result.BoundingBox,
+                    })
+                ]
+            });
         }
         catch (ArgumentException ex)
         {

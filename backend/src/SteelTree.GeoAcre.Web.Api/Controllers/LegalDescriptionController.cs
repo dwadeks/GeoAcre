@@ -1,5 +1,5 @@
+using SteelTree.GeoAcre.Services;
 using SteelTree.GeoAcre.Web.Api.Models;
-using SteelTree.GeoAcre.Web.Api.Services;
 
 namespace SteelTree.GeoAcre.Web.Api.Controllers;
 
@@ -25,10 +25,55 @@ public class LegalDescriptionController : ControllerBase
     {
         try
         {
-            var result = await _legalDescriptionService.InterpretAsync(request, cancellationToken);
+            var command = new LegalDescriptionInterpretCommand
+            {
+                SourceType = request.Source.Type,
+                Text = request.Source.Text,
+                FileName = request.Source.FileName,
+                ContentType = request.Source.ContentType,
+                Base64Content = request.Source.Base64Content,
+                MaxVertices = request.Options?.MaxVertices,
+                ConfidenceThreshold = request.Options?.ConfidenceThreshold,
+            };
+
+            var result = await _legalDescriptionService.InterpretAsync(command, cancellationToken);
             if (result.Response is not null)
             {
-                return StatusCode(result.StatusCode, result.Response);
+                var payload = new LegalDescriptionInterpretResponse
+                {
+                    Mode = result.Response.Mode,
+                    SchemaVersion = result.Response.SchemaVersion,
+                    Interpretation = new LegalDescriptionInterpretationDto
+                    {
+                        Status = result.Response.Status,
+                        Confidence = result.Response.Confidence,
+                        Diagnostics = result.Response.Diagnostics,
+                    },
+                    Boundary = result.Response.Boundary is null
+                        ? null
+                        : new LegalDescriptionBoundaryDto
+                        {
+                            Provenance = result.Response.Boundary.Provenance,
+                            IsReadOnly = result.Response.Boundary.IsReadOnly,
+                            Vertices =
+                            [
+                                .. result.Response.Boundary.Vertices.Select(v =>
+                                    new LatLngDto { Latitude = v.Latitude, Longitude = v.Longitude })
+                            ],
+                            AreaSquareMeters = result.Response.Boundary.AreaSquareMeters,
+                            PerimeterMeters = result.Response.Boundary.PerimeterMeters,
+                            HasSelfIntersection = result.Response.Boundary.HasSelfIntersection,
+                        },
+                    Retry = result.Response.Retry is null
+                        ? null
+                        : new RetryGuidanceDto
+                        {
+                            Allowed = result.Response.Retry.Allowed,
+                            Message = result.Response.Retry.Message,
+                        },
+                };
+
+                return StatusCode(result.StatusCode, payload);
             }
 
             return StatusCode(result.StatusCode, new { error = result.Error, code = result.Code });

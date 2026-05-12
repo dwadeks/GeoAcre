@@ -3,8 +3,9 @@ using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using SteelTree.GeoAcre.Services;
 using SteelTree.GeoAcre.Web.Api.Models;
-using SteelTree.GeoAcre.Web.Api.Services;
+using CoreGeocodeResult = SteelTree.GeoAcre.Services.GeocodeResult;
 
 namespace SteelTree.GeoAcre.Web.Api.Tests;
 
@@ -18,7 +19,7 @@ public class GeocodingControllerTests
         {
             SearchResults =
             [
-                new GeocodeResult
+                new CoreGeocodeResult
                 {
                     Id = "1",
                     DisplayName = "Springfield, IL",
@@ -109,11 +110,11 @@ public class GeocodingControllerTests
 
     private sealed class StubGeocodeService : IGeocodeService
     {
-        public IEnumerable<GeocodeResult> SearchResults { get; set; } = [];
+        public IEnumerable<CoreGeocodeResult> SearchResults { get; set; } = [];
         public string ReverseAddress { get; set; } = "Unknown";
         public Exception? ThrowOnSearch { get; set; }
 
-        public Task<IEnumerable<GeocodeResult>> SearchAsync(string query, int maxResults = 10)
+        public Task<IEnumerable<CoreGeocodeResult>> SearchAsync(string query, int maxResults = 10)
         {
             if (ThrowOnSearch is not null)
             {

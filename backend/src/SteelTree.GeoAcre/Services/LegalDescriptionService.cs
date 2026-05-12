@@ -1,7 +1,6 @@
 using SteelTree.GeoAcre.Geocoding;
-using SteelTree.GeoAcre.Web.Api.Models;
 
-namespace SteelTree.GeoAcre.Web.Api.Services;
+namespace SteelTree.GeoAcre.Services;
 
 public sealed class LegalDescriptionService : ILegalDescriptionService
 {
@@ -22,15 +21,14 @@ public sealed class LegalDescriptionService : ILegalDescriptionService
     }
 
     public async Task<LegalDescriptionProcessingResult> InterpretAsync(
-        LegalDescriptionInterpretRequest request,
+        LegalDescriptionInterpretCommand command,
         CancellationToken cancellationToken = default)
     {
-        var source = request.Source;
-        if (!TryBuildSource(source, out var domainSource, out var validationError))
+        if (!TryBuildSource(command, out var domainSource, out var validationError))
         {
             return new LegalDescriptionProcessingResult
             {
-                StatusCode = StatusCodes.Status400BadRequest,
+                StatusCode = 400,
                 Error = validationError,
                 Code = "INVALID_INPUT_SOURCE",
             };
@@ -44,7 +42,7 @@ public sealed class LegalDescriptionService : ILegalDescriptionService
             {
                 return new LegalDescriptionProcessingResult
                 {
-                    StatusCode = StatusCodes.Status422UnprocessableEntity,
+                    StatusCode = 422,
                     Response = BuildRetryResponse(
                         ocrResult.Confidence,
                         ocrResult.Diagnostics.Count > 0
@@ -61,7 +59,7 @@ public sealed class LegalDescriptionService : ILegalDescriptionService
         {
             return new LegalDescriptionProcessingResult
             {
-                StatusCode = StatusCodes.Status422UnprocessableEntity,
+                StatusCode = 422,
                 Response = BuildRetryResponse(
                     0,
                     interpretation.Diagnostics.Count > 0
@@ -71,7 +69,7 @@ public sealed class LegalDescriptionService : ILegalDescriptionService
         }
 
         var bestCandidate = interpretation.Candidates.OrderByDescending(c => c.Confidence).First();
-        LegalDescriptionBoundaryDto boundary;
+        LegalDescriptionBoundaryResult boundary;
         try
         {
             boundary = _boundaryMapper.Map(bestCandidate);
@@ -80,7 +78,7 @@ public sealed class LegalDescriptionService : ILegalDescriptionService
         {
             return new LegalDescriptionProcessingResult
             {
-                StatusCode = StatusCodes.Status422UnprocessableEntity,
+                StatusCode = 422,
                 Response = BuildRetryResponse(
                     bestCandidate.Confidence,
                     ["Interpreted boundary could not be finalized. Please retry with clearer source data."])
@@ -89,35 +87,29 @@ public sealed class LegalDescriptionService : ILegalDescriptionService
 
         return new LegalDescriptionProcessingResult
         {
-            StatusCode = StatusCodes.Status200OK,
-            Response = new LegalDescriptionInterpretResponse
+            StatusCode = 200,
+            Response = new LegalDescriptionInterpretationResult
             {
                 Mode = "LegalDescription",
                 SchemaVersion = SchemaVersion,
-                Interpretation = new LegalDescriptionInterpretationDto
-                {
-                    Status = "Succeeded",
-                    Confidence = bestCandidate.Confidence,
-                    Diagnostics = [.. bestCandidate.Diagnostics],
-                },
+                Status = "Succeeded",
+                Confidence = bestCandidate.Confidence,
+                Diagnostics = [.. bestCandidate.Diagnostics],
                 Boundary = boundary,
             },
         };
     }
 
-    private static LegalDescriptionInterpretResponse BuildRetryResponse(double confidence, string[] diagnostics)
+    private static LegalDescriptionInterpretationResult BuildRetryResponse(double confidence, string[] diagnostics)
     {
-        return new LegalDescriptionInterpretResponse
+        return new LegalDescriptionInterpretationResult
         {
             Mode = "LegalDescription",
             SchemaVersion = SchemaVersion,
-            Interpretation = new LegalDescriptionInterpretationDto
-            {
-                Status = "NeedsRetry",
-                Confidence = confidence,
-                Diagnostics = diagnostics,
-            },
-            Retry = new RetryGuidanceDto
+            Status = "NeedsRetry",
+            Confidence = confidence,
+            Diagnostics = diagnostics,
+            Retry = new LegalDescriptionRetryGuidanceResult
             {
                 Allowed = true,
                 Message = "Please upload a clearer scan or paste the legal text directly.",
@@ -126,16 +118,16 @@ public sealed class LegalDescriptionService : ILegalDescriptionService
     }
 
     private static bool TryBuildSource(
-        LegalDescriptionSourceDto source,
+        LegalDescriptionInterpretCommand command,
         out LegalDescriptionSource legalDescriptionSource,
         out string validationError)
     {
         legalDescriptionSource = new LegalDescriptionSource(LegalInputType.PastedText, null, null, null, null);
 
-        var hasText = !string.IsNullOrWhiteSpace(source.Text);
-        var hasImageMetadata = !string.IsNullOrWhiteSpace(source.FileName)
-            || !string.IsNullOrWhiteSpace(source.ContentType)
-            || !string.IsNullOrWhiteSpace(source.Base64Content);
+        var hasText = !string.IsNullOrWhiteSpace(command.Text);
+        var hasImageMetadata = !string.IsNullOrWhiteSpace(command.FileName)
+            || !string.IsNullOrWhiteSpace(command.ContentType)
+            || !string.IsNullOrWhiteSpace(command.Base64Content);
 
         if (hasText && hasImageMetadata)
         {
@@ -143,7 +135,7 @@ public sealed class LegalDescriptionService : ILegalDescriptionService
             return false;
         }
 
-        if (!Enum.TryParse<LegalInputType>(source.Type, ignoreCase: true, out var inputType))
+        if (!Enum.TryParse<LegalInputType>(command.SourceType, ignoreCase: true, out var inputType))
         {
             validationError = "Unsupported legal description source type.";
             return false;
@@ -157,14 +149,14 @@ public sealed class LegalDescriptionService : ILegalDescriptionService
                 return false;
             }
 
-            legalDescriptionSource = new LegalDescriptionSource(LegalInputType.PastedText, source.Text, null, null, null);
+            legalDescriptionSource = new LegalDescriptionSource(LegalInputType.PastedText, command.Text, null, null, null);
             validationError = string.Empty;
             return true;
         }
 
-        if (string.IsNullOrWhiteSpace(source.FileName)
-            || string.IsNullOrWhiteSpace(source.ContentType)
-            || string.IsNullOrWhiteSpace(source.Base64Content)
+        if (string.IsNullOrWhiteSpace(command.FileName)
+            || string.IsNullOrWhiteSpace(command.ContentType)
+            || string.IsNullOrWhiteSpace(command.Base64Content)
             || hasText)
         {
             validationError = "UploadedImage source requires fileName, contentType, and base64Content only.";
@@ -174,7 +166,7 @@ public sealed class LegalDescriptionService : ILegalDescriptionService
         byte[] imageBytes;
         try
         {
-            imageBytes = Convert.FromBase64String(source.Base64Content);
+            imageBytes = Convert.FromBase64String(command.Base64Content);
         }
         catch (FormatException)
         {
@@ -185,8 +177,8 @@ public sealed class LegalDescriptionService : ILegalDescriptionService
         legalDescriptionSource = new LegalDescriptionSource(
             LegalInputType.UploadedImage,
             null,
-            source.FileName,
-            source.ContentType,
+            command.FileName,
+            command.ContentType,
             imageBytes);
         validationError = string.Empty;
         return true;

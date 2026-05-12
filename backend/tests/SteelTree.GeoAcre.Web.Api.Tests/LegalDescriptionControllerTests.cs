@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using SteelTree.GeoAcre.Geometry;
+using SteelTree.GeoAcre.Services;
 using SteelTree.GeoAcre.Web.Api.Models;
-using SteelTree.GeoAcre.Web.Api.Services;
 
 namespace SteelTree.GeoAcre.Web.Api.Tests;
 
@@ -19,25 +20,22 @@ public class LegalDescriptionControllerTests
         await using var factory = CreateFactory(_ => Task.FromResult(new LegalDescriptionProcessingResult
         {
             StatusCode = StatusCodes.Status200OK,
-            Response = new LegalDescriptionInterpretResponse
+            Response = new LegalDescriptionInterpretationResult
             {
                 Mode = "LegalDescription",
                 SchemaVersion = "2.0.0",
-                Interpretation = new LegalDescriptionInterpretationDto
-                {
-                    Status = "Succeeded",
-                    Confidence = 0.91,
-                    Diagnostics = [],
-                },
-                Boundary = new LegalDescriptionBoundaryDto
+                Status = "Succeeded",
+                Confidence = 0.91,
+                Diagnostics = [],
+                Boundary = new LegalDescriptionBoundaryResult
                 {
                     Provenance = "LegalInterpretation",
                     IsReadOnly = true,
                     Vertices =
                     [
-                        new LatLngDto { Latitude = 37, Longitude = -94 },
-                        new LatLngDto { Latitude = 37, Longitude = -94.001 },
-                        new LatLngDto { Latitude = 37.001, Longitude = -94.001 },
+                        new GeoPoint(37, -94),
+                        new GeoPoint(37, -94.001),
+                        new GeoPoint(37.001, -94.001),
                     ],
                     AreaSquareMeters = 100,
                     PerimeterMeters = 40,
@@ -61,17 +59,14 @@ public class LegalDescriptionControllerTests
         await using var factory = CreateFactory(_ => Task.FromResult(new LegalDescriptionProcessingResult
         {
             StatusCode = StatusCodes.Status422UnprocessableEntity,
-            Response = new LegalDescriptionInterpretResponse
+            Response = new LegalDescriptionInterpretationResult
             {
                 Mode = "LegalDescription",
                 SchemaVersion = "2.0.0",
-                Interpretation = new LegalDescriptionInterpretationDto
-                {
-                    Status = "NeedsRetry",
-                    Confidence = 0.3,
-                    Diagnostics = ["Need clearer input"],
-                },
-                Retry = new RetryGuidanceDto
+                Status = "NeedsRetry",
+                Confidence = 0.3,
+                Diagnostics = ["Need clearer input"],
+                Retry = new LegalDescriptionRetryGuidanceResult
                 {
                     Allowed = true,
                     Message = "Retry with clearer input",
@@ -113,7 +108,7 @@ public class LegalDescriptionControllerTests
     }
 
     private static WebApplicationFactory<Program> CreateFactory(
-        Func<LegalDescriptionInterpretRequest, Task<LegalDescriptionProcessingResult>> handler)
+        Func<LegalDescriptionInterpretCommand, Task<LegalDescriptionProcessingResult>> handler)
     {
         return new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
@@ -140,14 +135,14 @@ public class LegalDescriptionControllerTests
 
     private sealed class StubLegalDescriptionService : ILegalDescriptionService
     {
-        private readonly Func<LegalDescriptionInterpretRequest, Task<LegalDescriptionProcessingResult>> _handler;
+        private readonly Func<LegalDescriptionInterpretCommand, Task<LegalDescriptionProcessingResult>> _handler;
 
-        public StubLegalDescriptionService(Func<LegalDescriptionInterpretRequest, Task<LegalDescriptionProcessingResult>> handler)
+        public StubLegalDescriptionService(Func<LegalDescriptionInterpretCommand, Task<LegalDescriptionProcessingResult>> handler)
         {
             _handler = handler;
         }
 
-        public Task<LegalDescriptionProcessingResult> InterpretAsync(LegalDescriptionInterpretRequest request, CancellationToken cancellationToken = default)
+        public Task<LegalDescriptionProcessingResult> InterpretAsync(LegalDescriptionInterpretCommand request, CancellationToken cancellationToken = default)
         {
             return _handler(request);
         }

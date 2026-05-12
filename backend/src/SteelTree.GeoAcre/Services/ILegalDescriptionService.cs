@@ -1,10 +1,8 @@
-using SteelTree.GeoAcre.Web.Api.Models;
-
-namespace SteelTree.GeoAcre.Web.Api.Services;
+namespace SteelTree.GeoAcre.Services;
 
 public interface ILegalDescriptionService
 {
     Task<LegalDescriptionProcessingResult> InterpretAsync(
-        LegalDescriptionInterpretRequest request,
+        LegalDescriptionInterpretCommand command,
         CancellationToken cancellationToken = default);
 }

@@ -21,6 +21,9 @@ description: "Task list template for feature implementation"
   exactly one top-level class or one top-level interface, per the constitution.
   File names MUST match the class or interface they contain (e.g., Polygon.cs for
   class Polygon, GeoPoint.ts for interface GeoPoint)
+- For backend web app features, place service contract/implementation tasks in
+  `backend/src/SteelTree.GeoAcre/Services` and keep `backend/src/*Web.Api*`
+  tasks focused on startup wiring and HTTP request/response translation.
 
 ## Path Conventions
 
@@ -185,6 +188,7 @@ Examples of foundational tasks (adjust based on your project):
 - Tests (if included) MUST be written and FAIL before implementation
 - Models before services
 - Services before endpoints
+- In backend web apps, core-library services before API-controller translation tasks
 - Core implementation before integration
 - Split multi-type code into separate files before or during implementation when
   needed to satisfy the one-class-or-interface-per-file rule

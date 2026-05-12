@@ -1,12 +1,11 @@
 using SteelTree.GeoAcre.Geocoding;
 using SteelTree.GeoAcre.Geometry;
-using SteelTree.GeoAcre.Web.Api.Models;
 
-namespace SteelTree.GeoAcre.Web.Api.Services;
+namespace SteelTree.GeoAcre.Services;
 
 public sealed class LegalDescriptionBoundaryMapper : ILegalDescriptionBoundaryMapper
 {
-    public LegalDescriptionBoundaryDto Map(InterpretedBoundary boundary)
+    public LegalDescriptionBoundaryResult Map(InterpretedBoundary boundary)
     {
         if (boundary.Vertices.Count < 3)
         {
@@ -20,11 +19,11 @@ public sealed class LegalDescriptionBoundaryMapper : ILegalDescriptionBoundaryMa
             ? GeoCalculations.ComputeAreaEvenOddRule(polygon.Vertices)
             : polygon.ComputedAreaSquareMeters;
 
-        return new LegalDescriptionBoundaryDto
+        return new LegalDescriptionBoundaryResult
         {
             Provenance = "LegalInterpretation",
             IsReadOnly = true,
-            Vertices = [.. polygon.Vertices.Select(v => new LatLngDto { Latitude = v.Latitude, Longitude = v.Longitude })],
+            Vertices = polygon.Vertices,
             AreaSquareMeters = areaSquareMeters,
             PerimeterMeters = polygon.ComputedPerimeterMeters,
             HasSelfIntersection = hasIntersections,
