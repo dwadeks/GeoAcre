@@ -109,7 +109,31 @@
 
 ---
 
-## Phase 6: User Story 3 - Export Mode-Specific JSON (Priority: P3)
+## Phase 6: Plan Amendment - ILegalDescriptionInterpreter Next (US1 Delta Priority)
+
+**Goal**: Implement `ILegalDescriptionInterpreter` as the next build item, including optional tract-heading normalization (`Tract II:` / `Tract IV:`) and deterministic parser diagnostics.
+
+**Independent Test**: Submit fixture-equivalent legal text with and without tract heading prefixes and verify interpretation success and equivalent geometry candidates.
+
+### Tests for Interpreter Amendment (US1)
+
+- [ ] T044 [P] [US1] Add interpreter normalization unit tests for heading-present and heading-absent inputs in backend/tests/SteelTree.GeoAcre.Web.Api.Tests/LegalDescriptionInterpreterNormalizationTests.cs
+- [ ] T045 [P] [US1] Extend legal-description integration tests for tract-prefix equivalence in backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/LegalDescriptionInterpretationIntegrationTests.cs
+- [ ] T046 [P] [US1] Add interpreter diagnostics tests for malformed or incomplete course clauses in backend/tests/SteelTree.GeoAcre.Web.Api.Tests/LegalDescriptionInterpreterDiagnosticsTests.cs
+
+### Implementation for Interpreter Amendment (US1)
+
+- [ ] T047 [US1] Implement legal-description text normalization helper in backend/src/SteelTree.GeoAcre.Geocoding/ProviderAdapters/LegalDescriptionTextNormalizer.cs
+- [ ] T048 [US1] Implement legal-description course parser for direction-distance extraction in backend/src/SteelTree.GeoAcre.Geocoding/ProviderAdapters/LegalDescriptionCourseParser.cs
+- [ ] T049 [US1] Refactor interpreter implementation to use normalization and parser services in backend/src/SteelTree.GeoAcre.Geocoding/ProviderAdapters/PlaceholderLegalDescriptionInterpreter.cs
+- [ ] T050 [US1] Add deterministic candidate construction helper for interpreter output in backend/src/SteelTree.GeoAcre.Geocoding/ProviderAdapters/LegalDescriptionBoundaryCandidateBuilder.cs
+- [ ] T051 [US1] Validate interpreter service orchestration compatibility in backend/src/SteelTree.GeoAcre/Services/LegalDescriptionService.cs
+
+**Checkpoint**: Interpreter implementation aligns with plan amendment and is independently testable.
+
+---
+
+## Phase 7: User Story 3 - Export Mode-Specific JSON (Priority: P3)
 
 **Goal**: Users can export JSON payloads specific to the active mode with schema discriminator and validation guard when no complete result exists.
 
@@ -117,31 +141,31 @@
 
 ### Tests for User Story 3
 
-- [ ] T044 [P] [US3] Add frontend unit tests for mode-specific export mappers in frontend/src/tests/services/exportMapper.test.ts
-- [ ] T045 [P] [US3] Add frontend tests for export blocking when active mode is incomplete in frontend/src/tests/components/ExportActions.test.tsx
-- [ ] T046 [P] [US3] Add backend API tests for export snapshot contract and conflict response in backend/tests/SteelTree.GeoAcre.Web.Api.Tests/ExportControllerTests.cs
-- [ ] T047 [P] [US3] Add integration tests for export endpoint per mode schema in backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/ModeExportIntegrationTests.cs
+- [ ] T052 [P] [US3] Add frontend unit tests for mode-specific export mappers in frontend/src/tests/services/exportMapper.test.ts
+- [ ] T053 [P] [US3] Add frontend tests for export blocking when active mode is incomplete in frontend/src/tests/components/ExportActions.test.tsx
+- [ ] T054 [P] [US3] Add backend API tests for export snapshot contract and conflict response in backend/tests/SteelTree.GeoAcre.Web.Api.Tests/ExportControllerTests.cs
+- [ ] T055 [P] [US3] Add integration tests for export endpoint per mode schema in backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/ModeExportIntegrationTests.cs
 
 ### Implementation for User Story 3
 
-- [ ] T048 [US3] Implement mode-specific export payload builders in frontend/src/services/exportMapper.ts
-- [ ] T049 [US3] Implement export action UI and incomplete-state guard messaging in frontend/src/components/ExportActions.tsx
-- [ ] T050 [US3] Implement export API endpoint in backend/src/SteelTree.GeoAcre.Web.Api/Controllers/ExportController.cs
-- [ ] T051 [US3] Implement backend export snapshot service and validators in backend/src/SteelTree.GeoAcre/Services/ModeExportService.cs
-- [ ] T052 [US3] Replace legacy export wiring with mode-specific export flow in frontend/src/pages/App.tsx and frontend/src/components/ExportButton.tsx
+- [ ] T056 [US3] Implement mode-specific export payload builders in frontend/src/services/exportMapper.ts
+- [ ] T057 [US3] Implement export action UI and incomplete-state guard messaging in frontend/src/components/ExportActions.tsx
+- [ ] T058 [US3] Implement export API endpoint in backend/src/SteelTree.GeoAcre.Web.Api/Controllers/ExportController.cs
+- [ ] T059 [US3] Implement backend export snapshot service and validators in backend/src/SteelTree.GeoAcre/Services/ModeExportService.cs
+- [ ] T060 [US3] Replace legacy export wiring with mode-specific export flow in frontend/src/pages/App.tsx and frontend/src/components/ExportButton.tsx
 
 **Checkpoint**: All user stories are independently testable and complete.
 
 ---
 
-## Phase 7: Polish & Cross-Cutting Concerns
+## Phase 8: Polish & Cross-Cutting Concerns
 
 **Purpose**: Final hardening, documentation, and non-regression checks.
 
-- [ ] T053 [P] Add frontend regression tests for v1 draw and distance behavior in frontend/src/tests/integration/V1ModeRegression.test.tsx
-- [ ] T054 [P] Add backend non-regression tests for existing geocoding and geometry endpoints in backend/tests/SteelTree.GeoAcre.Web.Api.Tests/ExistingEndpointsRegressionTests.cs
-- [ ] T055 Add observability logs and request correlation for legal-description and export flows in backend/src/SteelTree.GeoAcre.Web.Api/Middleware/ErrorHandlingMiddleware.cs
-- [ ] T056 Update v2 usage documentation and workflow notes in docs/legal-description-mapping.md and validate specs/002-legal-description-mapping/quickstart.md
+- [ ] T061 [P] Add frontend regression tests for v1 draw and distance behavior in frontend/src/tests/integration/V1ModeRegression.test.tsx
+- [ ] T062 [P] Add backend non-regression tests for existing geocoding and geometry endpoints in backend/tests/SteelTree.GeoAcre.Web.Api.Tests/ExistingEndpointsRegressionTests.cs
+- [ ] T063 Add observability logs and request correlation for legal-description and export flows in backend/src/SteelTree.GeoAcre.Web.Api/Middleware/ErrorHandlingMiddleware.cs
+- [ ] T064 Update v2 usage documentation and workflow notes in docs/legal-description-mapping.md and validate specs/002-legal-description-mapping/quickstart.md
 
 ---
 
@@ -152,16 +176,17 @@
 - Phase 1 (Setup): can start immediately.
 - Phase 2 (Foundational): depends on Phase 1 completion and blocks all stories.
 - Phase 3 (OCR Extraction): depends on Phase 2 and should complete before final OCR packaging verification.
-- Phase 4 (US1): depends on Phase 2; can proceed before OCR extraction completes if current OCR adapter remains temporarily wired.
+- Phase 4 (US1): depends on Phase 2.
 - Phase 5 (US2): depends on Phase 2; can run in parallel with US1.
-- Phase 6 (US3): depends on Phase 2 and stable mode state from US1/US2.
-- Phase 7 (Polish): depends on completion of target stories.
+- Phase 6 (Interpreter Amendment): depends on Phase 2 and should complete before remaining roadmap stories.
+- Phase 7 (US3): depends on Phase 2 and stable mode state from US1/US2 plus interpreter amendment completion.
+- Phase 8 (Polish): depends on completion of target stories.
 
 ### User Story Dependencies
 
 - US1 (P1): no dependency on other stories after foundation.
 - US2 (P2): no strict dependency on US1, but integrates with shared UI state.
-- US3 (P3): depends on stable mode state and legal-description output contracts; should follow or pair with US1/US2 stabilization.
+- US3 (P3): depends on stable mode state and legal-description output contracts; follows interpreter amendment completion.
 
 ### Within Each User Story
 
@@ -186,7 +211,12 @@
 
 ### User Story 3
 
-- T044, T046, and T047 can run in parallel because they target separate test layers.
+- T052, T054, and T055 can run in parallel because they target separate test layers.
+
+### Interpreter Amendment
+
+- T044, T045, and T046 can run in parallel as independent failing tests.
+- T047 and T048 can run in parallel because they target separate helper classes.
 
 ---
 
@@ -196,19 +226,21 @@
 
 1. Confirm Phases 1 and 2 are complete.
 2. Deliver and validate US1 (Phase 4).
-3. Keep US2 complete and stable (Phase 5).
+3. Complete interpreter amendment tasks (Phase 6).
+4. Keep US2 complete and stable (Phase 5).
 
 ### Plan-Alignment Delta
 
 1. Complete OCR extraction tasks in Phase 3 to match updated architecture.
-2. Then complete US3 export contract work in Phase 6.
-3. Finish polish and non-regression checks in Phase 7.
+2. Complete interpreter amendment tasks in Phase 6 as next build priority.
+3. Then complete US3 export contract work in Phase 7.
+4. Finish polish and non-regression checks in Phase 8.
 
 ### Team Parallelization
 
-1. Engineer A: Phase 3 OCR extraction and backend reference updates.
-2. Engineer B: US3 frontend export mapper/actions.
-3. Engineer C: US3 backend export endpoint/service and integration tests.
+1. Engineer A: Phase 6 interpreter helper implementation and interpreter refactor (`T047`-`T050`).
+2. Engineer B: Phase 6 interpreter test coverage (`T044`-`T046`).
+3. Engineer C: US3 export tasks after interpreter amendment checkpoint (`T052`-`T060`).
 
 ---
 
