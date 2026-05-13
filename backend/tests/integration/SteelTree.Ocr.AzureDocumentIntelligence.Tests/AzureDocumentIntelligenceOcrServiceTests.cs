@@ -11,6 +11,7 @@ public class AzureDocumentIntelligenceOcrServiceTests
 
         var service = CreateService();
         var document = BuildImageDocument("tract-ii.png");
+        var expectedText = GetExpectedOcrResult("tract-ii.txt");
 
         var result = await service.ExtractTextAsync(document);
 
@@ -18,6 +19,7 @@ public class AzureDocumentIntelligenceOcrServiceTests
         result.ExtractedText.Should().NotBeNullOrWhiteSpace();
         result.ExtractedText.Should().NotBeEmpty();
         result.Confidence.Should().BeGreaterThan(0);
+        result.ExtractedText.Should().Be(expectedText);
     }
 
     [TestMethod]
@@ -28,6 +30,7 @@ public class AzureDocumentIntelligenceOcrServiceTests
 
         var service = CreateService();
         var document = BuildImageDocument("tract-iv.png");
+        var expectedText = GetExpectedOcrResult("tract-iv.txt");
 
         var result = await service.ExtractTextAsync(document);
 
@@ -35,6 +38,7 @@ public class AzureDocumentIntelligenceOcrServiceTests
         result.ExtractedText.Should().NotBeNullOrWhiteSpace();
         result.ExtractedText.Should().NotBeEmpty();
         result.Confidence.Should().BeGreaterThan(0);
+        result.ExtractedText.Should().Be(expectedText);
     }
 
     private static AzureDocumentIntelligenceOcrService CreateService()
@@ -57,6 +61,11 @@ public class AzureDocumentIntelligenceOcrServiceTests
         var bytes = File.ReadAllBytes(imagePath);
 
         return new OcrDocument(bytes, fileName, "image/png");
+    }
+
+    private static string GetExpectedOcrResult(string fileName)
+    {
+        return File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "TestData", fileName));
     }
 
     private static void SkipIfNotConfigured()
