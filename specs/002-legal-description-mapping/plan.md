@@ -1,11 +1,23 @@
 # Implementation Plan: Legal Description Mapping (V2)
 
-**Branch**: `002-legal-description-mapping` | **Date**: 2026-05-11 | **Spec**: `/specs/002-legal-description-mapping/spec.md`
+**Branch**: `002-legal-description-mapping` | **Date**: 2026-05-11 (amended 2026-05-13) | **Spec**: `/specs/002-legal-description-mapping/spec.md`
 **Input**: Feature specification from `/specs/002-legal-description-mapping/spec.md`
 
 ## Summary
 
-Deliver a third workflow mode, `Legal Description`, that accepts exactly one input source (pasted text or uploaded image), interprets legal descriptions into tract geometry, renders read-only boundaries, and exports mode-specific JSON. Third-party dependencies (OCR, legal interpretation, geocoding) will be isolated behind interfaces/adapters to preserve provider swap flexibility and align with future Azure deployment.
+Deliver a third workflow mode, `Legal Description`, that accepts exactly one input source (pasted text or uploaded image), interprets legal descriptions into tract geometry, renders read-only boundaries, and exports mode-specific JSON. Third-party dependencies (OCR, legal interpretation, geocoding) are isolated behind interfaces/adapters to preserve provider swap flexibility and align with future Azure deployment.
+
+## Plan Amendment: 2026-05-13
+
+This amendment preserves the full feature plan scope and sets the next implementation target:
+
+- **Next build item**: implement `ILegalDescriptionInterpreter` in `backend/src/SteelTree.GeoAcre.Geocoding/ProviderAdapters/PlaceholderLegalDescriptionInterpreter.cs`.
+- **Interpreter rule**: legal text prefixes such as `Tract II:` and `Tract IV:` are non-semantic and must be ignored when present.
+- **Validation expectation**: interpretation should succeed for fixture-like legal text whether those prefixes exist or not.
+- **Execution order**:
+  1. Add/extend failing tests for interpreter behavior (including prefix-present and prefix-absent equivalence).
+  2. Implement interpreter parsing and diagnostics logic.
+  3. Verify downstream boundary mapping remains read-only and provenance-preserving.
 
 ## Technical Context
 
@@ -27,8 +39,8 @@ Pre-Phase 0 gate evaluation:
 
 - **I. Library-First**: PASS. New parsing/interpretation behavior is planned as library abstractions (`SteelTree.GeoAcre.Geocoding` extension + new legal-description service interface contracts) before API/controller wiring.
 - **II. TDD (NON-NEGOTIABLE)**: PASS (planned). New public APIs and mode behaviors are test-first in unit/integration suites; failing tests required before implementation.
-- **III. Object-Oriented Design**: PASS. External providers will be represented by interfaces and injected implementations; mode orchestration remains in service classes.
-- **IV. Integration Testing**: PASS (planned). Contract/integration tests will cover mode-specific API paths and provider boundary adapters.
+- **III. Object-Oriented Design**: PASS. External providers are represented by interfaces and injected implementations; mode orchestration remains in service classes.
+- **IV. Integration Testing**: PASS (planned). Contract/integration tests cover mode-specific API paths and provider boundary adapters.
 - **V. Simplicity (YAGNI)**: PASS. Provider abstraction is limited to required third-party touchpoints only (OCR, legal parsing, geocoding), avoiding speculative domain frameworks.
 
 Post-Phase 1 gate re-check:
@@ -65,14 +77,14 @@ backend/
 │   ├── SteelTree.GeoAcre.Geocoding/             # Legal description services (refactored)
 │   ├── SteelTree.GeoAcre/                       # GeoAcre domain services (refactored)
 │   ├── SteelTree.GeoAcre.Web.Api/               # API host (refactored for new OCR projects)
-│   ├── SteelTree.Ocr/                           # NEW: OCR abstraction library (standalone)
-│   └── SteelTree.Ocr.AzureDocumentIntelligence/ # NEW: Azure DI implementation (standalone)
+│   ├── SteelTree.Ocr/                           # OCR abstraction library (standalone)
+│   └── SteelTree.Ocr.AzureDocumentIntelligence/ # Azure DI implementation (standalone)
 └── tests/
     ├── SteelTree.GeoAcre.Geometry.Tests/
     ├── SteelTree.GeoAcre.Web.Api.Tests/
     ├── integration/
     │   ├── SteelTree.GeoAcre.Web.Api.Tests/
-    │   └── SteelTree.Ocr.AzureDocumentIntelligence.Tests/ # NEW: OCR integration tests
+    │   └── SteelTree.Ocr.AzureDocumentIntelligence.Tests/
 
 frontend/
 ├── src/
@@ -84,11 +96,11 @@ frontend/
 └── staticwebapp.config.json
 ```
 
-**Structure Decision**: Keep the existing web-application split (`frontend` + `backend`) and add legal-description mode behavior through service abstractions and contracts instead of introducing new host applications. **NEW**: Extract OCR functionality into standalone projects (`SteelTree.Ocr` abstraction + `SteelTree.Ocr.AzureDocumentIntelligence` implementation) to prepare for future NuGet packaging while maintaining solution-level project references. The `SteelTree.Ocr` project contains all OCR contracts (ILegalDescriptionOcrService, OcrExtractionResult, OcrProviderOptions, etc.) and is referenced by `SteelTree.GeoAcre` services. The `SteelTree.Ocr.AzureDocumentIntelligence` project is referenced only by `SteelTree.GeoAcre.Web.Api` for dependency injection registration.
+**Structure Decision**: Keep the existing web-application split (`frontend` + `backend`) and add legal-description mode behavior through service abstractions and contracts instead of introducing new host applications. OCR functionality is extracted into standalone projects (`SteelTree.Ocr` abstraction + `SteelTree.Ocr.AzureDocumentIntelligence` implementation) to prepare for future NuGet packaging while maintaining solution-level project references.
 
 ## Phase 0: Research Output
 
-Research completed in `/specs/002-legal-description-mapping/research.md` with all technical unknowns resolved, including:
+Research completed in `/specs/002-legal-description-mapping/research.md` with technical unknowns resolved, including:
 
 - OCR + legal-interpretation provider strategy with interface abstraction.
 - Input validation policy for mutually exclusive source selection.
@@ -117,63 +129,18 @@ Agent context updated in `.github/copilot-instructions.md` to point to this feat
 5. Add test-first coverage per story (frontend unit, backend unit, backend integration).
 6. Preserve existing v1 behavior and verify non-regression in draw/measure paths.
 
-### OCR Project Extraction (New Standalone Library)
+### OCR Project Extraction (Standalone Library)
 
-This phase includes extraction of OCR functionality into reusable, standalone projects to prepare for future NuGet packaging:
+1. Create/maintain `SteelTree.Ocr` abstraction project for generic OCR contracts.
+2. Create/maintain `SteelTree.Ocr.AzureDocumentIntelligence` implementation project for Azure OCR adapter wiring.
+3. Keep GeoAcre domain concerns out of OCR standalone libraries.
+4. Validate solution references and integration test coverage for OCR provider behavior.
 
-**Phase 2a: Create `SteelTree.Ocr` Abstraction Project**
-- Create new project `backend/src/SteelTree.Ocr/` (.NET 10 Class Library)
-- Move OCR contracts from `SteelTree.GeoAcre.Ocr` namespace:
-  - `ILegalDescriptionOcrService` interface
-  - `OcrExtractionResult` class
-  - `OcrProviderOptions` class
-- Add project to `GeoAcre.sln`
-- No external dependencies except .NET Base Class Library
+### Current Priority Amendment
 
-**Phase 2b: Create `SteelTree.Ocr.AzureDocumentIntelligence` Implementation Project**
-- Create new project `backend/src/SteelTree.Ocr.AzureDocumentIntelligence/` (.NET 10 Class Library)
-- Move OCR implementation from `SteelTree.GeoAcre.Ocr.AzureDocumentIntelligence`:
-  - `AzureDocumentIntelligenceOcrService` class
-  - `AddAzureDocumentIntelligenceOcr()` extension method
-- Add project to `GeoAcre.sln`
-- Project dependencies: `SteelTree.Ocr`, `Azure.AI.FormRecognizer` (v4.1.0+)
-
-**Phase 2c: Delete Legacy OCR Project**
-- Remove `SteelTree.GeoAcre.Ocr.AzureDocumentIntelligence` project from solution and disk
-
-**Phase 2d: Refactor GeoAcre Projects for New OCR Projects**
-- Update `SteelTree.GeoAcre` project:
-  - Add project reference to `SteelTree.Ocr`
-  - Remove project reference to `SteelTree.GeoAcre.Ocr.AzureDocumentIntelligence` (if present)
-  - Update imports: `using SteelTree.Ocr;` where applicable
-- Update `SteelTree.GeoAcre.Web.Api` project:
-  - Add project reference to `SteelTree.Ocr.AzureDocumentIntelligence`
-  - Remove project reference to `SteelTree.GeoAcre.Ocr.AzureDocumentIntelligence`
-  - Update `Program.cs` DI registration: import from new project namespace
-- Update test projects:
-  - Update imports in `SteelTree.GeoAcre.Web.Api.Tests` to use `SteelTree.Ocr` for mocking
-  - Update imports in integration tests to use `SteelTree.Ocr` contracts
-
-**Phase 2e: Create Integration Tests for SteelTree.Ocr.AzureDocumentIntelligence**
-- Create new test project `backend/tests/integration/SteelTree.Ocr.AzureDocumentIntelligence.Tests/` (.NET 10 xUnit project)
-- Project dependencies: `SteelTree.Ocr`, `SteelTree.Ocr.AzureDocumentIntelligence`, `FluentAssertions`
-- Create test data directory: `backend/tests/integration/SteelTree.Ocr.AzureDocumentIntelligence.Tests/TestData/` with sample documents:
-  - `tract-ii.txt`: Sample Tract II legal description (Northwest Corner of Lot Three, Block Seven, Crestline, Cherokee County, Kansas)
-  - `tract-iv.txt`: Sample Tract IV legal description (Southeast Quarter of Section Twenty-six, Township Thirty-three South, Range Twenty-five East)
-- Implement integration tests:
-  - `AzureDocumentIntelligenceOcrServiceTests.cs`: Verify OCR extraction against sample legal description documents
-  - Test cases:
-    - `ExtractText_WithValidTractIIDocument_ReturnsExpectedLegalDescription()`: Verify Tract II OCR output contains key landmarks and measurements
-    - `ExtractText_WithValidTractIVDocument_ReturnsExpectedLegalDescription()`: Verify Tract IV OCR output contains section references and boundaries
-  - Validate `OcrExtractionResult` contains extracted text, confidence scores, and diagnostics
-  - Requires Azure Document Intelligence credentials (environment variable or configuration)
-  - Mark with `[Trait("Category", "Integration")]` for CI/CD filtering if needed
-
-**Phase 2f: Validate & Verify**
-- Build `GeoAcre.sln`: All projects compile cleanly
-- Run `dotnet test GeoAcre.sln`: All 59+ tests pass (including new OCR integration tests)
-- Verify no breaking changes to API contracts or services
-- Verify solution structure: 6 primary projects (Geometry, Geocoding, SteelTree.GeoAcre, Web.Api, SteelTree.Ocr, SteelTree.Ocr.AzureDocumentIntelligence) + 3 test projects (Geometry.Tests, Web.Api.Tests, Ocr.AzureDocumentIntelligence.Tests)
+1. Implement `ILegalDescriptionInterpreter` next.
+2. Ensure tract-heading normalization ignores optional prefix labels (`Tract II:`, `Tract IV:`).
+3. Confirm equivalent interpretation behavior for heading-present and heading-absent variants of the same legal text.
 
 ## Complexity Tracking
 

@@ -17,7 +17,7 @@ Fields:
 
 Validation:
 - Active mode is required.
-- Mode ordering for selector UI is fixed: DrawBoundary -> LegalDescription -> MeasureDistance.
+- Mode ordering for selector UI is fixed: DrawBoundary -> LegalDescription -> Measure Distance.
 - Switch into a new mode requires confirmation when current mode has in-progress data.
 
 State transitions:
@@ -113,3 +113,11 @@ Validation:
 - OCR unreadable image -> `NeedsRetry` with actionable diagnostics.
 - Ambiguous/incomplete legal text -> `Failed` or `NeedsRetry` with guidance.
 - Invalid/self-intersecting interpreted polygon -> failed finalization with retry path.
+
+## Amendment: 2026-05-13 (Interpreter Next)
+
+This amendment adds interpreter implementation details while preserving the baseline V2 data model.
+
+- Add normalization behavior before parsing where optional tract prefixes (`Tract II:` / `Tract IV:`) are removed when present.
+- Interpretation outcomes should be equivalent for heading-present and heading-absent variants of the same legal text.
+- Parsing-focused diagnostics are required for incomplete or ambiguous course extraction.

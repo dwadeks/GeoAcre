@@ -56,3 +56,11 @@
 - Third-party integrations are adapterized behind interfaces for swapability and TDD.
 - API contracts keep provider-neutral request/response shapes.
 - Azure readiness includes secret externalization, RBAC, and deployment via IaC in future deployment workstreams.
+
+## Amendment: 2026-05-13 (Interpreter Next)
+
+This amendment adds priority sequencing and parser nuance without replacing baseline research scope.
+
+- Next implementation target is `ILegalDescriptionInterpreter`.
+- Interpreter normalization must ignore optional leading labels like `Tract II:` / `Tract IV:`.
+- Add tests proving equivalent interpretation results with and without those prefixes on fixture-derived legal text.

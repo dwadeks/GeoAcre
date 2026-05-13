@@ -130,3 +130,15 @@ dotnet test
 - Use environment-based configuration keys for provider endpoints and timeouts.
 - Plan secret storage with Azure Key Vault and managed identity for deployed environments.
 - Keep deployment automation in IaC for future `/infra` additions.
+
+## Amendment: 2026-05-13 (Interpreter Next)
+
+- When implementing `ILegalDescriptionInterpreter`, treat leading `Tract II:` / `Tract IV:` text as optional and non-semantic.
+- Add a focused interpreter verification pass comparing heading-present and heading-removed variants of fixture text.
+
+Focused interpreter integration run:
+
+```bash
+cd backend
+dotnet test tests/integration/SteelTree.GeoAcre.Web.Api.Tests/SteelTree.GeoAcre.Web.Api.IntegrationTests.csproj --filter LegalDescription
+```

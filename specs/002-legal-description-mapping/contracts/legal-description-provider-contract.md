@@ -92,3 +92,9 @@ Integration tests:
 - Verify API endpoint behavior using fake implementations.
 - Verify provider-unavailable cases map to `503`.
 - Verify interpreted boundaries marked read-only with provenance `LegalInterpretation`.
+
+## Amendment: 2026-05-13 (Interpreter Next)
+
+- `ILegalDescriptionInterpreter` implementations must ignore optional non-semantic tract labels (for example `Tract II:` and `Tract IV:`) when present at the start of legal text.
+- Interpreter must preserve legal course parsing order after normalization.
+- Add interpreter-focused tests for heading-present vs heading-absent equivalence and malformed clause diagnostics.
