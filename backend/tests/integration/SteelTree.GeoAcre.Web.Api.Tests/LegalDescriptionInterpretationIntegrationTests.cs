@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using SteelTree.GeoAcre.Geocoding;
+using SteelTree.GeoAcre.Geocoding.ProviderAdapters;
 using SteelTree.GeoAcre.Geometry;
 using SteelTree.Ocr;
 using SteelTree.GeoAcre.Web.Api.Models;
@@ -15,6 +17,34 @@ namespace SteelTree.GeoAcre.Web.Api.Tests;
 [TestClass]
 public class LegalDescriptionInterpretationIntegrationTests
 {
+    [TestMethod]
+    public async Task Interpreter_WithAndWithoutTractPrefix_ProducesEquivalentGeometry()
+    {
+        var sample = LoadSample("tract-ii");
+        var withPrefix = sample.Text;
+        var withoutPrefix = withPrefix.Replace("Tract II:", string.Empty, StringComparison.OrdinalIgnoreCase).Trim();
+
+        var interpreter = new PlaceholderLegalDescriptionInterpreter(
+            Options.Create(new LegalDescriptionProviderOptions
+            {
+                Interpretation = new InterpretationProviderOptions
+                {
+                    Provider = "Placeholder",
+                    DefaultConfidenceThreshold = 0.7,
+                },
+            }));
+
+        var withPrefixResult = await interpreter.InterpretAsync(withPrefix);
+        var withoutPrefixResult = await interpreter.InterpretAsync(withoutPrefix);
+
+        withPrefixResult.Success.Should().BeTrue();
+        withoutPrefixResult.Success.Should().BeTrue();
+        withPrefixResult.Candidates.Should().HaveCount(1);
+        withoutPrefixResult.Candidates.Should().HaveCount(1);
+        withPrefixResult.Candidates[0].Vertices.Count.Should().BeGreaterThanOrEqualTo(4);
+        withoutPrefixResult.Candidates[0].Vertices.Should().BeEquivalentTo(withPrefixResult.Candidates[0].Vertices, options => options.WithStrictOrdering());
+    }
+
     [TestMethod]
     public async Task Interpret_WithFixtureTextSample_ReturnsReadOnlyBoundary()
     {

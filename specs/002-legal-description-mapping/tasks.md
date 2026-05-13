@@ -117,17 +117,17 @@
 
 ### Tests for Interpreter Amendment (US1)
 
-- [ ] T044 [P] [US1] Add interpreter normalization unit tests for heading-present and heading-absent inputs in backend/tests/SteelTree.GeoAcre.Web.Api.Tests/LegalDescriptionInterpreterNormalizationTests.cs
-- [ ] T045 [P] [US1] Extend legal-description integration tests for tract-prefix equivalence in backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/LegalDescriptionInterpretationIntegrationTests.cs
-- [ ] T046 [P] [US1] Add interpreter diagnostics tests for malformed or incomplete course clauses in backend/tests/SteelTree.GeoAcre.Web.Api.Tests/LegalDescriptionInterpreterDiagnosticsTests.cs
+- [X] T044 [P] [US1] Add interpreter normalization unit tests for heading-present and heading-absent inputs in backend/tests/SteelTree.GeoAcre.Web.Api.Tests/LegalDescriptionInterpreterNormalizationTests.cs
+- [X] T045 [P] [US1] Extend legal-description integration tests for tract-prefix equivalence in backend/tests/integration/SteelTree.GeoAcre.Web.Api.Tests/LegalDescriptionInterpretationIntegrationTests.cs
+- [X] T046 [P] [US1] Add interpreter diagnostics tests for malformed or incomplete course clauses in backend/tests/SteelTree.GeoAcre.Web.Api.Tests/LegalDescriptionInterpreterDiagnosticsTests.cs
 
 ### Implementation for Interpreter Amendment (US1)
 
-- [ ] T047 [US1] Implement legal-description text normalization helper in backend/src/SteelTree.GeoAcre.Geocoding/ProviderAdapters/LegalDescriptionTextNormalizer.cs
-- [ ] T048 [US1] Implement legal-description course parser for direction-distance extraction in backend/src/SteelTree.GeoAcre.Geocoding/ProviderAdapters/LegalDescriptionCourseParser.cs
-- [ ] T049 [US1] Refactor interpreter implementation to use normalization and parser services in backend/src/SteelTree.GeoAcre.Geocoding/ProviderAdapters/PlaceholderLegalDescriptionInterpreter.cs
-- [ ] T050 [US1] Add deterministic candidate construction helper for interpreter output in backend/src/SteelTree.GeoAcre.Geocoding/ProviderAdapters/LegalDescriptionBoundaryCandidateBuilder.cs
-- [ ] T051 [US1] Validate interpreter service orchestration compatibility in backend/src/SteelTree.GeoAcre/Services/LegalDescriptionService.cs
+- [X] T047 [US1] Implement legal-description text normalization helper in backend/src/SteelTree.GeoAcre.Geocoding/ProviderAdapters/LegalDescriptionTextNormalizer.cs
+- [X] T048 [US1] Implement legal-description course parser for direction-distance extraction in backend/src/SteelTree.GeoAcre.Geocoding/ProviderAdapters/LegalDescriptionCourseParser.cs
+- [X] T049 [US1] Refactor interpreter implementation to use normalization and parser services in backend/src/SteelTree.GeoAcre.Geocoding/ProviderAdapters/PlaceholderLegalDescriptionInterpreter.cs
+- [X] T050 [US1] Add deterministic candidate construction helper for interpreter output in backend/src/SteelTree.GeoAcre.Geocoding/ProviderAdapters/LegalDescriptionBoundaryCandidateBuilder.cs
+- [X] T051 [US1] Validate interpreter service orchestration compatibility in backend/src/SteelTree.GeoAcre/Services/LegalDescriptionService.cs
 
 **Checkpoint**: Interpreter implementation aligns with plan amendment and is independently testable.
 

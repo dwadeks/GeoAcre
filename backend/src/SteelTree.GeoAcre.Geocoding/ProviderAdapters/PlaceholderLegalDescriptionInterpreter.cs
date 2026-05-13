@@ -6,6 +6,9 @@ namespace SteelTree.GeoAcre.Geocoding.ProviderAdapters;
 public sealed class PlaceholderLegalDescriptionInterpreter : ILegalDescriptionInterpreter
 {
     private readonly LegalDescriptionProviderOptions _options;
+    private readonly LegalDescriptionTextNormalizer _normalizer = new();
+    private readonly LegalDescriptionCourseParser _courseParser = new();
+    private readonly LegalDescriptionBoundaryCandidateBuilder _candidateBuilder = new();
 
     public PlaceholderLegalDescriptionInterpreter(IOptions<LegalDescriptionProviderOptions> options)
     {
@@ -25,19 +28,53 @@ public sealed class PlaceholderLegalDescriptionInterpreter : ILegalDescriptionIn
                 _options.Interpretation.Provider));
         }
 
+        var normalization = _normalizer.Normalize(normalizedLegalText);
+        if (string.IsNullOrWhiteSpace(normalization.NormalizedText))
+        {
+            return Task.FromResult(new LegalInterpretationResult(
+                false,
+                [],
+                ["Legal description text is empty after normalization."],
+                _options.Interpretation.Provider));
+        }
+
+        var parse = _courseParser.Parse(normalization.NormalizedText);
+        if (parse.Courses.Count < 3)
+        {
+            var diagnostics = parse.Diagnostics.Count > 0
+                ? parse.Diagnostics
+                : ["Unable to parse enough direction-distance clauses from the legal description."];
+
+            return Task.FromResult(new LegalInterpretationResult(
+                false,
+                [],
+                diagnostics,
+                _options.Interpretation.Provider));
+        }
+
+        var vertices = _candidateBuilder.Build(parse.Courses);
+        if (vertices.Count < 3)
+        {
+            return Task.FromResult(new LegalInterpretationResult(
+                false,
+                [],
+                ["Interpreted geometry did not contain enough vertices."],
+                _options.Interpretation.Provider));
+        }
+
+        var confidence = Math.Min(
+            1.0,
+            _options.Interpretation.DefaultConfidenceThreshold + (parse.Courses.Count * 0.03));
+
         var boundary = new InterpretedBoundary(
-            [
-                new GeoPoint(39.7817, -89.6501),
-                new GeoPoint(39.7820, -89.6510),
-                new GeoPoint(39.7809, -89.6512),
-            ],
-            _options.Interpretation.DefaultConfidenceThreshold,
-            ["Placeholder interpretation result. Replace with real provider implementation."]);
+            vertices,
+            confidence,
+            []);
 
         return Task.FromResult(new LegalInterpretationResult(
             true,
             [boundary],
-            [],
+            parse.Diagnostics,
             _options.Interpretation.Provider));
     }
 }

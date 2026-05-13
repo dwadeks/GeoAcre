@@ -55,7 +55,7 @@ public sealed class LegalDescriptionService : ILegalDescriptionService
             normalizedText = ocrResult.ExtractedText;
         }
 
-        var interpretation = await _interpreter.InterpretAsync(normalizedText ?? string.Empty, cancellationToken);
+        var interpretation = await _interpreter.InterpretAsync((normalizedText ?? string.Empty).Trim(), cancellationToken);
         if (!interpretation.Success || interpretation.Candidates.Count == 0)
         {
             return new LegalDescriptionProcessingResult
